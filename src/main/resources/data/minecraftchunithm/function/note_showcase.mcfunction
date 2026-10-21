@@ -1,0 +1,1 @@
+execute align xyz run function minecraftchunithm:note_showcase_aligned

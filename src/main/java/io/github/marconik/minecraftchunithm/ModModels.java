@@ -46,7 +46,33 @@ public final class ModModels {
                     Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID, name));
             Registry.register(BuiltInRegistries.ITEM, key, new Item(new Item.Properties().setId(key)));
         }
+        for (var kind : NoteDefinition.Kind.values()) {
+            if (kind==NoteDefinition.Kind.TAP) continue;
+            for (int lanes=1;lanes<=16;lanes++) {
+                if(kind==NoteDefinition.Kind.AIR_ACTION && lanes!=2)continue;
+                String name=kind.name().toLowerCase(java.util.Locale.ROOT)+"_"+lanes;
+                ResourceKey<Item> key=ResourceKey.create(Registries.ITEM,
+                        Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));
+                items.add(Registry.register(BuiltInRegistries.ITEM,key,
+                        new NoteModelItem(new Item.Properties().setId(key).stacksTo(1),lanes,kind)));
+            }
+        }
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.BUILDING_BLOCKS)
                 .register(output -> items.forEach(output::accept));
+        for (var kind : List.of(NoteDefinition.Kind.SLIDE,NoteDefinition.Kind.AIR_ACTION,NoteDefinition.Kind.AIR)) {
+            var variants=kind==NoteDefinition.Kind.AIR
+                    ?List.of("up_left","up_right","down","down_left","down_right")
+                    :List.of("parabola_up","parabola_down");
+            for (String variant:variants) for(int width=1;width<=16;width++) {
+                if(kind==NoteDefinition.Kind.AIR_ACTION && width!=2)continue;
+                String name=kind.name().toLowerCase(java.util.Locale.ROOT)+"_"+variant+"_"+width;
+                var key=ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));
+                items.add(Registry.register(BuiltInRegistries.ITEM,key,new NoteModelItem(
+                        new Item.Properties().setId(key).stacksTo(1),width,kind,
+                        kind==NoteDefinition.Kind.AIR?NoteDefinition.Direction.valueOf(variant.toUpperCase(java.util.Locale.ROOT)):NoteDefinition.Direction.UP,
+                        kind==NoteDefinition.Kind.AIR?NoteDefinition.Connection.LINEAR:
+                                NoteDefinition.Connection.valueOf(variant.toUpperCase(java.util.Locale.ROOT)))));
+            }
+        }
     }
 }

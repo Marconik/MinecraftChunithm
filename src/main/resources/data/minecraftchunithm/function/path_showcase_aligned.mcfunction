@@ -1,0 +1,13 @@
+chunithm track 48
+summon minecraft:item_display ~4.5 ~-0.359375 ~2 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:slide_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~5 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~8 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_action_2",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~11 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:slide_parabola_up_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~14 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:slide_parabola_down_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~17 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_action_parabola_up_2",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~20 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_action_parabola_down_2",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~23 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_up_left_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~26 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_up_right_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~29 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_down_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~32 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_down_left_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
+summon minecraft:item_display ~4.5 ~-0.359375 ~35 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_down_right_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}

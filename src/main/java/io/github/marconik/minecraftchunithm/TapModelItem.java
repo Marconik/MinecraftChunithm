@@ -15,13 +15,14 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 
 /** Static model placement for inspection; playback will use a separate renderer. */
-public final class TapModelItem extends Item {
+public class TapModelItem extends Item {
     private final int lanes;
 
     public TapModelItem(Properties properties, int lanes) {
         super(properties);
         this.lanes = lanes;
     }
+    protected double previewFootprintWidth() { return lanes*0.5; }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
@@ -34,15 +35,15 @@ public final class TapModelItem extends Item {
         Vec3 hit = context.getClickLocation();
         TrackBounds bounds = TrackBounds.find(level, context.getClickedPos());
         if (bounds == null) {
-            context.getPlayer().sendOverlayMessage(Component.literal("请在完整的 9 格宽轨道表面放置 TAP。"));
+            context.getPlayer().sendOverlayMessage(Component.literal("请在完整的 9 格宽轨道表面放置音符。"));
             return InteractionResult.FAIL;
         }
         boolean alongZ = bounds.alongZ();
-        double width = lanes * 0.5;
+        double width = previewFootprintWidth();
         double start = Math.floor((alongZ ? hit.z : hit.x) * 2) / 2;
         double surface = context.getClickedPos().getY() + TrackBlock.SURFACE_HEIGHT;
         if (Math.abs(hit.y - surface) > 0.001 || !bounds.contains(start, width)) {
-            context.getPlayer().sendOverlayMessage(Component.literal("TAP 不能放在金色边框上或超出有效轨道宽度。"));
+            context.getPlayer().sendOverlayMessage(Component.literal("音符不能放在金色边框上或超出有效轨道宽度。"));
             return InteractionResult.FAIL;
         }
         Display.ItemDisplay display = EntityTypes.ITEM_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
@@ -56,7 +57,7 @@ public final class TapModelItem extends Item {
         display.setItemTransform(ItemDisplayContext.FIXED);
         display.setBrightnessOverride(new Brightness(15, 15));
         display.setWidth((float) width + 0.5F);
-        display.setHeight(0.5F);
+        display.setHeight(2.5F);
         display.addTag("minecraftchunithm.tap_preview");
         level.addFreshEntity(display);
         return InteractionResult.SUCCESS;

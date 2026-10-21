@@ -31,7 +31,8 @@ public final class TrackMotion {
     private TrackMotion() {}
 
     public static void initialize() {
-        ServerTickEvents.END_LEVEL_TICK.register(level -> {
+        // Update before entity tracking sends this tick's positions, not after it.
+        ServerTickEvents.START_LEVEL_TICK.register(level -> {
             Session session = SESSIONS.get(level);
             if (session != null && !session.tick(level)) stop(level);
         });
@@ -96,7 +97,15 @@ public final class TrackMotion {
         return display;
     }
 
-    private record Moving(Display.ItemDisplay entity, double bornAt) {}
+    private static final class Moving {
+        private final Display.ItemDisplay entity;
+        private final double bornAt;
+        private long reachedAtTick = -1;
+        private Moving(Display.ItemDisplay entity, double bornAt) {
+            this.entity = entity;
+            this.bornAt = bornAt;
+        }
+    }
 
     private static final class Session {
         private final BlockPos origin;
@@ -138,12 +147,16 @@ public final class TrackMotion {
             var iterator=notes.iterator();
             while(iterator.hasNext()) {
                 var note=iterator.next();
-                if(note.entity.isRemoved() || RhythmTiming.expired(note.bornAt,now,speed,length)) {
+                if(note.entity.isRemoved() || RhythmTiming.canRemove(note.reachedAtTick,tick)) {
                     note.entity.discard(); LIVE.remove(note.entity.getUUID()); iterator.remove();
                     despawned++;
                 } else {
                     note.entity.setPos(note.entity.getX(),note.entity.getY(),
-                            origin.getZ()+RhythmTiming.position(note.bornAt,now,speed));
+                            origin.getZ()+RhythmTiming.displayPosition(note.bornAt,now,speed,length));
+                    // Never skip the final location just because this tick overshot the edge.
+                    if (note.reachedAtTick < 0 && RhythmTiming.expired(note.bornAt,now,speed,length)) {
+                        note.reachedAtTick = tick;
+                    }
                 }
             }
         }

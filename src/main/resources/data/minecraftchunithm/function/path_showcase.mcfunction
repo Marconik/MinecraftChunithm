@@ -1,0 +1,1 @@
+execute align xyz run function minecraftchunithm:path_showcase_aligned

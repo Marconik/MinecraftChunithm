@@ -1,0 +1,553 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "gui_light": "front",
+  "textures": {
+    "deck": "minecraftchunithm:block/deck",
+    "side": "minecraftchunithm:block/side",
+    "lane": "minecraftchunithm:block/lane",
+    "gold": "minecraftchunithm:block/gold",
+    "white": "minecraftchunithm:block/white",
+    "tap_red": "minecraftchunithm:block/tap_red",
+    "tap_shadow": "minecraftchunithm:block/tap_shadow",
+    "highlight": "minecraftchunithm:block/highlight",
+    "beat_gray": "minecraftchunithm:block/beat_gray",
+    "rail_gold_left": "minecraftchunithm:block/rail_gold_left",
+    "rail_gold_right": "minecraftchunithm:block/rail_gold_right",
+    "gold_inner": "minecraftchunithm:block/gold_inner",
+    "gold_outer": "minecraftchunithm:block/gold_outer",
+    "ex_gold": "minecraftchunithm:block/ex_gold",
+    "hold_yellow": "minecraftchunithm:block/hold_yellow",
+    "slide_cyan": "minecraftchunithm:block/slide_cyan",
+    "slide_blue": "minecraftchunithm:block/slide_blue",
+    "flick_blue": "minecraftchunithm:block/flick_blue",
+    "air_green": "minecraftchunithm:block/air_green",
+    "action_purple": "minecraftchunithm:block/action_purple",
+    "slide_band_0": "minecraftchunithm:block/slide_band_0",
+    "slide_band_1": "minecraftchunithm:block/slide_band_1",
+    "slide_band_2": "minecraftchunithm:block/slide_band_2",
+    "slide_band_3": "minecraftchunithm:block/slide_band_3",
+    "slide_band_4": "minecraftchunithm:block/slide_band_4",
+    "slide_band_5": "minecraftchunithm:block/slide_band_5",
+    "slide_band_6": "minecraftchunithm:block/slide_band_6",
+    "slide_band_7": "minecraftchunithm:block/slide_band_7",
+    "slide_band_8": "minecraftchunithm:block/slide_band_8",
+    "slide_band_9": "minecraftchunithm:block/slide_band_9",
+    "slide_band_10": "minecraftchunithm:block/slide_band_10",
+    "slide_band_11": "minecraftchunithm:block/slide_band_11",
+    "slide_band_12": "minecraftchunithm:block/slide_band_12",
+    "slide_band_13": "minecraftchunithm:block/slide_band_13",
+    "slide_band_14": "minecraftchunithm:block/slide_band_14",
+    "slide_band_15": "minecraftchunithm:block/slide_band_15",
+    "particle": "minecraftchunithm:block/ex_gold"
+  },
+  "elements": [
+    {
+      "from": [
+        -7.875,
+        8.1,
+        -16
+      ],
+      "to": [
+        23.875,
+        8.3,
+        8
+      ],
+      "shade": false,
+      "light_emission": 10,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#hold_yellow"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#hold_yellow"
+        },
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#hold_yellow"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#hold_yellow"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#hold_yellow"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#hold_yellow"
+        }
+      }
+    },
+    {
+      "from": [
+        -7.75,
+        8.31,
+        -16
+      ],
+      "to": [
+        23.75,
+        8.4,
+        8
+      ],
+      "shade": false,
+      "light_emission": 12,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        }
+      }
+    },
+    {
+      "from": [
+        -8,
+        8,
+        8
+      ],
+      "to": [
+        24,
+        9.5,
+        12
+      ],
+      "shade": false,
+      "light_emission": 12,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        }
+      }
+    },
+    {
+      "from": [
+        -7.8125,
+        9.5,
+        8.5
+      ],
+      "to": [
+        23.8125,
+        10,
+        11.5
+      ],
+      "shade": false,
+      "light_emission": 12,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        }
+      }
+    },
+    {
+      "from": [
+        -8,
+        8,
+        -16
+      ],
+      "to": [
+        24,
+        9.5,
+        -12
+      ],
+      "shade": false,
+      "light_emission": 12,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        }
+      }
+    },
+    {
+      "from": [
+        -7.8125,
+        9.5,
+        -15.5
+      ],
+      "to": [
+        23.8125,
+        10,
+        -12.5
+      ],
+      "shade": false,
+      "light_emission": 12,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#ex_gold"
+        }
+      }
+    }
+  ],
+  "display": {
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        4,
+        1,
+        1
+      ]
+    },
+    "gui": {
+      "rotation": [
+        35,
+        20,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.42,
+        1.2,
+        1.2
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.3,
+        0.8,
+        0.8
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.6,
+        0.6
+      ]
+    }
+  }
+}

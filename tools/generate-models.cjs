@@ -159,6 +159,7 @@ for (const name of ['beat_line','judgment_line']) {
   en[`item.${ns}.${name}`]=gold?'Judgment line':'Quarter beat line';
   zh[`item.${ns}.${name}`]=gold?'金色判定线':'四分音符节拍线';
 }
+require('./note-models.cjs')({box,texture,textures,json,write,assets,ns,en,zh});
 json(`${assets}/lang/en_us.json`,en);
 json(`${assets}/lang/zh_cn.json`,zh);
 // Reuse the same command geometry, aligned to the block grid.
