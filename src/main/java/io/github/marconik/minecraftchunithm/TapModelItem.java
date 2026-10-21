@@ -1,6 +1,7 @@
 package io.github.marconik.minecraftchunithm;
 
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Brightness;
 import net.minecraft.world.InteractionResult;
@@ -30,18 +31,26 @@ public final class TapModelItem extends Item {
         if (context.getPlayer() == null || !context.getPlayer().getAbilities().instabuild) {
             return InteractionResult.PASS;
         }
+        Vec3 hit = context.getClickLocation();
+        TrackBounds bounds = TrackBounds.find(level, context.getClickedPos());
+        if (bounds == null) {
+            context.getPlayer().sendOverlayMessage(Component.literal("请在完整的 9 格宽轨道表面放置 TAP。"));
+            return InteractionResult.FAIL;
+        }
+        boolean alongZ = bounds.alongZ();
+        double width = lanes * 0.5;
+        double start = Math.floor((alongZ ? hit.z : hit.x) * 2) / 2;
+        double surface = context.getClickedPos().getY() + TrackBlock.SURFACE_HEIGHT;
+        if (Math.abs(hit.y - surface) > 0.001 || !bounds.contains(start, width)) {
+            context.getPlayer().sendOverlayMessage(Component.literal("TAP 不能放在金色边框上或超出有效轨道宽度。"));
+            return InteractionResult.FAIL;
+        }
         Display.ItemDisplay display = EntityTypes.ITEM_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
         if (display == null) return InteractionResult.FAIL;
-        Vec3 hit = context.getClickLocation();
-        var state = level.getBlockState(context.getClickedPos());
-        Direction direction = state.getBlock() instanceof TrackBlock
-                ? state.getValue(TrackBlock.FACING) : context.getHorizontalDirection();
-        boolean alongZ = direction.getAxis() == Direction.Axis.X;
-        double width = lanes * 0.5;
         // The clicked half-lane is the low-coordinate edge; cap details keep their physical size.
         double x = alongZ ? context.getClickedPos().getX() + 0.5 : Math.floor(hit.x * 2) / 2 + width / 2;
         double z = alongZ ? Math.floor(hit.z * 2) / 2 + width / 2 : context.getClickedPos().getZ() + 0.5;
-        display.setPos(x, hit.y + 0.015625, z);
+        display.setPos(x, surface + 0.015625, z);
         display.setYRot(alongZ ? 90 : 0);
         display.setItemStack(new ItemStack(this));
         display.setItemTransform(ItemDisplayContext.FIXED);

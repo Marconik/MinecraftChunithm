@@ -26,7 +26,12 @@ public final class ModModels {
             ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, id);
             Block block = Registry.register(BuiltInRegistries.BLOCK, blockKey,
                     new TrackBlock(BlockBehaviour.Properties.of().setId(blockKey)
-                            .strength(1.5F).sound(SoundType.METAL)));
+                            .strength(1.5F).sound(SoundType.METAL).noOcclusion(), switch (name) {
+                                case "track_left" -> TrackBlock.Part.LEFT;
+                                case "track_right" -> TrackBlock.Part.RIGHT;
+                                case "track_judgment" -> TrackBlock.Part.JUDGMENT;
+                                default -> TrackBlock.Part.DECK;
+                            }));
             items.add(Registry.register(BuiltInRegistries.ITEM, itemKey,
                     new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix())));
         }
@@ -35,6 +40,11 @@ public final class ModModels {
                     Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID, "tap_" + lanes));
             items.add(Registry.register(BuiltInRegistries.ITEM, key,
                     new TapModelItem(new Item.Properties().setId(key).stacksTo(1), lanes)));
+        }
+        for (String name : List.of("beat_line", "judgment_line")) {
+            ResourceKey<Item> key = ResourceKey.create(Registries.ITEM,
+                    Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID, name));
+            Registry.register(BuiltInRegistries.ITEM, key, new Item(new Item.Properties().setId(key)));
         }
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.BUILDING_BLOCKS)
                 .register(output -> items.forEach(output::accept));

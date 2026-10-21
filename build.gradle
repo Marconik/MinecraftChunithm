@@ -10,6 +10,15 @@ loom {
             sourceSet sourceSets.client
         }
     }
+    runs {
+        client {
+            if (project.hasProperty('motionQuickPlay')) {
+                vmArg '-Dminecraftchunithm.motionQuickPlay=true'
+                programArg '--quickPlaySingleplayer'
+                programArg 'New World'
+            }
+        }
+    }
 }
 
 dependencies {
@@ -36,3 +45,18 @@ java {
     sourceCompatibility = JavaVersion.VERSION_25
     targetCompatibility = JavaVersion.VERSION_25
 }
+
+sourceSets {
+    boundsCheck {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
+tasks.register('checkTrackBounds', JavaExec) {
+    dependsOn boundsCheckClasses
+    classpath = sourceSets.boundsCheck.runtimeClasspath
+    mainClass = 'io.github.marconik.minecraftchunithm.TrackBoundsCheck'
+}
+
+check.dependsOn checkTrackBounds

@@ -11,6 +11,9 @@ public final class MinecraftChunithm implements ModInitializer {
     @Override
     public void onInitialize() {
         ModModels.initialize();
+        TrackCommands.initialize();
+        TrackMotion.initialize();
+        DevelopmentMotionTest.initialize();
         LOGGER.info("MinecraftChunithm initialized: track blocks and 16 TAP model widths.");
     }
 }

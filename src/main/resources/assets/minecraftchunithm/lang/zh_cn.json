@@ -1,5 +1,5 @@
 {
-  "block.minecraftchunithm.track": "轨道 · 双分区",
+  "block.minecraftchunithm.track": "轨道 · 区域分隔",
   "block.minecraftchunithm.track_left": "轨道 · 左边框",
   "block.minecraftchunithm.track_right": "轨道 · 右边框",
   "block.minecraftchunithm.track_judgment": "轨道 · 判定线",
@@ -18,5 +18,7 @@
   "item.minecraftchunithm.tap_13": "TAP · 13 分区（6.5 格）",
   "item.minecraftchunithm.tap_14": "TAP · 14 分区（7 格）",
   "item.minecraftchunithm.tap_15": "TAP · 15 分区（7.5 格）",
-  "item.minecraftchunithm.tap_16": "TAP · 16 分区（8 格）"
+  "item.minecraftchunithm.tap_16": "TAP · 16 分区（8 格）",
+  "item.minecraftchunithm.beat_line": "四分音符节拍线",
+  "item.minecraftchunithm.judgment_line": "金色判定线"
 }

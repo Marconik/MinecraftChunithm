@@ -11,6 +11,11 @@
     "tap_red": "minecraftchunithm:block/tap_red",
     "tap_shadow": "minecraftchunithm:block/tap_shadow",
     "highlight": "minecraftchunithm:block/highlight",
+    "beat_gray": "minecraftchunithm:block/beat_gray",
+    "rail_gold_left": "minecraftchunithm:block/rail_gold_left",
+    "rail_gold_right": "minecraftchunithm:block/rail_gold_right",
+    "gold_inner": "minecraftchunithm:block/gold_inner",
+    "gold_outer": "minecraftchunithm:block/gold_outer",
     "particle": "minecraftchunithm:block/tap_red"
   },
   "elements": [
@@ -18,12 +23,12 @@
       "from": [
         -8,
         8,
-        6.25
+        4.5
       ],
       "to": [
         24,
         8.5,
-        9.75
+        11.5
       ],
       "shade": true,
       "faces": {
@@ -87,12 +92,12 @@
       "from": [
         -7.933333333333334,
         8.5,
-        6
+        4
       ],
       "to": [
         23.933333333333334,
         9.5,
-        10
+        12
       ],
       "shade": false,
       "light_emission": 12,
@@ -157,12 +162,12 @@
       "from": [
         -8,
         8.5,
-        6.5
+        5
       ],
       "to": [
         24,
         9.25,
-        9.5
+        11
       ],
       "shade": false,
       "light_emission": 12,
@@ -227,12 +232,12 @@
       "from": [
         -7.8,
         9.5,
-        6.5
+        5
       ],
       "to": [
         23.8,
         10,
-        9.5
+        11
       ],
       "shade": false,
       "light_emission": 12,
@@ -297,12 +302,12 @@
       "from": [
         -7.733333333333333,
         10.01,
-        6.625
+        5.25
       ],
       "to": [
         23.733333333333334,
         10.0625,
-        7
+        6
       ],
       "shade": false,
       "light_emission": 15,
@@ -360,6 +365,76 @@
             16
           ],
           "texture": "#highlight"
+        }
+      }
+    },
+    {
+      "from": [
+        -7.6,
+        10.07,
+        7.75
+      ],
+      "to": [
+        23.6,
+        10.125,
+        8.25
+      ],
+      "shade": false,
+      "light_emission": 15,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#white"
         }
       }
     }

@@ -1,5 +1,5 @@
 {
-  "block.minecraftchunithm.track": "Track · two lanes",
+  "block.minecraftchunithm.track": "Track · divider",
   "block.minecraftchunithm.track_left": "Track · left edge",
   "block.minecraftchunithm.track_right": "Track · right edge",
   "block.minecraftchunithm.track_judgment": "Track · judgment line",
@@ -18,5 +18,7 @@
   "item.minecraftchunithm.tap_13": "TAP · 13 lanes (6.5 blocks)",
   "item.minecraftchunithm.tap_14": "TAP · 14 lanes (7 blocks)",
   "item.minecraftchunithm.tap_15": "TAP · 15 lanes (7.5 blocks)",
-  "item.minecraftchunithm.tap_16": "TAP · 16 lanes (8 blocks)"
+  "item.minecraftchunithm.tap_16": "TAP · 16 lanes (8 blocks)",
+  "item.minecraftchunithm.beat_line": "Quarter beat line",
+  "item.minecraftchunithm.judgment_line": "Judgment line"
 }
