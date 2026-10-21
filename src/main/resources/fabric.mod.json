@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "minecraftchunithm",
+  "version": "${version}",
+  "name": "MinecraftChunithm",
+  "description": "World-space rhythm tracks inspired by CHUNITHM.",
+  "authors": ["Marconik"],
+  "contact": {
+    "sources": "https://github.com/Marconik/MinecraftChunithm",
+    "issues": "https://github.com/Marconik/MinecraftChunithm/issues"
+  },
+  "environment": "*",
+  "entrypoints": {
+    "main": ["io.github.marconik.minecraftchunithm.MinecraftChunithm"],
+    "client": ["io.github.marconik.minecraftchunithm.client.MinecraftChunithmClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
