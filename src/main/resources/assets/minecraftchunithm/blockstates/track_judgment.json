@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "minecraftchunithm:block/track_judgment",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "minecraftchunithm:block/track_judgment",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "minecraftchunithm:block/track_judgment",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "minecraftchunithm:block/track_judgment",
+      "y": 270
+    }
+  }
+}

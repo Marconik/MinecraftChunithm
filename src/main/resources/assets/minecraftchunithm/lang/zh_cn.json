@@ -1,0 +1,22 @@
+{
+  "block.minecraftchunithm.track": "轨道 · 双分区",
+  "block.minecraftchunithm.track_left": "轨道 · 左边框",
+  "block.minecraftchunithm.track_right": "轨道 · 右边框",
+  "block.minecraftchunithm.track_judgment": "轨道 · 判定线",
+  "item.minecraftchunithm.tap_1": "TAP · 1 分区（0.5 格）",
+  "item.minecraftchunithm.tap_2": "TAP · 2 分区（1 格）",
+  "item.minecraftchunithm.tap_3": "TAP · 3 分区（1.5 格）",
+  "item.minecraftchunithm.tap_4": "TAP · 4 分区（2 格）",
+  "item.minecraftchunithm.tap_5": "TAP · 5 分区（2.5 格）",
+  "item.minecraftchunithm.tap_6": "TAP · 6 分区（3 格）",
+  "item.minecraftchunithm.tap_7": "TAP · 7 分区（3.5 格）",
+  "item.minecraftchunithm.tap_8": "TAP · 8 分区（4 格）",
+  "item.minecraftchunithm.tap_9": "TAP · 9 分区（4.5 格）",
+  "item.minecraftchunithm.tap_10": "TAP · 10 分区（5 格）",
+  "item.minecraftchunithm.tap_11": "TAP · 11 分区（5.5 格）",
+  "item.minecraftchunithm.tap_12": "TAP · 12 分区（6 格）",
+  "item.minecraftchunithm.tap_13": "TAP · 13 分区（6.5 格）",
+  "item.minecraftchunithm.tap_14": "TAP · 14 分区（7 格）",
+  "item.minecraftchunithm.tap_15": "TAP · 15 分区（7.5 格）",
+  "item.minecraftchunithm.tap_16": "TAP · 16 分区（8 格）"
+}

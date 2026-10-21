@@ -1,0 +1,22 @@
+{
+  "block.minecraftchunithm.track": "Track · two lanes",
+  "block.minecraftchunithm.track_left": "Track · left edge",
+  "block.minecraftchunithm.track_right": "Track · right edge",
+  "block.minecraftchunithm.track_judgment": "Track · judgment line",
+  "item.minecraftchunithm.tap_1": "TAP · 1 lanes (0.5 blocks)",
+  "item.minecraftchunithm.tap_2": "TAP · 2 lanes (1 blocks)",
+  "item.minecraftchunithm.tap_3": "TAP · 3 lanes (1.5 blocks)",
+  "item.minecraftchunithm.tap_4": "TAP · 4 lanes (2 blocks)",
+  "item.minecraftchunithm.tap_5": "TAP · 5 lanes (2.5 blocks)",
+  "item.minecraftchunithm.tap_6": "TAP · 6 lanes (3 blocks)",
+  "item.minecraftchunithm.tap_7": "TAP · 7 lanes (3.5 blocks)",
+  "item.minecraftchunithm.tap_8": "TAP · 8 lanes (4 blocks)",
+  "item.minecraftchunithm.tap_9": "TAP · 9 lanes (4.5 blocks)",
+  "item.minecraftchunithm.tap_10": "TAP · 10 lanes (5 blocks)",
+  "item.minecraftchunithm.tap_11": "TAP · 11 lanes (5.5 blocks)",
+  "item.minecraftchunithm.tap_12": "TAP · 12 lanes (6 blocks)",
+  "item.minecraftchunithm.tap_13": "TAP · 13 lanes (6.5 blocks)",
+  "item.minecraftchunithm.tap_14": "TAP · 14 lanes (7 blocks)",
+  "item.minecraftchunithm.tap_15": "TAP · 15 lanes (7.5 blocks)",
+  "item.minecraftchunithm.tap_16": "TAP · 16 lanes (8 blocks)"
+}

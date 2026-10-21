@@ -10,6 +10,7 @@ public final class MinecraftChunithm implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        LOGGER.info("MinecraftChunithm initialized. Track playback is under development.");
+        ModModels.initialize();
+        LOGGER.info("MinecraftChunithm initialized: track blocks and 16 TAP model widths.");
     }
 }
