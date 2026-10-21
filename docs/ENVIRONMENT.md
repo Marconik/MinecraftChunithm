@@ -6,6 +6,7 @@
 - Gradle 9.6.0、Loom 1.17.21、Fabric Loader 0.19.5、Fabric API 0.163.0+26.3 已实际解析。
 - build：成功，公共入口和客户端入口均编译，生成普通 JAR 和源码 JAR。
 - runClient：日志确认 Minecraft 26.3 启动，两个模组入口初始化，窗口与音频引擎创建成功。
+- genSources：成功生成公共与客户端 Minecraft 源码，供 IDE 浏览。
 - 尚未验证进入世界、轨道功能或独立服务器；当前没有玩法实现和自动化玩法测试。
 - 未确认 IntelliJ IDEA 已安装；可在 IDEA 中打开根目录，选择 JDK 25 与 Gradle Wrapper。
 
@@ -19,3 +20,4 @@
 
 请分别执行 build 和 genSources。当前 Loom / Gradle 组合将二者放在同一次调用中时会报告缓存产物的隐式任务依赖问题。
 源码生成不是每次构建的必要步骤。
+Windows 下生成源码前应关闭开发客户端，以免游戏 JAR 被占用。
