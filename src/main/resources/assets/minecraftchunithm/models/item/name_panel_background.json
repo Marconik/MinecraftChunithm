@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "minecraftchunithm:item/name_panel/background"
+                 },
+    "parent":  "minecraft:item/generated"
+}

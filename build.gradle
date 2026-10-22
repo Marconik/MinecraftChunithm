@@ -12,8 +12,9 @@ loom {
     }
     runs {
         client {
-            if (project.hasProperty('motionQuickPlay') || project.hasProperty('modelQuickPlay')) {
-                vmArg project.hasProperty('modelQuickPlay') ? '-Dminecraftchunithm.modelQuickPlay=true' : '-Dminecraftchunithm.motionQuickPlay=true'
+            if (project.hasProperty('motionQuickPlay') || project.hasProperty('modelQuickPlay') || project.hasProperty('nameplateQuickPlay')) {
+                vmArg project.hasProperty('nameplateQuickPlay') ? '-Dminecraftchunithm.nameplateQuickPlay=true' :
+                    project.hasProperty('modelQuickPlay') ? '-Dminecraftchunithm.modelQuickPlay=true' : '-Dminecraftchunithm.motionQuickPlay=true'
                 programArg '--quickPlaySingleplayer'
                 programArg 'New World'
             }

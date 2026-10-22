@@ -1,0 +1,6 @@
+﻿{
+    "textures":  {
+                     "layer0":  "minecraftchunithm:item/name_panel/silver"
+                 },
+    "parent":  "minecraft:item/generated"
+}

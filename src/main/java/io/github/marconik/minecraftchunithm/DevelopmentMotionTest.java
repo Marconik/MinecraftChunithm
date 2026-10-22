@@ -10,8 +10,9 @@ public final class DevelopmentMotionTest {
 
     public static void initialize() {
         boolean models=Boolean.getBoolean("minecraftchunithm.modelQuickPlay");
+        boolean nameplates=Boolean.getBoolean("minecraftchunithm.nameplateQuickPlay");
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()
-                || (!models && !Boolean.getBoolean("minecraftchunithm.motionQuickPlay"))) return;
+                || (!models && !nameplates && !Boolean.getBoolean("minecraftchunithm.motionQuickPlay"))) return;
         int[] ticks = {0};
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getPlayerList().getPlayers().isEmpty() || ticks[0] >= 100) return;
@@ -20,6 +21,21 @@ public final class DevelopmentMotionTest {
             var source = player.createCommandSourceStack();
             var commands = server.getCommands();
             commands.performPrefixedCommand(source, "gamemode spectator");
+            if(nameplates){
+                commands.performPrefixedCommand(source,"time set day");
+                commands.performPrefixedCommand(source,"weather clear");
+                for(int i=0;i<2;i++){
+                    commands.performPrefixedCommand(source,"tp @s "+(64.5+i*8)+" -60 0.5 180 0");
+                    var anchor=player.createCommandSourceStack();
+                    commands.performPrefixedCommand(anchor,"chunithm nameplate");
+                    NamePanel.update(server.overworld(),NamePanel.placement(anchor),new NameDisplayData(
+                            "CHUNITHM TEAM",i==0?"SILVER TITLE":"GOLD TITLE",i==0?NameDisplayData.TitleColor.SILVER:NameDisplayData.TitleColor.GOLD,
+                            "99","PLAYER "+(i+1),NameDisplayData.defaults().characterModel(),"16.50"));
+                }
+                commands.performPrefixedCommand(player.createCommandSourceStack(),"tp @s 65.5 -58.5 9 180 8");
+                MinecraftChunithm.LOGGER.info("Nameplate showcase ready: silver and gold panels, camera 65.5 -58.5 9.");
+                return;
+            }
             if(models) {
                 commands.performPrefixedCommand(source.withPosition(new Vec3(0,-60,0)),
                         "function minecraftchunithm:air_showcase");

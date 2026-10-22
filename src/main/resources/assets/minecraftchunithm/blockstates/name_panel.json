@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=south": {"model":"minecraftchunithm:block/name_panel","y":0},
+    "facing=west": {"model":"minecraftchunithm:block/name_panel","y":90},
+    "facing=north": {"model":"minecraftchunithm:block/name_panel","y":180},
+    "facing=east": {"model":"minecraftchunithm:block/name_panel","y":270}
+  }
+}

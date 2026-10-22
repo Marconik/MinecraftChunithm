@@ -19,6 +19,9 @@ public final class TrackBoundsCheck {
             }
         }
         System.out.println("TAP boundary checks passed: " + checked);
+        if(NameplateTypography.width("Player",false)!=23||NameplateTypography.width("Player",true)!=26
+                ||NameplateTypography.width("欢迎来到中二节奏",false)!=72)
+            throw new AssertionError("Uniform font alignment metrics mismatch");
         for(var difficulty:SongDisplayData.Difficulty.values()) {
             var song=new SongDisplayData(SongDisplayData.defaults().coverModel(),"曲目","作者",3,difficulty,"15+",8,true);
             if(song.track()!=3||!song.mirror()||song.speed()!=8)throw new AssertionError("Song interface lost inputs");
@@ -26,11 +29,28 @@ public final class TrackBoundsCheck {
         try {new SongDisplayData(SongDisplayData.defaults().coverModel(),"A","B",0,SongDisplayData.Difficulty.MASTER,"15",8,false);
             throw new AssertionError("Invalid track accepted");}catch(IllegalArgumentException expected) { }
         var standing=new net.minecraft.core.BlockPos(-7,63,-9);
+        for(var color:NameDisplayData.TitleColor.values()){
+            var data=new NameDisplayData("TEAM","称号",color,"99","玩家",NameDisplayData.defaults().characterModel(),"16.50");
+            if(data.titleColor()!=color||!data.name().equals("玩家")||!data.rating().equals("16.50"))
+                throw new AssertionError("Nameplate interface lost inputs");
+        }
+        try {new NameDisplayData("A","B",null,"1","C",NameDisplayData.defaults().characterModel(),"0");
+            throw new AssertionError("Missing title color accepted");}catch(IllegalArgumentException expected) { }
         for(var direction:new net.minecraft.core.Direction[]{net.minecraft.core.Direction.NORTH,net.minecraft.core.Direction.SOUTH,
                 net.minecraft.core.Direction.WEST,net.minecraft.core.Direction.EAST}) {
             var track=new Placement(standing.relative(direction.getCounterClockWise(),-4),direction);
             if(!track.block(4,0,0).equals(standing))throw new AssertionError("Track anchor differs from standing block");
             var front=direction.getOpposite();
+            var playerBlock=standing.above();
+            var nameplate=NamePanel.placement(playerBlock,direction);
+            var anchor=playerBlock.relative(direction);
+            if(!nameplate.block(6,0,0).equals(anchor)||nameplate.forward()!=front)
+                throw new AssertionError("Nameplate must face player with lower-right anchor ahead");
+            var song=new Placement(anchor,front);
+            for(int x=0;x<7;x++)for(int y=0;y<3;y++){
+                if(!nameplate.block(6-x,y,0).equals(anchor.relative(song.across(),-x).above(y)))
+                    throw new AssertionError("Nameplate is not the mirror of the song panel");
+            }
             var head=new Placement(standing.relative(direction).relative(front.getCounterClockWise(),-5),front);
             if(!head.block(5,0,0).equals(standing.relative(direction)))throw new AssertionError("Head anchor is not one block ahead");
             if(!track.point(4.5,0,.5).equals(new net.minecraft.world.phys.Vec3(standing.getX()+.5,63,standing.getZ()+.5)))

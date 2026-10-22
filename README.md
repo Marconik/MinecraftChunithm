@@ -114,6 +114,8 @@ $env:CHUNITHM_JAVA_HOME = 'C:\path\to\jdk-25'
 
 ## 代码布局
 
+左侧名牌：`/chunithm nameplate`，通过 `/chunithm nameplate_data <JSON>` 输入 TEAM、称号颜色、等级、名字、角色头像和 RATING。生成规则与歌曲信息板左右对称，详见 [名牌面板说明](docs/NAME_PANEL.md)。
+
 - `src/main/java`：公共入口，后续加入轨道配置、谱面、播放状态及服务端逻辑。
 - `src/client/java`：客户端入口，后续加入轨道/音符渲染、音频与界面。
 - `src/main/resources/fabric.mod.json`：模组身份与依赖约束。

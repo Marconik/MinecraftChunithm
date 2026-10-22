@@ -20,6 +20,9 @@ public final class TrackCommands {
         CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) ->
                 dispatcher.register(Commands.literal("chunithm")
                         .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .then(Commands.literal("nameplate").executes(context->NamePanel.generate(context.getSource())))
+                        .then(Commands.literal("nameplate_data").then(Commands.argument("json",com.mojang.brigadier.arguments.StringArgumentType.greedyString())
+                                .executes(context->NamePanel.command(context.getSource(),com.mojang.brigadier.arguments.StringArgumentType.getString(context,"json")))))
                         .then(Commands.literal("song").executes(context->SongPanel.generate(context.getSource())))
                         .then(Commands.literal("song_data").then(Commands.argument("json",com.mojang.brigadier.arguments.StringArgumentType.greedyString())
                                 .executes(context->SongPanel.command(context.getSource(),com.mojang.brigadier.arguments.StringArgumentType.getString(context,"json")))))
