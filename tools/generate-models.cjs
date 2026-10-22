@@ -165,7 +165,7 @@ json(`${assets}/lang/zh_cn.json`,zh);
 // Reuse the same command geometry, aligned to the block grid.
 write(`data/${ns}/function/model_showcase.mcfunction`,
   `execute align xyz run function ${ns}:model_showcase_aligned\n`);
-const commands = ['# Replaces a 9 x 24 footprint one block below the caller.', 'chunithm track 24'];
+const commands = ['# Replaces a 9 x 24 footprint one block below the caller.', 'execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 24'];
 for(let lanes=1; lanes<=16; lanes++) commands.push(
   `summon minecraft:item_display ~4.5 ~-0.359375 ~${lanes+2} {Tags:["minecraftchunithm.tap_preview"],item:{id:"${ns}:tap_${lanes}",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:0.5f}`);
 write(`data/${ns}/function/model_showcase_aligned.mcfunction`,commands.join('\n')+'\n');

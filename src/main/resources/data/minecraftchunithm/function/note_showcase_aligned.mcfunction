@@ -1,5 +1,5 @@
 # Replaces a 9 x 96 footprint; 6 types, each in 5 representative widths.
-chunithm track 96
+execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 96
 summon minecraft:item_display ~4.5 ~-0.359375 ~2 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:ex_tap_1",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
 summon minecraft:item_display ~4.5 ~-0.359375 ~5 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:ex_tap_2",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}
 summon minecraft:item_display ~4.5 ~-0.359375 ~8 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:ex_tap_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}

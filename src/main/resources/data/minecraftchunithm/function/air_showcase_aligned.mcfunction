@@ -1,4 +1,4 @@
-chunithm track 32
+execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 32
 summon minecraft:item_display ~2.5 ~-0.359375 ~2 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:4.0f,height:3.0f}
 summon minecraft:item_display ~6.5 ~-0.359375 ~2 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_down_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:4.0f,height:3.0f}
 summon minecraft:item_display ~2.5 ~-0.359375 ~6 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:air_up_left_4",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:4.0f,height:3.0f}

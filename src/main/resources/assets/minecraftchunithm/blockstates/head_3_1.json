@@ -1,0 +1,19 @@
+﻿{
+    "variants":  {
+                     "facing=north":  {
+                                          "model":  "minecraftchunithm:block/head_3_1",
+                                          "y":  180
+                                      },
+                     "facing=south":  {
+                                          "model":  "minecraftchunithm:block/head_3_1"
+                                      },
+                     "facing=east":  {
+                                         "model":  "minecraftchunithm:block/head_3_1",
+                                         "y":  270
+                                     },
+                     "facing=west":  {
+                                         "model":  "minecraftchunithm:block/head_3_1",
+                                         "y":  90
+                                     }
+                 }
+}

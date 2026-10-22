@@ -11,6 +11,8 @@ public final class MinecraftChunithm implements ModInitializer {
     @Override
     public void onInitialize() {
         ModModels.initialize();
+        TrackHead.initialize();
+        SongPanel.initialize();
         TrackCommands.initialize();
         TrackMotion.initialize();
         DevelopmentMotionTest.initialize();

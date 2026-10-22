@@ -5,6 +5,12 @@ Minecraft Java 26.3 / Fabric 项目。已实现轨道模型、16 种宽度的 TA
 
 ## 音符运动测试
 
+右侧曲目信息面板：`/chunithm song` 独立生成，`/chunithm song_data <JSON>` 更新封面、曲名、创作者、TRACK、难度、定级、速度及镜像。详见 [曲目面板](docs/SONG_PANEL.md)。
+
+只生成空轨道：`/chunithm track_empty 24`，长度支持 2～1024 格，省略长度默认为 24。生成轨道、边框和尾部金色判定线，不生成头部、音符或节拍线。起点中央为脚下方块，沿玩家朝向延伸，会替换对应范围方块；当前维度的运动测试会停止，并清除本次范围内的旧展示音符和判定线后重新添加一条判定线。
+
+独立的轨道控制头部可用 `/chunithm head` 生成，尺寸和放置说明见 [轨道头部](docs/TRACK_HEAD.md)。
+
 已加入 EX-Tap、Hold、Slide、Flick、Air、Air-Action 的属性定义与全部 16 种宽度的静态模型，详见 [音符说明](docs/NOTES.md)。在空地运行 `/function minecraftchunithm:note_showcase` 可查看六类模型。
 
 在空地执行（会生成/替换脚下一层 9×24 格轨道）：
@@ -130,3 +136,5 @@ git push
 
 构建缓存、IDE 配置、运行目录和日志不会提交。
 项目许可证待仓库所有者确定；没有复制原作音乐或图像资源。
+
+生成锚点更新：`/chunithm track <长度>` 以脚下方块为起点行中央，向玩家朝向延伸；`/chunithm head` 以脚下方块沿朝向前进一格作为头部中间最下方块，正面朝玩家。站立方块按 floor(位置).below() 计算。普通启动不生成测试内容，保持空白测试世界请勿使用 QuickPlay 自动生成参数。

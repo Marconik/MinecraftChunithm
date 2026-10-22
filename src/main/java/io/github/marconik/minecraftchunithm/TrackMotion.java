@@ -46,24 +46,22 @@ public final class TrackMotion {
         });
     }
 
-    public static void clearArea(ServerLevel level, BlockPos origin, int length) {
-        AABB area = new AABB(origin.getX(), origin.getY(), origin.getZ(),
-                origin.getX()+9, origin.getY()+2, origin.getZ()+length);
+    public static void clearArea(ServerLevel level, Placement placement, int length) {
+        AABB area = new AABB(placement.point(0,0,0),placement.point(9,2,length));
         for (var entity : level.getEntitiesOfClass(Display.ItemDisplay.class, area,
                 e -> e.entityTags().contains(LINE_TAG) || e.entityTags().contains("minecraftchunithm.tap_preview"))) {
             entity.discard();
         }
     }
 
-    public static void addJudgment(ServerLevel level, BlockPos origin, int length) {
-        create(level, "judgment_line", origin.getX()+4.5,
-                origin.getY()+TrackBlock.SURFACE_HEIGHT+0.002,
-                origin.getZ()+RhythmTiming.judgment(length), LINE_TAG, 8);
+    public static void addJudgment(ServerLevel level, Placement placement, int length) {
+        var pos=placement.point(4.5,TrackBlock.SURFACE_HEIGHT+0.002,RhythmTiming.judgment(length));
+        var line=create(level,"judgment_line",pos.x,pos.y,pos.z,LINE_TAG,8);line.setYRot(placement.yaw());
     }
 
-    public static void start(ServerLevel level, BlockPos origin, int length, double bpm, double speed) {
+    public static void start(ServerLevel level, Placement placement, int length, double bpm, double speed) {
         stop(level);
-        Session session = new Session(origin, length, bpm, speed);
+        Session session = new Session(placement, length, bpm, speed);
         SESSIONS.put(level, session);
         session.advance(level, 0); // The first beat starts immediately, followed by quarter notes.
     }
@@ -101,6 +99,7 @@ public final class TrackMotion {
         private final Display.ItemDisplay entity;
         private final double bornAt;
         private long reachedAtTick = -1;
+        private double across;
         private Moving(Display.ItemDisplay entity, double bornAt) {
             this.entity = entity;
             this.bornAt = bornAt;
@@ -108,23 +107,23 @@ public final class TrackMotion {
     }
 
     private static final class Session {
-        private final BlockPos origin;
+        private final Placement placement;
         private final int length;
         private final double bpm, speed;
         private final Random random = new Random();
         private final ArrayList<Moving> notes = new ArrayList<>();
         private long tick, beat, despawned;
-        private Session(BlockPos origin, int length, double bpm, double speed) {
-            this.origin=origin.immutable(); this.length=length; this.bpm=bpm; this.speed=speed;
+        private Session(Placement placement, int length, double bpm, double speed) {
+            this.placement=placement; this.length=length; this.bpm=bpm; this.speed=speed;
         }
         private boolean tick(ServerLevel level) {
             for (int z=0;z<length;z++) {
-                if (!level.hasChunkAt(origin.offset(0,0,z)) || !level.hasChunkAt(origin.offset(8,0,z))) return false;
+                if (!level.hasChunkAt(placement.block(0,0,z)) || !level.hasChunkAt(placement.block(8,0,z))) return false;
             }
             // Stop if the track was broken or changed; check each complete row once per second.
             if (tick % 20 == 0) for (int z=0;z<length;z++) {
-                var bounds = TrackBounds.find(level,origin.offset(0,0,z));
-                if (bounds == null || bounds.alongZ() || bounds.min() != origin.getX()+0.5) return false;
+                var bounds = TrackBounds.find(level,placement.block(0,0,z));
+                if (bounds == null) return false;
             }
             advance(level, ++tick / 20.0);
             if (Boolean.getBoolean("minecraftchunithm.motionQuickPlay") && tick % 200 == 0) {
@@ -138,11 +137,12 @@ public final class TrackMotion {
                 double born = RhythmTiming.beatTime(beat++,bpm);
                 int width = random.nextInt(16)+1;
                 int lane = random.nextInt(17-width);
-                double z = origin.getZ()+RhythmTiming.position(born,now,speed);
-                double y = origin.getY()+TrackBlock.SURFACE_HEIGHT;
-                notes.add(new Moving(create(level,"beat_line",origin.getX()+4.5,y+0.004,z,MOTION_TAG,8),born));
-                notes.add(new Moving(create(level,"tap_"+width,origin.getX()+0.5+lane*0.5+width*0.25,
-                        y+0.015625,z,MOTION_TAG,width*0.5),born));
+                for (int item=0;item<2;item++) {
+                    double across=item==0?4.5:0.5+lane*.5+width*.25;
+                    var pos=placement.point(across,TrackBlock.SURFACE_HEIGHT+(item==0?.004:.015625),RhythmTiming.position(born,now,speed));
+                    var entity=create(level,item==0?"beat_line":"tap_"+width,pos.x,pos.y,pos.z,MOTION_TAG,item==0?8:width*.5);
+                    entity.setYRot(placement.yaw());var moving=new Moving(entity,born);moving.across=across;notes.add(moving);
+                }
             }
             var iterator=notes.iterator();
             while(iterator.hasNext()) {
@@ -151,8 +151,8 @@ public final class TrackMotion {
                     note.entity.discard(); LIVE.remove(note.entity.getUUID()); iterator.remove();
                     despawned++;
                 } else {
-                    note.entity.setPos(note.entity.getX(),note.entity.getY(),
-                            origin.getZ()+RhythmTiming.displayPosition(note.bornAt,now,speed,length));
+                    var pos=placement.point(note.across,0,RhythmTiming.displayPosition(note.bornAt,now,speed,length));
+                    note.entity.setPos(pos.x,note.entity.getY(),pos.z);
                     // Never skip the final location just because this tick overshot the edge.
                     if (note.reachedAtTick < 0 && RhythmTiming.expired(note.bornAt,now,speed,length)) {
                         note.reachedAtTick = tick;

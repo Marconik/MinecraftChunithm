@@ -125,20 +125,20 @@ module.exports=function({box,texture,textures,json,write,assets,ns,en,zh}) {
     zh[`item.${ns}.${id}`]=`${label} ${variant||'直线/上抬'} · ${lanes} 分区`;
   }
   write(`data/${ns}/function/note_showcase.mcfunction`,`execute align xyz run function ${ns}:note_showcase_aligned\n`);
-  const commands=['# Replaces a 9 x 96 footprint; 6 types, each in 5 representative widths.','chunithm track 96'];
+  const commands=['# Replaces a 9 x 96 footprint; 6 types, each in 5 representative widths.','execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 96'];
   let row=0;
   for(const kind of Object.keys(kinds))for(const lanes of kind==='air_action'?[2]:[1,2,4,8,16]) {
     commands.push(`summon minecraft:item_display ~4.5 ~-0.359375 ~${row++*3+2} {Tags:["minecraftchunithm.tap_preview"],item:{id:"${ns}:${kind}_${lanes}",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}`);
   }
   write(`data/${ns}/function/note_showcase_aligned.mcfunction`,commands.join('\n')+'\n');
-  const samples=['chunithm track 48'];
+  const samples=['execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 48'];
   variants.filter(v=>['slide','air_action','air'].includes(v.kind)).forEach((v,i)=>{
     const id=`${v.kind}${v.variant?'_'+v.variant:''}_${v.kind==='air_action'?2:4}`;
     samples.push(`summon minecraft:item_display ~4.5 ~-0.359375 ~${i*3+2} {Tags:["minecraftchunithm.tap_preview"],item:{id:"${ns}:${id}",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:3.0f}`);
   });
   write(`data/${ns}/function/path_showcase.mcfunction`,`execute align xyz run function ${ns}:path_showcase_aligned\n`);
   write(`data/${ns}/function/path_showcase_aligned.mcfunction`,samples.join('\n')+'\n');
-  const airSamples=['chunithm track 32'];
+  const airSamples=['execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 32'];
   const airIds=['air_4','air_down_4','air_up_left_4','air_down_left_4','air_up_right_4','air_down_right_4',
     'air_action_2','air_action_parabola_up_2','air_action_parabola_down_2'];
   airIds.forEach((id,i)=>airSamples.push(

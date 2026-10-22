@@ -1,5 +1,5 @@
 # Replaces a 9 x 24 footprint one block below the caller.
-chunithm track 24
+execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 24
 summon minecraft:item_display ~4.5 ~-0.359375 ~3 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:tap_1",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:0.5f}
 summon minecraft:item_display ~4.5 ~-0.359375 ~4 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:tap_2",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:0.5f}
 summon minecraft:item_display ~4.5 ~-0.359375 ~5 {Tags:["minecraftchunithm.tap_preview"],item:{id:"minecraftchunithm:tap_3",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:9.0f,height:0.5f}

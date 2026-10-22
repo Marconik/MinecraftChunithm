@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "minecraftchunithm:block/head/purple",
+    "north": "minecraftchunithm:block/head/black",
+    "south": "minecraftchunithm:block/white",
+    "east": "minecraftchunithm:block/head/purple",
+    "west": "minecraftchunithm:block/head/purple",
+    "up": "minecraftchunithm:block/head/purple",
+    "down": "minecraftchunithm:block/head/purple"
+  }
+}

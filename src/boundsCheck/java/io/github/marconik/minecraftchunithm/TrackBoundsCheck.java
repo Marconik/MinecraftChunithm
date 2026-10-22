@@ -19,6 +19,34 @@ public final class TrackBoundsCheck {
             }
         }
         System.out.println("TAP boundary checks passed: " + checked);
+        for(var difficulty:SongDisplayData.Difficulty.values()) {
+            var song=new SongDisplayData(SongDisplayData.defaults().coverModel(),"曲目","作者",3,difficulty,"15+",8,true);
+            if(song.track()!=3||!song.mirror()||song.speed()!=8)throw new AssertionError("Song interface lost inputs");
+        }
+        try {new SongDisplayData(SongDisplayData.defaults().coverModel(),"A","B",0,SongDisplayData.Difficulty.MASTER,"15",8,false);
+            throw new AssertionError("Invalid track accepted");}catch(IllegalArgumentException expected) { }
+        var standing=new net.minecraft.core.BlockPos(-7,63,-9);
+        for(var direction:new net.minecraft.core.Direction[]{net.minecraft.core.Direction.NORTH,net.minecraft.core.Direction.SOUTH,
+                net.minecraft.core.Direction.WEST,net.minecraft.core.Direction.EAST}) {
+            var track=new Placement(standing.relative(direction.getCounterClockWise(),-4),direction);
+            if(!track.block(4,0,0).equals(standing))throw new AssertionError("Track anchor differs from standing block");
+            var front=direction.getOpposite();
+            var head=new Placement(standing.relative(direction).relative(front.getCounterClockWise(),-5),front);
+            if(!head.block(5,0,0).equals(standing.relative(direction)))throw new AssertionError("Head anchor is not one block ahead");
+            if(!track.point(4.5,0,.5).equals(new net.minecraft.world.phys.Vec3(standing.getX()+.5,63,standing.getZ()+.5)))
+                throw new AssertionError("Display frame differs from block frame");
+        }
+        long[] scores={0,100999,101000,302999,303000,403999,404000,434300,1009999,1010000,2000000};
+        for(long score:scores) {
+            var data=new HeadDisplayData(1,2,3,4,5,score);
+            long capped=Math.min(score,1010000);
+            if(data.filledCells()!=capped/101000)throw new AssertionError("Wrong score completion cells");
+            if(Math.abs((data.filledCells()+data.barFraction())*101000-capped)>1e-6)throw new AssertionError("Wrong score remainder");
+            if(data.goldBar()!=(score>=303000))throw new AssertionError("Wrong colour threshold");
+            if(Math.abs(data.percent()-capped/10100.0)>1e-9)throw new AssertionError("Wrong percent");
+        }
+        try {new HeadDisplayData(0,0,0,0,0,-1);throw new AssertionError("Negative score accepted");}
+        catch(IllegalArgumentException expected) { }
         for(var connection:NoteDefinition.Connection.values()) {
             var path=new NoteDefinition("curve",NoteDefinition.Kind.SLIDE,0,0,2,1000,
                     NoteDefinition.Direction.NONE,"",java.util.List.of(
