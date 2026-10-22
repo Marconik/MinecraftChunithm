@@ -25,6 +25,7 @@ public final class TrackHead {
         }
     }
     public static int generate(CommandSourceStack source) {
+        if(!PartPorts.checkReady(source))return 0;
         var level=source.getLevel();
         // Preserve the previous nine-block centre: extend one block on each side.
         var placement=Placement.head(source);
@@ -38,6 +39,7 @@ public final class TrackHead {
         for(int row=0;row<4;row++)for(int col=0;col<11;col++)
             level.setBlock(placement.block(col,row,0),TILES[row][col].defaultBlockState().setValue(HeadTile.FACING,placement.forward()),Block.UPDATE_ALL);
         source.sendSuccess(()->Component.literal("已生成独立轨道头部：宽11、高4（含1格底座）、厚1，进度条宽8。正面朝向玩家。"),false);
+        PartConnections.register(level,PartConnections.Kind.HEAD,placement,1);
         TrackHeadDisplay.update(level,placement,new HeadDisplayData(0,0,0,0,0,0));
         return 44;
     }

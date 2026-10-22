@@ -46,6 +46,7 @@ public final class NamePanel {
             }
         }
         for(int y=0;y<3;y++)for(int x=0;x<7;x++)level.setBlock(p.block(x,y,0),tile.defaultBlockState().setValue(HeadTile.FACING,p.forward()),Block.UPDATE_ALL);
+        PartConnections.register(level,PartConnections.Kind.PLAYER,p,1);
         update(level,p,NameDisplayData.defaults());
         source.sendSuccess(()->Component.literal("已生成名牌面板：右下角在玩家所在方格前一格，向左展开，面朝玩家；宽7、高3、厚1。"),false);
         return 21;
@@ -77,6 +78,7 @@ public final class NamePanel {
         add(level,p,e,center,y-scale*.1375,1.09,new Vector3f(scale));
     }
     public static void update(ServerLevel level,Placement p,NameDisplayData data){
+        PartConnections.playerUpdated(level,p,data);
         for(var e:level.getEntitiesOfClass(Display.class,new AABB(p.point(-.1,0,.9),p.point(7.1,3.1,1.3)),e->e.entityTags().contains(TAG)))e.discard();
         image(level,p,3.5,1.5,7,3,1.025,art("background"));
         text(level,p,.70,2.57,"TEAM",.78f,.76,0x25252c,true,false);

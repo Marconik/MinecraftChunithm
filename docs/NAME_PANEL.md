@@ -6,7 +6,7 @@
 
 ## 命令
 
-开发环境自动打开 `New World` 并生成银色、金色两块测试面板：`powershell -NoProfile -ExecutionPolicy Bypass -File .\dev.ps1 runClient -PnameplateQuickPlay`。测试区域位于 X=58～72、Y=-60、Z=-1；会替换两块面板范围内的方块，并设置白天、晴天及旁观模式。普通启动不会自动生成。
+开发环境自动打开 `New World` 并生成银色、金色两块测试面板：`powershell -NoProfile -ExecutionPolicy Bypass -File .\dev.ps1 runClient -PnameplateQuickPlay`。测试区域位于 X=58～72、Y=-60、Z=-1；会替换两块面板范围内的方块，并设置白天、晴天及创造模式。普通启动不会自动生成。
 
 ```mcfunction
 /chunithm nameplate

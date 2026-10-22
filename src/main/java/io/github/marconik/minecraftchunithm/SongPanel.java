@@ -43,6 +43,7 @@ public final class SongPanel {
             }
         }
         for(int y=0;y<3;y++)for(int x=0;x<7;x++)level.setBlock(p.block(x,y,0),tile.defaultBlockState().setValue(HeadTile.FACING,p.forward()),Block.UPDATE_ALL);
+        PartConnections.register(level,PartConnections.Kind.SONG,p,1);
         update(level,p,SongDisplayData.defaults());
         source.sendSuccess(()->Component.literal("已生成曲目面板：左下角在玩家所在方格前一格，正面朝向玩家，宽7、高3、厚1。"),false);return 21;
     }
@@ -78,6 +79,7 @@ public final class SongPanel {
         return value.codePoints().map(c->(c>255?9:6)+(bold?1:0)).sum();
     }
     public static void update(ServerLevel level,Placement p,SongDisplayData data){
+        PartConnections.songUpdated(level,p,data);
         for(var e:level.getEntitiesOfClass(Display.class,new AABB(p.point(-.1,0,.9),p.point(7.1,3.1,1.3)),e->e.entityTags().contains(TAG)))e.discard();
         String theme=switch(data.difficulty()){case MASTER->"purple_concrete";case EXPERT->"red_concrete";case ULTIMA->"black_concrete";};
         rect(level,p,0,0,7,3,theme,1.001);

@@ -19,6 +19,22 @@ public final class TrackBoundsCheck {
             }
         }
         System.out.println("TAP boundary checks passed: " + checked);
+        double[] responses=new double[16];responses[0]=Double.NaN;responses[1]=2;responses[2]=-.5;
+        var input=new HeadControlServices.Input(true,false,true,Double.POSITIVE_INFINITY,.6,responses);
+        responses[1]=0;double[] copy=input.ground();copy[1]=0;
+        if(input.leftAir()!=0||input.ground()[0]!=0||input.ground()[1]!=1||input.ground()[2]!=0)
+            throw new AssertionError("Device responses must be bounded and immutable");
+        for(var state:HeadControlServices.Playback.values())for(var action:HeadControlServices.Action.values()){
+            if(HeadControlServices.allowed(action,new HeadControlServices.Transport(false,state))!=(action!=HeadControlServices.Action.START_OR_RESUME))
+                throw new AssertionError("No-chart state must disable only Start, retaining Pause and Stop");
+            boolean expected=switch(action){case START_OR_RESUME->state!=HeadControlServices.Playback.PLAYING;
+                case PAUSE,STOP->true;};
+            if(HeadControlServices.allowed(action,new HeadControlServices.Transport(true,state))!=expected)
+                throw new AssertionError("Playback button state mismatch");
+        }
+        try{new HeadControlServices.Input(false,false,false,0,0,new double[8]);throw new AssertionError("Wrong lane count accepted");}
+        catch(IllegalArgumentException expected){}
+        System.out.println("Head UI input validation and playback availability checks passed.");
         if(NameplateTypography.width("Player",false)!=23||NameplateTypography.width("Player",true)!=26
                 ||NameplateTypography.width("欢迎来到中二节奏",false)!=72)
             throw new AssertionError("Uniform font alignment metrics mismatch");
@@ -52,6 +68,19 @@ public final class TrackBoundsCheck {
                     throw new AssertionError("Nameplate is not the mirror of the song panel");
             }
             var head=new Placement(standing.relative(direction).relative(front.getCounterClockWise(),-5),front);
+            var connectedTrack=PartConnections.target(head,PartConnections.Kind.TRACK);
+            for(int x:new int[]{0,4,8}){
+                if(!connectedTrack.block(x,0,0).equals(head.block(x+1,0,1)))
+                    throw new AssertionError("Three track sockets must align with the head pedestal");
+            }
+            var connectedPlayer=PartConnections.target(head,PartConnections.Kind.PLAYER);
+            var connectedSong=PartConnections.target(head,PartConnections.Kind.SONG);
+            if(!connectedPlayer.block(6,0,0).relative(head.across()).equals(head.block(0,1,0))
+                    ||!connectedSong.block(0,0,0).equals(head.block(11,1,0)))
+                throw new AssertionError("Side panels must touch head sides and align vertically");
+            var nameSource=head.block(-1,1,0).relative(front);
+            if(!NamePanel.placement(nameSource,front.getOpposite()).equals(connectedPlayer))
+                throw new AssertionError("Assembly differs from normal nameplate generation");
             if(!head.block(5,0,0).equals(standing.relative(direction)))throw new AssertionError("Head anchor is not one block ahead");
             if(!track.point(4.5,0,.5).equals(new net.minecraft.world.phys.Vec3(standing.getX()+.5,63,standing.getZ()+.5)))
                 throw new AssertionError("Display frame differs from block frame");

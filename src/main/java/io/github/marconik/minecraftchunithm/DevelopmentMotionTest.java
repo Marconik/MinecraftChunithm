@@ -11,8 +11,9 @@ public final class DevelopmentMotionTest {
     public static void initialize() {
         boolean models=Boolean.getBoolean("minecraftchunithm.modelQuickPlay");
         boolean nameplates=Boolean.getBoolean("minecraftchunithm.nameplateQuickPlay");
+        boolean connections=Boolean.getBoolean("minecraftchunithm.connectionQuickPlay");
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()
-                || (!models && !nameplates && !Boolean.getBoolean("minecraftchunithm.motionQuickPlay"))) return;
+                || (!models && !nameplates && !connections && !Boolean.getBoolean("minecraftchunithm.motionQuickPlay"))) return;
         int[] ticks = {0};
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getPlayerList().getPlayers().isEmpty() || ticks[0] >= 100) return;
@@ -20,7 +21,25 @@ public final class DevelopmentMotionTest {
             var player = server.getPlayerList().getPlayers().getFirst();
             var source = player.createCommandSourceStack();
             var commands = server.getCommands();
-            commands.performPrefixedCommand(source, "gamemode spectator");
+            if(connections){
+                commands.performPrefixedCommand(source,"gamemode creative");
+                commands.performPrefixedCommand(source,"time set day");
+                commands.performPrefixedCommand(source,"tp @s 128.5 -60 0.5 180 0");
+                var anchor=player.createCommandSourceStack();
+                // Explicit test path may load its own small footprint before invoking normal preflight.
+                for(int x=7;x<=9;x++)for(int z=-1;z<=2;z++)server.overworld().getChunk(x,z);
+                if(PartAssembly.generate(anchor,24)!=1)throw new IllegalStateException("Connection assembly failed");
+                var head=PartConnections.find(server.overworld(),PartConnections.Kind.HEAD,Placement.head(anchor));
+                if(PartConnections.links(server.overworld(),head).stream().anyMatch(l->l.status()!=PartConnections.Status.CONNECTED))
+                    throw new IllegalStateException("Assembly ports failed to connect");
+                commands.performPrefixedCommand(player.createCommandSourceStack(),"tp @s 128.5 -60 -3.5 0 7");
+                PartWindows.open(player,server.overworld(),head,0);
+                if(!(player.containerMenu instanceof HeadControlMenu menu)||menu.enabled(0)||!menu.enabled(1)||!menu.enabled(2))
+                    throw new IllegalStateException("Native head menu or no-chart transport buttons were not initialized correctly");
+                MinecraftChunithm.LOGGER.info("Connection smoke test passed: all five ports connected; head window opened.");
+                return;
+            }
+            commands.performPrefixedCommand(source, "gamemode creative");
             if(nameplates){
                 commands.performPrefixedCommand(source,"time set day");
                 commands.performPrefixedCommand(source,"weather clear");

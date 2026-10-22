@@ -41,7 +41,7 @@ Minecraft Java 26.3 / Fabric 项目。已实现轨道模型、16 种宽度的 TA
 powershell -NoProfile -ExecutionPolicy Bypass -File .\dev.ps1 runClient -PmotionQuickPlay
 ```
 
-该选项会重建测试存档中 `(0,-61,0)` 开始的 9×24 区域，切换旁观模式，并将视角放到轨道终点上方。仅开发环境显式启用该参数时生效；普通启动和发布 JAR 不会自动生成。测试存档必须已存在。
+该选项会重建测试存档中 `(0,-61,0)` 开始的 9×24 区域，切换创造模式，并将视角放到轨道终点上方。仅开发环境显式启用该参数时生效；普通启动和发布 JAR 不会自动生成。测试存档必须已存在。
 
 ## 轨道与 TAP
 
@@ -112,7 +112,13 @@ $env:CHUNITHM_JAVA_HOME = 'C:\path\to\jdk-25'
 如需复用脚本下载的依赖，将 IDE 的 Gradle user home 设置为本项目的 `.gradle-user-home` 绝对路径。
 开发存档位于 `run/`，不会使用或提交现有游戏存档。
 
+更新 Java 代码前必须保存世界并完全关闭测试客户端，不能只退出世界或按 F3+T。`dev.ps1` 会阻止在本项目客户端仍运行时编译或重复启动，避免旧初始化器混用新类文件导致整机生成中断。启动日志中的 `build=head-control-logo-2` 与 `control logo registered=true` 可用于核对版本与入口资源初始化状态。
+
 ## 代码布局
+
+头部背面已使用原生浅灰控制界面，包含连接状态、输入响应及图标播放按钮，接入方式见 [头部 UI 说明](docs/HEAD_UI.md)。无谱面时开始键置灰，暂停和结束仍可按；未接入的输入设备模块保持禁用。Music、Player 卡片点击暂不执行动作。
+
+整机与连接窗口：`/chunithm assemble [长度]`，生成按接口对齐的空轨道、头部、玩家板及歌曲板。背面右键青色窗口查看连接或设置数据，详见 [部件接口说明](docs/CONNECTIONS.md)。
 
 左侧名牌：`/chunithm nameplate`，通过 `/chunithm nameplate_data <JSON>` 输入 TEAM、称号颜色、等级、名字、角色头像和 RATING。生成规则与歌曲信息板左右对称，详见 [名牌面板说明](docs/NAME_PANEL.md)。
 
@@ -137,6 +143,6 @@ git push
 ```
 
 构建缓存、IDE 配置、运行目录和日志不会提交。
-项目许可证待仓库所有者确定；没有复制原作音乐或图像资源。
+项目许可证待仓库所有者确定；未附带原作音乐。头部背面控制入口使用用户提供的 CHUNITHM Logo 图片。
 
 生成锚点更新：`/chunithm track <长度>` 以脚下方块为起点行中央，向玩家朝向延伸；`/chunithm head` 以脚下方块沿朝向前进一格作为头部中间最下方块，正面朝玩家。站立方块按 floor(位置).below() 计算。普通启动不生成测试内容，保持空白测试世界请勿使用 QuickPlay 自动生成参数。

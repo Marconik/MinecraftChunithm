@@ -20,6 +20,9 @@ public final class TrackCommands {
         CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) ->
                 dispatcher.register(Commands.literal("chunithm")
                         .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .then(Commands.literal("assemble").executes(c->PartAssembly.generate(c.getSource(),24))
+                                .then(Commands.argument("length",IntegerArgumentType.integer(2,1024))
+                                        .executes(c->PartAssembly.generate(c.getSource(),IntegerArgumentType.getInteger(c,"length")))))
                         .then(Commands.literal("nameplate").executes(context->NamePanel.generate(context.getSource())))
                         .then(Commands.literal("nameplate_data").then(Commands.argument("json",com.mojang.brigadier.arguments.StringArgumentType.greedyString())
                                 .executes(context->NamePanel.command(context.getSource(),com.mojang.brigadier.arguments.StringArgumentType.getString(context,"json")))))
@@ -84,7 +87,7 @@ public final class TrackCommands {
                 .defaultBlockState().setValue(TrackBlock.FACING, facing);
     }
 
-    private static int generate(CommandSourceStack source, int length) {
+    static int generate(CommandSourceStack source, int length) {
         var level = source.getLevel();
         var placement=Placement.track(source);
         BlockPos origin=placement.origin();
@@ -107,6 +110,7 @@ public final class TrackCommands {
             level.setBlock(placement.block(x,0,z), block, Block.UPDATE_ALL);
         }
         TrackMotion.addJudgment(level,placement,length);
+        PartConnections.register(level,PartConnections.Kind.TRACK,placement,length);
         source.sendSuccess(() -> Component.literal("已生成轨道（含尾部判定线）：有效宽 8 格 / 16 分区，总宽 9 格，总高 0.75 格，长 "
                 + length + " 格。"), true);
         return 9 * length;
