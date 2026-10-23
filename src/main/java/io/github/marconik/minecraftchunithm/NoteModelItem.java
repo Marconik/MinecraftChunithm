@@ -17,6 +17,10 @@ public final class NoteModelItem extends TapModelItem {
     }
     public NoteDefinition definition() { return definition; }
     @Override
+    protected boolean previewFullBright() {
+        return definition.kind()!=NoteDefinition.Kind.SPEED_CHANGE;
+    }
+    @Override
     protected double previewFootprintWidth() {
         if(definition.kind()==NoteDefinition.Kind.AIR_ACTION
                 && definition.nodes().getFirst().connection()!=NoteDefinition.Connection.LINEAR)return 1.5;

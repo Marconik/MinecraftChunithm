@@ -124,6 +124,41 @@ module.exports=function({box,texture,textures,json,write,assets,ns,en,zh}) {
     en[`item.${ns}.${id}`]=`${label} ${variant||'linear/up'} · ${lanes} lanes`;
     zh[`item.${ns}.${id}`]=`${label} ${variant||'直线/上抬'} · ${lanes} 分区`;
   }
+  // Unit meshes are transformed by the chart renderer, independently of timing.
+  for(const [name,color] of [['chart_hold_body','hold_yellow'],['chart_slide_body','slide_cyan'],['chart_air_body','air_green']]) {
+    const elements=name==='chart_slide_body'?Array.from({length:16},(_,i)=>
+      box([i,0,0],[i+1,16,16],`slide_band_${i}`,12)):[box([0,0,0],[16,16,16],color,15)];
+    json(`${assets}/models/item/${name}.json`,{parent:'minecraft:block/block',ambientocclusion:false,
+      textures,elements,display:{fixed:{scale:[1,1,1]}}});
+    json(`${assets}/items/${name}.json`,{model:{type:'minecraft:model',model:`${ns}:item/${name}`}});
+  }
+  for(let lanes=1;lanes<=16;lanes++)for(const kind of ['slide_node','air_arrow','action_bar']) {
+    const source=JSON.parse(fs.readFileSync(path.resolve(__dirname,`../src/main/resources/${assets}/models/item/${kind==='air_arrow'?'air':'tap'}_${lanes}.json`),'utf8'));
+    if(kind==='air_arrow')source.elements=source.elements.filter(e=>e.from[1]>=11);
+    else for(const element of source.elements)for(const face of Object.values(element.faces))
+      if(face.texture==='#tap_red')face.texture=kind==='slide_node'?'#slide_blue':'#action_purple';
+    source.textures={...textures,...source.textures,slide_blue:textures.slide_blue,action_purple:textures.action_purple};
+    const name=`chart_${kind}_${lanes}`;
+    json(`${assets}/models/item/${name}.json`,source);
+    json(`${assets}/items/${name}.json`,{model:{type:'minecraft:model',model:`${ns}:item/${name}`}});
+  }
+  for(let lanes=1;lanes<=16;lanes++)for(const variant of ['up_left','up_right','down','down_left','down_right']) {
+    const source=JSON.parse(fs.readFileSync(path.resolve(__dirname,`../src/main/resources/${assets}/models/item/air_${variant}_${lanes}.json`),'utf8'));
+    source.elements=source.elements.filter(e=>e.from[1]>=11);
+    const name=`chart_air_arrow_${variant}_${lanes}`;
+    json(`${assets}/models/item/${name}.json`,source);
+    json(`${assets}/items/${name}.json`,{model:{type:'minecraft:model',model:`${ns}:item/${name}`}});
+  }
+  const effectColors={gry:[160,160,160],aqa:[70,230,240],red:[245,65,65],blk:[25,25,25],
+    def:[85,245,75],dgr:[25,115,55],blu:[55,100,255],orn:[255,155,40],yel:[255,235,60],ppl:[200,80,255]};
+  for(const [color,rgb] of Object.entries(effectColors)) {
+    const name=`chart_effect_${color}_body`,tex=`effect_${color}`;
+    texture(tex,rgb);
+    json(`${assets}/models/item/${name}.json`,{parent:'minecraft:block/block',ambientocclusion:false,
+      textures:{effect:`${ns}:block/${tex}`,particle:`${ns}:block/${tex}`},
+      elements:[box([0,0,0],[16,16,16],'effect',12)],display:{fixed:{scale:[1,1,1]}}});
+    json(`${assets}/items/${name}.json`,{model:{type:'minecraft:model',model:`${ns}:item/${name}`}});
+  }
   write(`data/${ns}/function/note_showcase.mcfunction`,`execute align xyz run function ${ns}:note_showcase_aligned\n`);
   const commands=['# Replaces a 9 x 96 footprint; 6 types, each in 5 representative widths.','execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 96'];
   let row=0;

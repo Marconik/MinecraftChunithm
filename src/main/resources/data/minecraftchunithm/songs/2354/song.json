@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": 2354,
+  "title": "月の光",
+  "artist": "大国奏音「原曲:ドビュッシー」",
+  "sortName": "ツキノヒカリトヒユツシウ",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20230401",
+  "defaultBpm": 86.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2354/cover.png",
+    "itemModel": "minecraftchunithm:cover/2354",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2354",
+    "resource": "minecraftchunithm:sounds/songs/2354/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 178645.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 6,
+      "levelDecimal": 0,
+      "internalLevel": 6.0,
+      "sourceFile": "2354_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 7,
+      "levelDecimal": 0,
+      "internalLevel": 7.0,
+      "sourceFile": "2354_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 10,
+      "levelDecimal": 50,
+      "internalLevel": 10.5,
+      "sourceFile": "2354_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 70,
+      "internalLevel": 14.7,
+      "sourceFile": "2354_03.c2s",
+      "notesDesigner": "Opus Negativus Centum",
+      "chartResource": "minecraftchunithm:songs/2354/master.json",
+      "imported": true,
+      "firstNoteMs": 3488.372093,
+      "lastNoteMs": 176772.074381,
+      "logicalNoteCount": 694,
+      "judgmentCount": 2555,
+      "speedChangeMarkerCount": 0
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2354",
+    "metadataFile": "Music.xml"
+  }
+}

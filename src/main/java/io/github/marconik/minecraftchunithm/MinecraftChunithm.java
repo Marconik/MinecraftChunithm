@@ -22,6 +22,7 @@ public final class MinecraftChunithm implements ModInitializer {
         PartWindows.initialize();
         HeadControlMenu.initialize();
         TrackMotion.initialize();
+        ChartPlayback.initialize();
         DevelopmentMotionTest.initialize();
         LOGGER.info("MinecraftChunithm initialized: build={}, control logo registered={}",BUILD_LABEL,PartPorts.ready());
     }

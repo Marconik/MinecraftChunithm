@@ -179,9 +179,19 @@ public final class TrackBoundsCheck {
         }
         for (var kind:NoteDefinition.Kind.values()) for (int width=1;width<=16;width++) {
             if(kind==NoteDefinition.Kind.AIR_ACTION && width==1)continue;
+            if(kind==NoteDefinition.Kind.SPEED_CHANGE && width!=16)continue;
             var definition=NoteDefinition.preview(kind,width);
             if (definition.width()!=width || definition.kind()!=kind) throw new AssertionError("Invalid note attributes");
         }
+        var speedMarker=NoteDefinition.preview(NoteDefinition.Kind.SPEED_CHANGE,16);
+        if(speedMarker.judged() || speedMarker.lane()!=0 || speedMarker.durationMs()!=0
+                || !speedMarker.nodes().isEmpty())throw new AssertionError("Speed marker must be visual only");
+        if(!NoteDefinition.preview(NoteDefinition.Kind.TAP,4).judged())
+            throw new AssertionError("Speed markers changed normal note judgment");
+        try {
+            NoteDefinition.preview(NoteDefinition.Kind.SPEED_CHANGE,8);
+            throw new AssertionError("Partial-width speed marker accepted");
+        } catch (IllegalArgumentException expected) { }
         try {
             new NoteDefinition.Node(0,15,2,0);
             throw new AssertionError("Out-of-bounds path accepted");
@@ -227,5 +237,6 @@ public final class TrackBoundsCheck {
                 throw new AssertionError("Random TAP exceeded borders");
         }
         System.out.println("120 BPM / 10 blocks per second timing, despawn and random widths passed.");
+        ChartPlaybackCheck.run();
     }
 }

@@ -89,6 +89,7 @@ texture('tap_red', [255,156,171], [222,14,60]);
 texture('tap_shadow', [111,17,49], [49,13,35]);
 texture('highlight', [255,240,245]);
 texture('beat_gray', [110,116,129]);
+texture('speed_purple', [222,120,255], [162,55,228]);
 function box(from, to, tex, light = 0) {
   return { from, to, shade: light === 0, ...(light ? {light_emission: light} : {}),
     faces: Object.fromEntries(['up','down','north','south','east','west'].map(face =>
@@ -183,18 +184,21 @@ for (let lanes = 1; lanes <= 16; lanes++) {
   en[`item.${ns}.tap_${lanes}`]=`TAP · ${lanes} lanes (${lanes/2} blocks)`;
   zh[`item.${ns}.tap_${lanes}`]=`TAP · ${lanes} 分区（${lanes/2} 格）`;
 }
-for (const name of ['beat_line','judgment_line']) {
+for (const name of ['beat_line','judgment_line','speed_change_line']) {
   const gold = name === 'judgment_line';
+  const speed = name === 'speed_change_line';
+  const color = speed?'speed_purple':gold?'gold':'beat_gray';
   const depth = gold ? 1.5 : 0.5;
   json(`${assets}/models/item/${name}.json`, {
     parent:'minecraft:block/block',ambientocclusion:false,
-    textures:{...textures,particle:gold?textures.gold:textures.beat_gray},
-    elements:[box([-8,8,8-depth/2],[24,8.0625,8+depth/2],gold?'gold':'beat_gray',gold?15:5)],
+    textures:{...textures,...(speed?{speed_purple:`${ns}:block/speed_purple`}:{}),
+      particle:speed?`${ns}:block/speed_purple`:textures[color]},
+    elements:[box([-8,8,8-depth/2],[24,8.0625,8+depth/2],color,speed?0:gold?15:5)],
     display:{fixed:{rotation:[0,0,0],translation:[0,0,0],scale:[4,1,1]}}
   });
   json(`${assets}/items/${name}.json`,{model:{type:'minecraft:model',model:`${ns}:item/${name}`}});
-  en[`item.${ns}.${name}`]=gold?'Judgment line':'Quarter beat line';
-  zh[`item.${ns}.${name}`]=gold?'金色判定线':'四分音符节拍线';
+  en[`item.${ns}.${name}`]=speed?'Speed change marker':gold?'Judgment line':'Quarter beat line';
+  zh[`item.${ns}.${name}`]=speed?'变速标记线（无判定）':gold?'金色判定线':'四分音符节拍线';
 }
 require('./note-models.cjs')({box,texture,textures,json,write,assets,ns,en,zh});
 json(`${assets}/lang/en_us.json`,en);

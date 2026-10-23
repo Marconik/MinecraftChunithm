@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": 465,
+  "title": "macrocosmos",
+  "artist": "LeaF",
+  "sortName": "MACROCOSMOS",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20180906",
+  "defaultBpm": 300.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0465/cover.png",
+    "itemModel": "minecraftchunithm:cover/0465",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0465",
+    "resource": "minecraftchunithm:sounds/songs/0465/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 166378.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "0465_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "0465_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 30,
+      "internalLevel": 13.3,
+      "sourceFile": "0465_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 40,
+      "internalLevel": 15.4,
+      "sourceFile": "0465_03.c2s",
+      "notesDesigner": "CatastroPhe\"-UNIVERSE-\"",
+      "chartResource": "minecraftchunithm:songs/0465/master.json",
+      "imported": true,
+      "firstNoteMs": 1600.0,
+      "lastNoteMs": 163501.509643,
+      "logicalNoteCount": 2013,
+      "judgmentCount": 3085,
+      "speedChangeMarkerCount": 39
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0465",
+    "metadataFile": "Music.xml"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": 1100,
+  "title": "TECHNOPOLIS 2085",
+  "artist": "PRASTIK DANCEFLOOR",
+  "sortName": "TECHNOPOLIS2085",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20210916",
+  "defaultBpm": 134.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/1100/cover.png",
+    "itemModel": "minecraftchunithm:cover/1100",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.1100",
+    "resource": "minecraftchunithm:sounds/songs/1100/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 138816.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 2,
+      "levelDecimal": 0,
+      "internalLevel": 2.0,
+      "sourceFile": "1100_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 7,
+      "levelDecimal": 0,
+      "internalLevel": 7.0,
+      "sourceFile": "1100_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 12,
+      "levelDecimal": 10,
+      "internalLevel": 12.1,
+      "sourceFile": "1100_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 50,
+      "internalLevel": 14.5,
+      "sourceFile": "1100_03.c2s",
+      "notesDesigner": "TEKNOKITCHEN 1796",
+      "chartResource": "minecraftchunithm:songs/1100/master.json",
+      "imported": true,
+      "firstNoteMs": 1791.044776,
+      "lastNoteMs": 135671.641791,
+      "logicalNoteCount": 1015,
+      "judgmentCount": 1796,
+      "speedChangeMarkerCount": 0
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music1100",
+    "metadataFile": "Music.xml"
+  }
+}

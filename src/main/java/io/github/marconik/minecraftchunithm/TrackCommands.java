@@ -52,6 +52,7 @@ public final class TrackCommands {
                                         .executes(context -> generate(context.getSource(),
                                                 IntegerArgumentType.getInteger(context,"length")))))
                         .then(Commands.literal("stop").executes(context -> {
+                            ChartPlayback.unload(context.getSource().getLevel());
                             TrackMotion.stop(context.getSource().getLevel());
                             context.getSource().sendSuccess(() -> Component.literal("运动测试已停止，测试音符和灰色节拍线已清除。"), false);
                             return 1;
@@ -106,6 +107,7 @@ public final class TrackCommands {
         var left = state("track_left",placement.forward().getOpposite());
         var right = state("track_right",placement.forward().getOpposite());
         TrackMotion.stop(level);
+        ChartPlayback.unload(level);
         TrackMotion.clearArea(level,placement,length);
         for (int z = 0; z < length; z++) for (int x = 0; x < 9; x++) {
             var block = x == 0 ? left : x == 8 ? right : deck;

@@ -66,4 +66,14 @@ for (let lanes=1; lanes<=16; lanes++) {
     assert.ok(e.from[axis] < e.to[axis]);
   }
 }
-console.log('Model checks passed: 7 dividers / 8 regions; all 16 TAP widths have 0.5-block travel depth and centred white stripes; mirrored gold-gradient rails include seamless metallic highlights.');
+const speedMarker=read('item/speed_change_line.json');
+const markerMin=axis=>Math.min(...speedMarker.elements.map(e=>e.from[axis]));
+const markerMax=axis=>Math.max(...speedMarker.elements.map(e=>e.to[axis]));
+assert.equal((markerMax(0)-markerMin(0))/16*speedMarker.display.fixed.scale[0],8,
+  'Speed marker must cover all sixteen half-block lanes');
+assert.equal((markerMin(0)+markerMax(0))/2,8,'Speed marker must be centred');
+assert.equal((markerMax(2)-markerMin(2))/16,0.03125,'Speed marker must remain a thin line');
+assert.ok(speedMarker.elements.every(e=>(e.light_emission??0)===0 && e.shade===true
+  && e.faces.up.texture==='#speed_purple'),
+  'Speed marker must use a non-emissive purple surface with normal shading');
+console.log('Model checks passed: track bounds, TAP widths, metallic rails and full-width purple speed marker.');

@@ -1,0 +1,245 @@
+package io.github.marconik.minecraftchunithm;
+
+import com.mojang.math.Transformation;
+import com.mojang.brigadier.arguments.*;
+import java.util.*;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.*;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.minecraft.commands.*;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Brightness;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.item.*;
+import net.minecraft.world.phys.AABB;
+import org.joml.Matrix4f;
+
+/** Visual-only chart backend. One selected track per dimension, no input judging. */
+public final class ChartPlayback {
+    private static final String TAG="minecraftchunithm.chart_playback";
+    private static final Map<ServerLevel,Session> SESSIONS=new HashMap<>();
+    private static final Set<UUID> LIVE=new HashSet<>();
+    private ChartPlayback(){}
+    public static void initialize(){
+        HeadControlServices.setPlaybackBackend(new HeadControlServices.PlaybackBackend(){
+            private Session session(ServerLevel level,Placement head){
+                var s=SESSIONS.get(level);return s!=null&&s.track.placement.equals(PartConnections.target(head,PartConnections.Kind.TRACK))?s:null;
+            }
+            public HeadControlServices.Transport snapshot(ServerLevel level,Placement head){
+                var s=session(level,head);return s==null?HeadControlServices.Transport.offline():new HeadControlServices.Transport(true,s.state);
+            }
+            public void execute(ServerLevel level,Placement head,HeadControlServices.Action action){
+                var s=session(level,head);if(s!=null)s.action(level,action);
+            }
+        });
+        ServerTickEvents.START_LEVEL_TICK.register(level->{
+            var s=SESSIONS.get(level);if(s==null)return;
+            try{
+                if(PartConnections.find(level,PartConnections.Kind.TRACK,s.track.placement)!=s.track){unload(level);return;}
+                if(level.getGameTime()%20==0&&PartConnections.integrity(level,s.track)!=PartConnections.Status.CONNECTED){unload(level);return;}
+                s.tick(level);
+            }catch(RuntimeException error){MinecraftChunithm.LOGGER.error("Chart playback stopped",error);unload(level);}
+        });
+        ServerEntityEvents.ENTITY_LOAD.register((entity,level)->{
+            if(entity.entityTags().contains(TAG)&&!LIVE.contains(entity.getUUID()))entity.discard();
+        });
+        ServerLifecycleEvents.SERVER_STOPPING.register(server->{for(var level:new ArrayList<>(SESSIONS.keySet()))unload(level);});
+        CommandRegistrationCallback.EVENT.register((dispatcher,registry,environment)->{
+            var chart=Commands.literal("chart").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS));
+            for(String verb:List.of("load","play")){
+                var command=Commands.literal(verb);
+                if(verb.equals("play"))command.executes(c->control(c.getSource(),HeadControlServices.Action.START_OR_RESUME));
+                command.then(Commands.argument("resource",StringArgumentType.string())
+                    .executes(c->select(c.getSource(),StringArgumentType.getString(c,"resource"),10,false,verb.equals("play")))
+                    .then(Commands.argument("speed",DoubleArgumentType.doubleArg(.25,20))
+                        .executes(c->select(c.getSource(),StringArgumentType.getString(c,"resource"),DoubleArgumentType.getDouble(c,"speed"),false,verb.equals("play")))
+                        .then(Commands.argument("mirror",BoolArgumentType.bool()).executes(c->select(c.getSource(),StringArgumentType.getString(c,"resource"),DoubleArgumentType.getDouble(c,"speed"),BoolArgumentType.getBool(c,"mirror"),verb.equals("play"))))));
+                chart.then(command);
+            }
+            chart.then(Commands.literal("pause").executes(c->control(c.getSource(),HeadControlServices.Action.PAUSE)))
+                .then(Commands.literal("resume").executes(c->control(c.getSource(),HeadControlServices.Action.START_OR_RESUME)))
+                .then(Commands.literal("stop").executes(c->control(c.getSource(),HeadControlServices.Action.STOP)))
+                .then(Commands.literal("seek").then(Commands.argument("seconds",DoubleArgumentType.doubleArg(0)).executes(c->{
+                    var s=SESSIONS.get(c.getSource().getLevel());if(s==null)return missing(c.getSource());
+                    s.time=Math.min(s.chart.lastTimeMs()+1000,DoubleArgumentType.getDouble(c,"seconds")*1000);
+                    if(s.state!=HeadControlServices.Playback.PLAYING)s.state=HeadControlServices.Playback.PAUSED;
+                    s.clear();s.render(c.getSource().getLevel());return 1;
+                })))
+                .then(Commands.literal("status").executes(c->{var s=SESSIONS.get(c.getSource().getLevel());if(s==null)return missing(c.getSource());
+                    c.getSource().sendSuccess(()->Component.literal(s.chart.title()+" · "+s.state+" · "+String.format(Locale.ROOT,"%.3fs",s.time/1000)
+                        +" · "+s.speed+" 格/秒 · 镜像 "+s.mirror+" · 显示实体 "+s.entities.size()),false);return 1;}));
+            dispatcher.register(Commands.literal("chunithm").then(chart));
+        });
+    }
+    private static int missing(CommandSourceStack source){source.sendFailure(Component.literal("尚未加载谱面：/chunithm chart load 180 10 false"));return 0;}
+    public static void unload(ServerLevel level){var s=SESSIONS.remove(level);if(s!=null)s.clear();}
+    /** Load onto an existing registered track without generating or replacing blocks. */
+    public static void load(ServerLevel level,PartConnections.Part track,ChartDefinition chart,double speed,boolean mirror){
+        if(track.kind!=PartConnections.Kind.TRACK||!Double.isFinite(speed)||speed<.25||speed>20
+                ||PartConnections.integrity(level,track)!=PartConnections.Status.CONNECTED)
+            throw new IllegalArgumentException("Invalid track or speed");
+        var candidate=new Session(chart,track,speed,mirror);candidate.frame();
+        unload(level);TrackMotion.stop(level);SESSIONS.put(level,candidate);
+    }
+    /** Pure geometry check used by offline regression checks, without spawning entities. */
+    static int checkGeometry(ChartDefinition chart,double speed,boolean mirror,double time){
+        var track=new PartConnections.Part(PartConnections.Kind.TRACK,new Placement(net.minecraft.core.BlockPos.ZERO,net.minecraft.core.Direction.SOUTH),24);
+        var session=new Session(chart,track,speed,mirror);session.time=time;var frame=session.frame();
+        for(var spec:frame.values()){
+            if(spec.item.endsWith("_body")){
+                if(spec.x-spec.sx/2-Math.abs(spec.shear)/2<.5-1e-6
+                        ||spec.x+spec.sx/2+Math.abs(spec.shear)/2>8.5+1e-6
+                        ||spec.z-spec.sz/2< -1e-6||spec.z+spec.sz/2>24+1e-6)
+                    throw new AssertionError("Ribbon leaves the track: "+spec);
+            }
+            if(spec.item.equals("speed_change_line")&&spec.bright)throw new AssertionError("Speed marker is fullbright");
+        }
+        return frame.size();
+    }
+    public static int control(CommandSourceStack source,HeadControlServices.Action action){
+        var s=SESSIONS.get(source.getLevel());if(s==null)return missing(source);s.action(source.getLevel(),action);
+        source.sendSuccess(()->Component.literal("谱面呈现："+s.state),false);return 1;
+    }
+    private static int select(CommandSourceStack source,String resource,double speed,boolean mirror,boolean start){
+        var level=source.getLevel();
+        var track=PartConnections.ofKind(level,PartConnections.Kind.TRACK).stream().min(Comparator.comparingDouble(part->{
+            var box=new AABB(part.placement.point(0,0,0),part.placement.point(9,1,part.length));return box.distanceToSqr(source.getPosition());
+        })).orElse(null);
+        if(track==null||new AABB(track.placement.point(0,0,0),track.placement.point(9,1,track.length)).distanceToSqr(source.getPosition())>32*32){
+            source.sendFailure(Component.literal("请靠近已生成的轨道；本命令不会替换地图。"));return 0;
+        }
+        if(PartConnections.integrity(level,track)!=PartConnections.Status.CONNECTED){source.sendFailure(Component.literal("轨道不完整或所在区块未加载。"));return 0;}
+        try{
+            var definition=ChartDefinition.load(level,resource);
+            load(level,track,definition,speed,mirror);var session=SESSIONS.get(level);
+            if(start)session.action(level,HeadControlServices.Action.START_OR_RESUME);
+            source.sendSuccess(()->Component.literal("已加载 "+definition.title()+" MASTER，"+speed+" 格/秒，镜像="+mirror
+                +"。预滚后从音乐时间0开始；当前仅呈现谱面，不计分、不自动播放音频。"),false);return 1;
+        }catch(Exception error){source.sendFailure(Component.literal("谱面加载失败："+error.getMessage()));return 0;}
+    }
+    private record Spec(String item,double x,double y,double z,double sx,double sy,double sz,double shear,double lift,boolean bright){}
+    private static final class Session {
+        final ChartDefinition chart;final PartConnections.Part track;final double speed;final boolean mirror;
+        final Map<String,Display.ItemDisplay> entities=new HashMap<>();
+        final Map<String,Spec> lastSpecs=new HashMap<>();
+        final Map<String,Long> retiring=new HashMap<>();
+        double time;HeadControlServices.Playback state=HeadControlServices.Playback.STOPPED;
+        Session(ChartDefinition chart,PartConnections.Part track,double speed,boolean mirror){
+            this.chart=chart;this.track=track;this.speed=speed;this.mirror=mirror;time=initialTime();
+        }
+        double initialTime(){return -Math.max(1000,(RhythmTiming.judgment(track.length)-.25)/speed*1000);}
+        void clear(){for(var entity:entities.values()){LIVE.remove(entity.getUUID());entity.discard();}entities.clear();lastSpecs.clear();retiring.clear();}
+        void action(ServerLevel level,HeadControlServices.Action action){switch(action){
+            case STOP->{clear();state=HeadControlServices.Playback.STOPPED;time=initialTime();}
+            case PAUSE->{if(state==HeadControlServices.Playback.PLAYING)state=HeadControlServices.Playback.PAUSED;}
+            case START_OR_RESUME->{if(state==HeadControlServices.Playback.FINISHED)time=initialTime();state=HeadControlServices.Playback.PLAYING;render(level);}
+        }}
+        void tick(ServerLevel level){if(state!=HeadControlServices.Playback.PLAYING)return;time+=50;render(level);
+            if(time>chart.lastTimeMs()+Math.max(1000,track.length/speed*1000)){clear();state=HeadControlServices.Playback.FINISHED;}}
+        double z(double t,boolean marker){return chart.position(t,time,speed,track.length,marker);}
+        void cap(Map<String,Spec> frame,String key,String item,double t,double lane,double width,double height,boolean marker){
+            double z=z(t,marker),depth=marker||item.equals("beat_line")?.03125:.5,lo=Math.max(0,z-depth/2),hi=Math.min(track.length,z+depth/2);
+            if(hi<=lo)return;double left=mirror?16-lane-width:lane;
+            frame.put(key,new Spec(item,.5+(left+width/2)*.5,height,(lo+hi)/2,1,1,(hi-lo)/depth,0,0,!marker));
+        }
+        void actionBar(Map<String,Spec> frame,String key,double t,double lane,double width,double height){
+            double barWidth=Math.max(2,width),left=Math.clamp(lane+(width-barWidth)/2,0,16-barWidth);
+            cap(frame,key,"chart_action_bar_"+(int)barWidth,t,left,barWidth,height,false);
+        }
+        String arrow(ChartDefinition.Note n){
+            String variant=n.airVariant(mirror);
+            return "chart_air_arrow_"+(variant.equals("up")?"":variant+"_")+(int)n.width();
+        }
+        void ribbon(Map<String,Spec> frame,ChartDefinition.Note n,String item,double height,boolean air){
+            // Split at every speed boundary BEFORE culling: reverse effects can
+            // bring the middle of a path on screen while both ends are outside.
+            TreeSet<Double> samples=new TreeSet<>();
+            samples.add(n.time());samples.add(n.end());
+            for(var effect:chart.speeds()){if(effect.start()>n.time()&&effect.start()<n.end())samples.add(effect.start());if(effect.end()>n.time()&&effect.end()<n.end())samples.add(effect.end());}
+            Double previous=null;int index=0;
+            boolean spatial=Set.of("ASC","ASD","ALD").contains(n.type());
+            for(double next:samples){if(previous==null){previous=next;continue;}double a=previous,b=next;previous=next;
+                double aZ=z(a,false),bZ=z(b,false);if(Math.abs(aZ-bZ)<1e-6)continue;
+                double lo=Math.max(0,Math.min(aZ,bZ)),hi=Math.min(track.length,Math.max(aZ,bZ));if(hi<=lo)continue;
+                double tLo=a+(b-a)*(lo-aZ)/(bZ-aZ),tHi=a+(b-a)*(hi-aZ)/(bZ-aZ);
+                // A sheared cube represents a constant-width linear segment
+                // exactly, including its vertical slope. Only tapering needs
+                // subdivision; dense decoration must not multiply by length.
+                int steps=Math.max(1,(int)Math.ceil(Math.abs(n.widthAt(tHi)-n.widthAt(tLo))*4));
+                for(int step=0;step<steps;step++){
+                    double u=(double)step/steps,v=(double)(step+1)/steps;
+                    double ta=tLo+(tHi-tLo)*u,tb=tLo+(tHi-tLo)*v;
+                    double wa=n.widthAt(ta),wb=n.widthAt(tb);
+                    double ca=.5+(n.laneAt(ta,mirror)+wa/2)*.5,cb=.5+(n.laneAt(tb,mirror)+wb/2)*.5;
+                    double ya=spatial?n.heightAt(ta)*.2:height,yb=spatial?n.heightAt(tb)*.2:height;
+                    double width=air?NoteDefinition.AIR_ACTION_LINE_SIZE:Math.min(wa,wb)*.5;
+                    frame.put(n.id()+"_body_"+index++,new Spec(item,(ca+cb)/2,(ya+yb)/2,lo+(hi-lo)*(u+v)/2,width,
+                        air?NoteDefinition.AIR_ACTION_LINE_SIZE:.018,(hi-lo)/steps,cb-ca,yb-ya,true));
+                }
+            }
+        }
+        Map<String,Spec> frame(){
+            Map<String,Spec> frame=new LinkedHashMap<>();
+            for(int i=0;i<chart.beats().size();i++)cap(frame,"beat_"+i,"beat_line",chart.beats().get(i),0,16,.006,false);
+            for(var n:chart.notes()){
+                int width=(int)n.width();String prefix=n.id();
+                switch(n.type()){
+                    case "TAP","CHR","FLK"->cap(frame,prefix,(n.type().equals("TAP")?"tap_":n.type().equals("CHR")?"ex_tap_":"flick_")+width,n.time(),n.lane(),n.width(),.025,false);
+                    case "AIR","AUL","AUR","ADW","ADL","ADR"->cap(frame,prefix,arrow(n),n.time(),n.lane(),n.width(),.025,false);
+                    case "HLD","HXD"->{ribbon(frame,n,"chart_hold_body",.04,false);cap(frame,prefix+"_head","ex_tap_"+width,n.time(),n.lane(),n.width(),.025,false);
+                        cap(frame,prefix+"_end","ex_tap_"+width,n.end(),n.endLane(),n.endWidth(),.025,false);}
+                    case "SLD","SLC","SXD","SXC"->{ribbon(frame,n,"chart_slide_body",.045,false);
+                        if(n.root()||n.type().endsWith("D"))cap(frame,prefix+"_node",(n.root()&&n.type().startsWith("SX")?"ex_tap_":"chart_slide_node_")+width,n.time(),n.lane(),n.width(),.03,false);
+                        if(n.terminal())cap(frame,prefix+"_tail","chart_slide_node_"+(int)n.endWidth(),n.end(),n.endLane(),n.endWidth(),.03,false);}
+                    case "AHD"->{ribbon(frame,n,"chart_air_body",1.0,true);
+                        if(!n.target().equals("AHD"))cap(frame,prefix+"_arrow","chart_air_arrow_"+width,n.time(),n.lane(),n.width(),.025,false);
+                        actionBar(frame,prefix+"_action_start",n.time(),n.lane(),n.width(),1);
+                        actionBar(frame,prefix+"_action_end",n.end(),n.endLane(),n.endWidth(),1);}
+                    case "ASC","ASD"->{ribbon(frame,n,"chart_air_body",1,true);
+                        if(n.root())cap(frame,prefix+"_arrow",arrow(n),n.time(),n.lane(),n.width(),.025,false);
+                        if(n.root()||n.type().equals("ASD"))actionBar(frame,prefix+"_action_start",n.time(),n.lane(),n.width(),n.height()*.2);
+                        if(n.terminal())actionBar(frame,prefix+"_action_end",n.end(),n.endLane(),n.endWidth(),n.endHeight()*.2);}
+                    case "ALD"->{
+                        if(n.color().equals("NON"))actionBar(frame,prefix+"_effect_action",n.time(),n.lane(),n.width(),n.height()*.2);
+                        else ribbon(frame,n,"chart_effect_"+n.color().toLowerCase(Locale.ROOT)+"_body",1,false);
+                    }
+                    default->throw new IllegalArgumentException("Unsupported note");
+                }
+            }
+            for(int i=0;i<chart.markers().size();i++)cap(frame,"speed_"+i,"speed_change_line",chart.markers().get(i),0,16,.03,true);
+            if(frame.size()>4096)throw new IllegalArgumentException("Visible chart exceeds 4096 display entities: "+chart.title()+" at "+time+" ms, speed "+speed+", count "+frame.size()+"; shorten the track or increase speed");
+            return frame;
+        }
+        void render(ServerLevel level){
+            var frame=frame();var remove=entities.entrySet().iterator();while(remove.hasNext()){
+                var entry=remove.next();
+                if(frame.containsKey(entry.getKey())&&!entry.getValue().isRemoved()){retiring.remove(entry.getKey());continue;}
+                long reached=retiring.computeIfAbsent(entry.getKey(),key->level.getGameTime());
+                if(!entry.getValue().isRemoved()&&level.getGameTime()-reached<RhythmTiming.ENDPOINT_GRACE_TICKS){
+                    var last=lastSpecs.get(entry.getKey());double depth=last.item.endsWith("_body")?last.sz:(last.item.equals("speed_change_line")||last.item.equals("beat_line")?.03125:.5)*last.sz;
+                    double edge=last.z<track.length/2.0?depth/2:track.length-depth/2;
+                    var end=track.placement.point(last.x,TrackBlock.SURFACE_HEIGHT+last.y,edge);
+                    entry.getValue().setPos(end.x,end.y,end.z);continue;
+                }
+                LIVE.remove(entry.getValue().getUUID());entry.getValue().discard();lastSpecs.remove(entry.getKey());retiring.remove(entry.getKey());remove.remove();}
+            for(var entry:frame.entrySet()){
+                var s=entry.getValue();var entity=entities.get(entry.getKey());boolean fresh=entity==null;
+                if(fresh){entity=EntityTypes.ITEM_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);if(entity==null)throw new IllegalStateException("Cannot create chart display");
+                    entity.setItemStack(new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,s.item))));
+                    entity.setItemTransform(ItemDisplayContext.FIXED);entity.setYRot(track.placement.yaw());
+                    entity.setPosRotInterpolationDuration(1);entity.setTransformationInterpolationDuration(1);
+                    if(s.bright)entity.setBrightnessOverride(new Brightness(15,15));
+                    entity.setWidth(10);entity.setHeight(4);entity.addTag(TAG);LIVE.add(entity.getUUID());entities.put(entry.getKey(),entity);
+                }
+                var pos=track.placement.point(s.x,TrackBlock.SURFACE_HEIGHT+s.y,s.z);entity.setPos(pos.x,pos.y,pos.z);
+                entity.setTransformation(new Transformation(new Matrix4f().scaling((float)s.sx,(float)s.sy,(float)s.sz).m20((float)s.shear).m21((float)s.lift)));
+                entity.setTransformationInterpolationDelay(0);
+                lastSpecs.put(entry.getKey(),s);
+                if(fresh)level.addFreshEntity(entity);
+            }
+        }
+    }
+}

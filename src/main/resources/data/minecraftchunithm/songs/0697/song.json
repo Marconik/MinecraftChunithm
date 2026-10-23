@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": 697,
+  "title": "folern",
+  "artist": "ぬゆり",
+  "sortName": "FOLERN",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20181025",
+  "defaultBpm": 200.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0697/cover.png",
+    "itemModel": "minecraftchunithm:cover/0697",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0697",
+    "resource": "minecraftchunithm:sounds/songs/0697/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 142656.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "0697_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 0,
+      "internalLevel": 8.0,
+      "sourceFile": "0697_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 70,
+      "internalLevel": 13.7,
+      "sourceFile": "0697_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 70,
+      "internalLevel": 14.7,
+      "sourceFile": "0697_03.c2s",
+      "notesDesigner": "すきやき奉行",
+      "chartResource": "minecraftchunithm:songs/0697/master.json",
+      "imported": true,
+      "firstNoteMs": 3300.0,
+      "lastNoteMs": 140400.0,
+      "logicalNoteCount": 1603,
+      "judgmentCount": 2000,
+      "speedChangeMarkerCount": 0
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0697",
+    "metadataFile": "Music.xml"
+  }
+}

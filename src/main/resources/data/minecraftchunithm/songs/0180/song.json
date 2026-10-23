@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": 180,
+  "title": "怒槌",
+  "artist": "光吉猛修",
+  "sortName": "イカスチ",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20150910",
+  "defaultBpm": 200.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0180/cover.png",
+    "itemModel": "minecraftchunithm:cover/0180",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0180",
+    "resource": "minecraftchunithm:sounds/songs/0180/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 150336.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 6,
+      "levelDecimal": 0,
+      "internalLevel": 6.0,
+      "sourceFile": "0180_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "0180_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 0,
+      "internalLevel": 14.0,
+      "sourceFile": "0180_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 40,
+      "internalLevel": 15.4,
+      "sourceFile": "0180_03.c2s",
+      "notesDesigner": "譜面ボーイズからの挑戦状",
+      "chartResource": "minecraftchunithm:songs/0180/master.json",
+      "imported": true,
+      "firstNoteMs": 1200.0,
+      "lastNoteMs": 146400.0,
+      "logicalNoteCount": 1924,
+      "judgmentCount": 3000,
+      "speedChangeMarkerCount": 6
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0180",
+    "metadataFile": "Music.xml"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "songs": [
+    {
+      "id": 103,
+      "title": "エンドマークに希望と涙を添えて",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0103/song.json"
+    },
+    {
+      "id": 180,
+      "title": "怒槌",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0180/song.json"
+    },
+    {
+      "id": 258,
+      "title": "TiamaT:F minor",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0258/song.json"
+    },
+    {
+      "id": 465,
+      "title": "macrocosmos",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0465/song.json"
+    },
+    {
+      "id": 697,
+      "title": "folern",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0697/song.json"
+    },
+    {
+      "id": 1100,
+      "title": "TECHNOPOLIS 2085",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/1100/song.json"
+    },
+    {
+      "id": 2241,
+      "title": "DA'AT -The First Seeker of Souls-",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2241/song.json"
+    },
+    {
+      "id": 2354,
+      "title": "月の光",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2354/song.json"
+    },
+    {
+      "id": 2475,
+      "title": "Chaotic Ørder",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2475/song.json"
+    }
+  ]
+}

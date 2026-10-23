@@ -5,7 +5,7 @@ import java.util.List;
 /** Chart attributes in milliseconds and half-block lanes; independent of model geometry. */
 public record NoteDefinition(String id, Kind kind, double timeMs, double lane, double width,
                              double durationMs, Direction direction, String parentId, List<Node> nodes) {
-    public enum Kind { TAP, EX_TAP, HOLD, SLIDE, FLICK, AIR, AIR_ACTION }
+    public enum Kind { TAP, EX_TAP, HOLD, SLIDE, FLICK, AIR, AIR_ACTION, SPEED_CHANGE }
     public static final double AIR_ACTION_LINE_SIZE = 0.075;
     public static final double AIR_ACTION_MIN_BAR_LANES = 2;
     public enum Direction { NONE, ANY, LEFT, RIGHT, UP, DOWN, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT }
@@ -16,6 +16,8 @@ public record NoteDefinition(String id, Kind kind, double timeMs, double lane, d
             return switch(this) { case LINEAR -> t; case PARABOLA_UP -> 2*t-t*t; case PARABOLA_DOWN -> t*t; };
         }
     }
+    /** Visual timing markers never participate in hit detection, combo or score. */
+    public boolean judged() { return kind != Kind.SPEED_CHANGE; }
     /** connection controls the segment from this node to the next node. */
     public record Node(double offsetMs, double lane, double width, double height, Connection connection) {
         public Node(double offsetMs,double lane,double width,double height) {
@@ -49,6 +51,9 @@ public record NoteDefinition(String id, Kind kind, double timeMs, double lane, d
         if (id == null || id.isBlank() || kind == null || direction == null)
             throw new IllegalArgumentException("Missing note identity, type or direction");
         checkLane(lane,width);
+        if (kind==Kind.SPEED_CHANGE && (lane!=0 || width!=16 || direction!=Direction.NONE
+                || (parentId!=null && !parentId.isBlank())))
+            throw new IllegalArgumentException("Speed markers span all 16 lanes and have no input or parent");
         if(kind==Kind.AIR_ACTION && width<AIR_ACTION_MIN_BAR_LANES)
             throw new IllegalArgumentException("AIR-ACTION bars must be at least one block wide");
         if (!Double.isFinite(timeMs) || timeMs < 0 || !Double.isFinite(durationMs) || durationMs < 0)

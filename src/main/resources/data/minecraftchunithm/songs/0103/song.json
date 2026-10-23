@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": 103,
+  "title": "エンドマークに希望と涙を添えて",
+  "artist": "cosMo＠暴走P",
+  "sortName": "エントマウクニキホウトナミタヲソエテ",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20151203",
+  "defaultBpm": 257.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0103/cover.png",
+    "itemModel": "minecraftchunithm:cover/0103",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0103",
+    "resource": "minecraftchunithm:sounds/songs/0103/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 170901.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "0103_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 7,
+      "levelDecimal": 0,
+      "internalLevel": 7.0,
+      "sourceFile": "0103_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 11,
+      "levelDecimal": 80,
+      "internalLevel": 11.8,
+      "sourceFile": "0103_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 0,
+      "internalLevel": 15.0,
+      "sourceFile": "0103_03.c2s",
+      "notesDesigner": "Revo@LC",
+      "chartResource": "minecraftchunithm:songs/0103/master.json",
+      "imported": true,
+      "firstNoteMs": 1867.70428,
+      "lastNoteMs": 166926.070039,
+      "logicalNoteCount": 1950,
+      "judgmentCount": 2277,
+      "speedChangeMarkerCount": 0
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0103",
+    "metadataFile": "Music.xml"
+  }
+}

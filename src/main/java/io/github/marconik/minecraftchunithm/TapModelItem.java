@@ -23,6 +23,7 @@ public class TapModelItem extends Item {
         this.lanes = lanes;
     }
     protected double previewFootprintWidth() { return lanes*0.5; }
+    protected boolean previewFullBright() { return true; }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
@@ -55,7 +56,7 @@ public class TapModelItem extends Item {
         display.setYRot(alongZ ? 90 : 0);
         display.setItemStack(new ItemStack(this));
         display.setItemTransform(ItemDisplayContext.FIXED);
-        display.setBrightnessOverride(new Brightness(15, 15));
+        if (previewFullBright()) display.setBrightnessOverride(new Brightness(15, 15));
         display.setWidth((float) width + 0.5F);
         display.setHeight(2.5F);
         display.addTag("minecraftchunithm.tap_preview");

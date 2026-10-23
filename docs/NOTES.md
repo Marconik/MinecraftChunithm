@@ -1,5 +1,7 @@
 # 音符属性与模型
 
+新增 `SPEED_CHANGE` 变速标记：紫色细线固定覆盖16分区（8格），`judged()`为false；不进入判定、连击或分数统计。资源ID为 `minecraftchunithm:speed_change_line`。转换时每段SFL的开始/结束各生成一条，同刻边界合并。详见 [变速定义](SPEED_CHANGES.md)。
+
 所有音符使用 16 个逻辑分区，1 分区 = 0.5 格。六类新音符各有 16 种宽度的原生 JSON 模型，可在创造模式建筑方块分类搜索，或使用 `/give @s minecraftchunithm:hold_4` 等 ID 获取。
 
 | 类型 | ID 前缀 | 属性与含义 | 模型样例 |

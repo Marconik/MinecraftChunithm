@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": 258,
+  "title": "TiamaT:F minor",
+  "artist": "Team Grimoire",
+  "sortName": "TIAMATFMINOR",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20170720",
+  "defaultBpm": 215.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0258/cover.png",
+    "itemModel": "minecraftchunithm:cover/0258",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0258",
+    "resource": "minecraftchunithm:sounds/songs/0258/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 152128.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "0258_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "0258_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 70,
+      "internalLevel": 13.7,
+      "sourceFile": "0258_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 30,
+      "internalLevel": 15.3,
+      "sourceFile": "0258_03.c2s",
+      "notesDesigner": "CODE:CatastroPhe",
+      "chartResource": "minecraftchunithm:songs/0258/master.json",
+      "imported": true,
+      "firstNoteMs": 1116.27907,
+      "lastNoteMs": 149023.255814,
+      "logicalNoteCount": 2271,
+      "judgmentCount": 3175,
+      "speedChangeMarkerCount": 0
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0258",
+    "metadataFile": "Music.xml"
+  }
+}

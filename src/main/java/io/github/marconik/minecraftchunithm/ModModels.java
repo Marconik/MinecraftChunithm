@@ -46,11 +46,24 @@ public final class ModModels {
                     Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID, name));
             Registry.register(BuiltInRegistries.ITEM, key, new Item(new Item.Properties().setId(key)));
         }
+        List<String> chartModels=new ArrayList<>(List.of("chart_hold_body","chart_slide_body","chart_air_body"));
+        for(int width=1;width<=16;width++)for(String kind:List.of("slide_node","air_arrow","action_bar"))
+            chartModels.add("chart_"+kind+"_"+width);
+        for(int width=1;width<=16;width++)for(String variant:List.of("up_left","up_right","down","down_left","down_right"))
+            chartModels.add("chart_air_arrow_"+variant+"_"+width);
+        for(String color:List.of("gry","aqa","red","blk","def","dgr","blu","orn","yel","ppl"))
+            chartModels.add("chart_effect_"+color+"_body");
+        for(String name:chartModels){
+            var key=ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));
+            Registry.register(BuiltInRegistries.ITEM,key,new Item(new Item.Properties().setId(key)));
+        }
         for (var kind : NoteDefinition.Kind.values()) {
             if (kind==NoteDefinition.Kind.TAP) continue;
             for (int lanes=1;lanes<=16;lanes++) {
                 if(kind==NoteDefinition.Kind.AIR_ACTION && lanes!=2)continue;
-                String name=kind.name().toLowerCase(java.util.Locale.ROOT)+"_"+lanes;
+                if(kind==NoteDefinition.Kind.SPEED_CHANGE && lanes!=16)continue;
+                String name=kind==NoteDefinition.Kind.SPEED_CHANGE?"speed_change_line":
+                        kind.name().toLowerCase(java.util.Locale.ROOT)+"_"+lanes;
                 ResourceKey<Item> key=ResourceKey.create(Registries.ITEM,
                         Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));
                 items.add(Registry.register(BuiltInRegistries.ITEM,key,
