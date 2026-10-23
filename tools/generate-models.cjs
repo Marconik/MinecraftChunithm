@@ -83,12 +83,9 @@ for (const [name, labels] of Object.entries(trackNames)) {
   if (name === 'track_left' || name === 'track_right') {
     const isLeft = name === 'track_left';
     const x = isLeft ? 0 : 8;
-    const rail = box([x,10,0],[x+8,12,16],isLeft?'rail_gold_left':'rail_gold_right',8);
-    // U follows world X across the rail. Along-track faces use constant endpoint
-    // colours, so adjacent blocks cannot restart a longitudinal gradient.
-    rail.faces.north.uv = [16,0,0,16];
-    rail.faces.west.texture = isLeft ? '#gold_outer' : '#gold_inner';
-    rail.faces.east.texture = isLeft ? '#gold_inner' : '#gold_outer';
+    // The vanilla gold-block bevel and highlights give every rail face the
+    // same metal finish as Minecraft gold. Keep ordinary directional lighting.
+    const rail = box([x,10,0],[x+8,12,16],isLeft?'rail_gold_left':'rail_gold_right');
     elements.push(rail);
   }
   if (name === 'track_judgment') {
@@ -105,7 +102,9 @@ for (const [name, labels] of Object.entries(trackNames)) {
   }
   json(`${assets}/models/block/${name}.json`, {
     parent:'minecraft:block/block', ambientocclusion:false,
-    textures:{...textures, particle:textures.deck}, elements
+    textures:{...textures, particle:textures.deck,
+      ...(name==='track_left'?{rail_gold_left:'minecraft:block/gold_block'}:{}),
+      ...(name==='track_right'?{rail_gold_right:'minecraft:block/gold_block'}:{})}, elements
   });
   json(`${assets}/blockstates/${name}.json`, {variants:Object.fromEntries(
     ['north','east','south','west'].map((direction,index) =>

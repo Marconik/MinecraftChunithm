@@ -22,31 +22,52 @@ public final class TrackHeadDisplay {
         long[] counters={data.critical(),data.justice(),data.attack(),data.miss()};
         int[] colors={0xfff26c,0xffb631,0x58ed39,0xbbc0c7};
         for(int i=0;i<4;i++)text(level,placement,(i+.5)*2.75,3.5625,Long.toString(counters[i]),2f,colors[i],true);
-        text(level,placement,2.60,2.66015625,"MAX COMBO:",1.5625f,0x252733,true);
-        text(level,placement,6.60,2.66015625,"SCORE:",1.5625f,0x252733,true);
-        text(level,placement,4.75,2.66015625,Long.toString(data.maxCombo()),1.5625f,0x252733,true);
-        text(level,placement,8.75,2.66015625,String.format(Locale.ROOT,"%,d",data.score()),1.5625f,0x252733,true);
+        glowingText(level,placement,2.60,2.66015625,"MAX COMBO:");
+        glowingText(level,placement,6.60,2.66015625,"SCORE:");
+        glowingText(level,placement,4.75,2.66015625,Long.toString(data.maxCombo()));
+        glowingText(level,placement,8.75,2.66015625,String.format(Locale.ROOT,"%,d",data.score()));
         panel(level,placement,1.5,208/128.0,8,73/128.0,"white_concrete",false,1.003);
         panel(level,placement,200/128.0,216/128.0,1008/128.0,57/128.0,"black_concrete",false,1.018);
         // Pixel coordinates match the native background texture (128 pixels per block).
         if(data.barFraction()>0)fill(level,placement,200/128.0,(512-296)/128.0,
                 1008/128.0*data.barFraction(),57/128.0,data.goldBar());
+        DisplayFinish.polish(level,placement,TAG,200/128.0,216/128.0,1008/128.0,57/128.0,1.052,false,true);
         for(int i=0;i<10;i++) {
             double x=i<3?2+i*.55:3.65+(i-3)*.8;
             double width=i<3?.42:.65,height=i<3?.28:.36;
             panel(level,placement,x,1.115,width,height,"white_concrete",true,1.003);
             panel(level,placement,x+.045,1.15,width-.09,height-.07,
                     i<data.filledCells()?(i>=3?"yellow_concrete":"light_blue_concrete"):"gray_concrete",true,1.02);
+            DisplayFinish.polish(level,placement,TAG,x+.045,1.15,width-.09,height-.07,1.038,true,true);
         }
         text(level,placement,4.047,1.55,"CLEAR",.42f,0xfff7b3,true);
     }
     private static void text(ServerLevel level,Placement placement,double x,double centerY,String text,float scale,int color,boolean bold) {
+        textLayer(level,placement,x,centerY,text,scale,color,bold,1.06,255);
+    }
+    private static void glowingText(ServerLevel level,Placement placement,double x,double centerY,String value) {
+        // Two faint rings behind the ink produce a white halo rather than a
+        // black drop shadow. Keep the existing dark font, scale and alignment.
+        for(int i=0;i<8;i++) {
+            double angle=i*Math.PI/4;
+            textLayer(level,placement,x+Math.cos(angle)*.026,centerY+Math.sin(angle)*.026,
+                    value,1.5625f,0xffffff,true,1.050,70);
+        }
+        for(int i=0;i<4;i++) {
+            double angle=i*Math.PI/2;
+            textLayer(level,placement,x+Math.cos(angle)*.013,centerY+Math.sin(angle)*.013,
+                    value,1.5625f,0xffffff,true,1.055,170);
+        }
+        text(level,placement,x,centerY,value,1.5625f,0x252733,true);
+    }
+    private static void textLayer(ServerLevel level,Placement placement,double x,double centerY,String text,float scale,int color,boolean bold,double depth,int opacity) {
         var entity=EntityTypes.TEXT_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);
         if(entity==null)throw new IllegalStateException("Cannot create text display");
         entity.setText(Component.literal(text).withStyle(style->style.withColor(color).withBold(bold)));
         entity.setLineWidth(4096);entity.setBackgroundColor(0);entity.setFlags((byte)0);
+        entity.setTextOpacity((byte)opacity);
         entity.setTransformation(new Transformation(null,null,new Vector3f(scale),null));
-        var pos=placement.point(x,centerY-scale*.1125,1.06);entity.setPos(pos.x,pos.y,pos.z);entity.setYRot(placement.yaw());
+        var pos=placement.point(x,centerY-scale*.1125,depth);entity.setPos(pos.x,pos.y,pos.z);entity.setYRot(placement.yaw());
         entity.setBrightnessOverride(new Brightness(15,15));entity.addTag(TAG);level.addFreshEntity(entity);
     }
     private static void fill(ServerLevel level,Placement placement,double x,double y,double width,double height,boolean gold) {

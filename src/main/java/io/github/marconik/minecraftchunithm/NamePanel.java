@@ -91,6 +91,7 @@ public final class NamePanel {
         text(level,p,.32,.49,"RATING",.74f,1.02,0x34343b,false,true);
         text(level,p,1.42,.49,data.rating(),.95f,3.68,0x34343b,false,true);
         image(level,p,6.00,.797,1.18,1.18,1.055,data.characterModel());
+        DisplayFinish.polish(level,p,TAG,5.41,.207,1.18,1.18,1.058,false,false);
     }
     public static int command(CommandSourceStack source,String json){
         try{

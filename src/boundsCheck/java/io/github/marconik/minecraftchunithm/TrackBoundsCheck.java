@@ -56,6 +56,54 @@ public final class TrackBoundsCheck {
                 net.minecraft.core.Direction.WEST,net.minecraft.core.Direction.EAST}) {
             var track=new Placement(standing.relative(direction.getCounterClockWise(),-4),direction);
             if(!track.block(4,0,0).equals(standing))throw new AssertionError("Track anchor differs from standing block");
+            var groundStandalone=new Placement(standing.relative(direction.getCounterClockWise(),-GroundSlide.WIDTH/2).relative(direction,-1),direction);
+            if(!groundStandalone.block(6,0,1).equals(standing))throw new AssertionError("Ground Slide anchor differs from standing block");
+            var groundConnected=PartConnections.groundTarget(track,24);
+            var leftAir=AirSensors.target(groundConnected,true);
+            var rightAir=AirSensors.target(groundConnected,false);
+            if(!leftAir.block(4,0,0).relative(direction.getCounterClockWise()).equals(groundConnected.block(0,0,0))
+                    ||!rightAir.block(0,0,0).equals(groundConnected.block(13,0,0)))
+                throw new AssertionError("AIR bases must touch opposite Ground Slide sides");
+            for(boolean left:new boolean[]{true,false}){
+                int blocks=0;
+                for(int y=0;y<4;y++)for(int x=0;x<5;x++)for(int z=0;z<3;z++){
+                    boolean expected=y==0||x==(left?0:4);
+                    if(AirSensors.occupied(left,x,y)!=expected)throw new AssertionError("AIR panel must occupy only the outermost base row");
+                    if(expected)blocks++;
+                }
+                if(blocks!=24)throw new AssertionError("AIR part must contain a 5x3x1 base and 3x3x1 panel");
+            }
+            for(int port=0;port<5;port++){
+                if(AirSensors.portHeight(port)!=1.5+port*.5)throw new AssertionError("AIR IR sensor height differs from the standing surface");
+                var midpoint=AirSensors.portPoint(groundConnected,true,port).add(AirSensors.portPoint(groundConnected,false,port)).scale(.5);
+                if(!midpoint.equals(groundConnected.point(6.5,AirSensors.portHeight(port),1.5)))
+                    throw new AssertionError("AIR IR sensors must face one another at mirrored coordinates");
+            }
+            if(!groundConnected.block(0,0,0).equals(track.block(-2,0,24))
+                    ||!groundConnected.block(12,0,2).equals(track.block(10,0,26)))
+                throw new AssertionError("Ground Slide must begin immediately after the track end");
+            if(!groundConnected.point(2.5,.5,.5).equals(track.point(.5,.5,24.5))
+                    ||!groundConnected.point(10.5,.5,.5).equals(track.point(8.5,.5,24.5)))
+                throw new AssertionError("Wider Ground Slide cabinet must preserve both 8-block light-window boundaries");
+            for(int lane=0;lane<16;lane++)for(int cell=0;cell<4;cell++){
+                var contact=groundConnected.point(2.75+lane*.5,.75,.75+cell*.5);
+                var box=new net.minecraft.world.phys.AABB(contact.x-.05,contact.y,contact.z-.05,contact.x+.05,contact.y+.1,contact.z+.05);
+                if(GroundSlidePressure.contacts(groundConnected,java.util.List.of(box))!=(1<<lane))
+                    throw new AssertionError("Every half-block cell must activate its whole lane in all four directions");
+            }
+            var boundary=groundConnected.point(3,.75,1.5);
+            var crossing=new net.minecraft.world.phys.AABB(boundary.x-.05,boundary.y,boundary.z-.05,boundary.x+.05,boundary.y+.1,boundary.z+.05);
+            if(GroundSlidePressure.contacts(groundConnected,java.util.List.of(crossing))!=3)
+                throw new AssertionError("Contact spanning a boundary must activate both adjacent strips");
+            var rim=groundConnected.point(1,1,1.5);
+            var above=groundConnected.point(3.25,1,1.5);
+            for(var contact:new net.minecraft.world.phys.Vec3[]{rim,above}){
+                var box=new net.minecraft.world.phys.AABB(contact.x-.05,contact.y,contact.z-.05,contact.x+.05,contact.y+.1,contact.z+.05);
+                if(GroundSlidePressure.contacts(groundConnected,java.util.List.of(box))!=0)
+                    throw new AssertionError("Rim or elevated contact must not activate touch strips");
+            }
+            if(GroundSlidePressure.contacts(groundConnected,java.util.List.of())!=0)
+                throw new AssertionError("Released controller must return to yellow");
             var front=direction.getOpposite();
             var playerBlock=standing.above();
             var nameplate=NamePanel.placement(playerBlock,direction);
@@ -85,6 +133,26 @@ public final class TrackBoundsCheck {
             if(!track.point(4.5,0,.5).equals(new net.minecraft.world.phys.Vec3(standing.getX()+.5,63,standing.getZ()+.5)))
                 throw new AssertionError("Display frame differs from block frame");
         }
+        if(GroundSlide.WIDTH!=13||GroundSlide.DEPTH!=3||GroundSlide.LIGHT_WIDTH!=8
+                ||GroundSlide.LIGHT_DEPTH!=2||GroundSlide.LANES!=16||GroundSlide.HEIGHT!=1||GroundSlide.SURFACE_HEIGHT!=.75)
+            throw new AssertionError("Ground Slide dimensions changed");
+        double recessedArea=0;
+        for(int z=0;z<GroundSlide.DEPTH;z++)for(int x=0;x<GroundSlide.WIDTH;x++){
+            var recess=GroundSlide.recess(x,z);
+            boolean expected=x>=2&&x<=10;
+            if((recess!=null)!=expected)throw new AssertionError("Wrong recessed tile extent");
+            if(recess!=null){
+                if(recess.minX()<0||recess.maxX()>16||recess.minZ()<0||recess.maxZ()>16)
+                    throw new AssertionError("Recess collision bounds exceed tile");
+                recessedArea+=(recess.maxX()-recess.minX())*(recess.maxZ()-recess.minZ());
+            }
+        }
+        if(recessedArea!=8*2*16*16)throw new AssertionError("Recess collision footprint must remain exactly 8x2 blocks");
+        if(GroundSlidePressure.tileMask(2,1)!=2||GroundSlidePressure.tileMask(10,1<<15)!=1
+                ||GroundSlidePressure.tileMask(3,6)!=3||GroundSlidePressure.tileMask(0,65535)!=0
+                ||GroundSlidePressure.tileMask(12,65535)!=0)
+            throw new AssertionError("Pressed tile halves must preserve adjacent lanes and leave the rim unchanged");
+        System.out.println("Ground Slide pressure: 256 oriented cell contacts, adjacent lanes, rim/height exclusion, release and tile masks passed.");
         long[] scores={0,100999,101000,302999,303000,403999,404000,434300,1009999,1010000,2000000};
         for(long score:scores) {
             var data=new HeadDisplayData(1,2,3,4,5,score);

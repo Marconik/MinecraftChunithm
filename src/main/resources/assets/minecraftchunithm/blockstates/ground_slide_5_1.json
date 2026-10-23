@@ -1,0 +1,68 @@
+﻿{
+    "variants":  {
+                     "facing=south,pressed=0":  {
+                                                    "model":  "minecraftchunithm:block/ground_slide_5_1",
+                                                    "y":  0
+                                                },
+                     "facing=west,pressed=0":  {
+                                                   "model":  "minecraftchunithm:block/ground_slide_5_1",
+                                                   "y":  90
+                                               },
+                     "facing=north,pressed=0":  {
+                                                    "model":  "minecraftchunithm:block/ground_slide_5_1",
+                                                    "y":  180
+                                                },
+                     "facing=east,pressed=0":  {
+                                                   "model":  "minecraftchunithm:block/ground_slide_5_1",
+                                                   "y":  270
+                                               },
+                     "facing=south,pressed=1":  {
+                                                    "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_1",
+                                                    "y":  0
+                                                },
+                     "facing=west,pressed=1":  {
+                                                   "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_1",
+                                                   "y":  90
+                                               },
+                     "facing=north,pressed=1":  {
+                                                    "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_1",
+                                                    "y":  180
+                                                },
+                     "facing=east,pressed=1":  {
+                                                   "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_1",
+                                                   "y":  270
+                                               },
+                     "facing=south,pressed=2":  {
+                                                    "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_2",
+                                                    "y":  0
+                                                },
+                     "facing=west,pressed=2":  {
+                                                   "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_2",
+                                                   "y":  90
+                                               },
+                     "facing=north,pressed=2":  {
+                                                    "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_2",
+                                                    "y":  180
+                                                },
+                     "facing=east,pressed=2":  {
+                                                   "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_2",
+                                                   "y":  270
+                                               },
+                     "facing=south,pressed=3":  {
+                                                    "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_3",
+                                                    "y":  0
+                                                },
+                     "facing=west,pressed=3":  {
+                                                   "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_3",
+                                                   "y":  90
+                                               },
+                     "facing=north,pressed=3":  {
+                                                    "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_3",
+                                                    "y":  180
+                                                },
+                     "facing=east,pressed=3":  {
+                                                   "model":  "minecraftchunithm:block/ground_slide_5_1_pressed_3",
+                                                   "y":  270
+                                               }
+                 }
+}

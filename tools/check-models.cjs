@@ -10,28 +10,11 @@ for (const [model, x] of [[left,0],[right,8]]) {
   assert.deepEqual(rail.to, [x+8,12,16]);
   assert.equal(Math.max(...model.elements.map(e=>e.to[1])), 12);
   assert.equal(Math.min(...model.elements.map(e=>e.from[1])), 0);
-  assert.equal(rail.faces.west.texture,x===0?'#gold_outer':'#gold_inner');
-  assert.equal(rail.faces.east.texture,x===0?'#gold_inner':'#gold_outer');
+  for (const face of Object.values(rail.faces))
+    assert.equal(model.textures[face.texture.slice(1)],'minecraft:block/gold_block');
+  assert.equal(rail.shade,true,'Metal rails must respond to normal world lighting');
+  assert.equal(rail.light_emission,undefined);
 }
-// Generated PNGs use filter 0: inspect actual texture colours without image hashes.
-function pixels(name) {
-  const png=fs.readFileSync(path.resolve(base,`../textures/block/${name}.png`));
-  const data=[];
-  for(let offset=8;offset<png.length;) {
-    const length=png.readUInt32BE(offset),type=png.toString('ascii',offset+4,offset+8);
-    if(type==='IDAT')data.push(png.subarray(offset+8,offset+8+length));
-    offset+=length+12;
-  }
-  const raw=require('node:zlib').inflateSync(Buffer.concat(data));
-  return (x,y)=>Array.from(raw.subarray(y*129+1+x*4,y*129+1+x*4+4));
-}
-const leftPixels=pixels('rail_gold_left'),rightPixels=pixels('rail_gold_right');
-for(let x=0;x<32;x++)for(let y=0;y<32;y++) {
-  assert.deepEqual(leftPixels(x,y),leftPixels(x,0),'Rail colour must not repeat along track');
-  assert.deepEqual(rightPixels(x,y),rightPixels(x,0));
-  assert.deepEqual(leftPixels(x,y),rightPixels(31-x,y),'Rails must mirror inner-to-outer');
-}
-assert.ok(leftPixels(31,0)[1]>leftPixels(0,0)[1],'Inner edge must be brighter');
 for (const name of ['track','track_judgment']) {
   const model = read(`block/${name}.json`);
   assert.equal(Math.max(...model.elements.map(e=>e.to[1])), 10);
@@ -61,4 +44,4 @@ for (let lanes=1; lanes<=16; lanes++) {
     assert.ok(e.from[axis] < e.to[axis]);
   }
 }
-console.log('Model checks passed: 7 dividers / 8 regions; all 16 TAP widths have 0.5-block travel depth and centred white stripes; rail dimensions and gradients preserved.');
+console.log('Model checks passed: 7 dividers / 8 regions; all 16 TAP widths have 0.5-block travel depth and centred white stripes; rails retain dimensions and use vanilla gold-block metal on all faces.');

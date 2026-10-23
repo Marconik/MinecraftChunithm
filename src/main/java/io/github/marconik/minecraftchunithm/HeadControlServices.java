@@ -29,11 +29,20 @@ public final class HeadControlServices {
         Transport snapshot(ServerLevel level,Placement head);
         void execute(ServerLevel level,Placement head,Action action);
     }
-    private static InputProvider inputs=(l,p)->Input.offline();
+    private static Input physicalInput(ServerLevel level,Placement head){
+        var track=PartConnections.find(level,PartConnections.Kind.TRACK,PartConnections.target(head,PartConnections.Kind.TRACK));
+        boolean connected=false;
+        if(track!=null&&PartConnections.integrity(level,track)==PartConnections.Status.CONNECTED){
+            var ground=PartConnections.find(level,PartConnections.Kind.GROUND_SLIDE,PartConnections.groundTarget(track.placement,track.length));
+            connected=ground!=null&&PartConnections.integrity(level,ground)==PartConnections.Status.CONNECTED;
+        }
+        return new Input(false,false,connected,0,0,new double[16]);
+    }
+    private static InputProvider inputs=HeadControlServices::physicalInput;
     private static PlaybackBackend playback;
     public static void setInputProvider(InputProvider provider){inputs=Objects.requireNonNull(provider);}
     public static void setPlaybackBackend(PlaybackBackend backend){playback=Objects.requireNonNull(backend);}
-    public static void reset(){inputs=(l,p)->Input.offline();playback=null;}
+    public static void reset(){inputs=HeadControlServices::physicalInput;playback=null;}
     static Input input(ServerLevel level,Placement head){return Objects.requireNonNull(inputs.snapshot(level,head));}
     static Transport transport(ServerLevel level,Placement head){return playback==null?Transport.offline():Objects.requireNonNull(playback.snapshot(level,head));}
     static void execute(ServerLevel level,Placement head,Action action){if(playback!=null)playback.execute(level,head,action);}

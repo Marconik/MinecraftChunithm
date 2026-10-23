@@ -11,7 +11,7 @@
     "tap_shadow": "minecraftchunithm:block/tap_shadow",
     "highlight": "minecraftchunithm:block/highlight",
     "beat_gray": "minecraftchunithm:block/beat_gray",
-    "rail_gold_left": "minecraftchunithm:block/rail_gold_left",
+    "rail_gold_left": "minecraft:block/gold_block",
     "rail_gold_right": "minecraftchunithm:block/rail_gold_right",
     "gold_inner": "minecraftchunithm:block/gold_inner",
     "gold_outer": "minecraftchunithm:block/gold_outer",
@@ -167,8 +167,7 @@
         12,
         16
       ],
-      "shade": false,
-      "light_emission": 8,
+      "shade": true,
       "faces": {
         "up": {
           "uv": [
@@ -190,9 +189,9 @@
         },
         "north": {
           "uv": [
+            0,
+            0,
             16,
-            0,
-            0,
             16
           ],
           "texture": "#rail_gold_left"
@@ -213,7 +212,7 @@
             16,
             16
           ],
-          "texture": "#gold_inner"
+          "texture": "#rail_gold_left"
         },
         "west": {
           "uv": [
@@ -222,7 +221,7 @@
             16,
             16
           ],
-          "texture": "#gold_outer"
+          "texture": "#rail_gold_left"
         }
       }
     }

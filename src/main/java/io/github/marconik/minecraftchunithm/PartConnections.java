@@ -11,7 +11,7 @@ import net.minecraft.world.level.storage.LevelResource;
 
 /** Registered structures, persisted per dimension. Connections require aligned, touching ports. */
 public final class PartConnections {
-    public enum Kind { HEAD, TRACK, PLAYER, SONG }
+    public enum Kind { HEAD, TRACK, PLAYER, SONG, GROUND_SLIDE, AIR_LEFT, AIR_RIGHT }
     public enum Status { CONNECTED, MISSING, UNLOADED, BROKEN }
     public record Link(String port,Status status){}
     public static final class Part {
@@ -19,8 +19,11 @@ public final class PartConnections {
         public NameDisplayData player=NameDisplayData.defaults();
         public SongDisplayData song=SongDisplayData.defaults();
         Part(Kind kind,Placement placement,int length){this.kind=kind;this.placement=placement;this.length=length;}
-        int width(){return kind==Kind.HEAD?11:kind==Kind.TRACK?9:7;}
-        int height(){return kind==Kind.HEAD?4:kind==Kind.TRACK?1:3;}
+        boolean air(){return kind==Kind.AIR_LEFT||kind==Kind.AIR_RIGHT;}
+        int width(){return air()?AirSensors.BASE_WIDTH:kind==Kind.HEAD?11:kind==Kind.GROUND_SLIDE?GroundSlide.WIDTH:kind==Kind.TRACK?9:7;}
+        int height(){return air()?AirSensors.BASE_HEIGHT+AirSensors.PANEL_HEIGHT:kind==Kind.HEAD?4:kind==Kind.TRACK||kind==Kind.GROUND_SLIDE?1:3;}
+        int depth(){return air()?AirSensors.DEPTH:kind==Kind.TRACK?length:kind==Kind.GROUND_SLIDE?GroundSlide.DEPTH:1;}
+        boolean occupied(int x,int y){return !air()||AirSensors.occupied(kind==Kind.AIR_LEFT,x,y);}
     }
     private static final Map<ServerLevel,List<Part>> CACHE=new WeakHashMap<>();
     private PartConnections(){}
@@ -60,23 +63,26 @@ public final class PartConnections {
         var part=new Part(kind,p,length);list.add(part);save(level);PartPorts.draw(level,part);return part;
     }
     private static boolean overlaps(Part a,Part b){
-        var aa=new net.minecraft.world.phys.AABB(net.minecraft.world.phys.Vec3.atCenterOf(a.placement.block(0,0,0)),net.minecraft.world.phys.Vec3.atCenterOf(a.placement.block(a.width()-1,a.height()-1,a.kind==Kind.TRACK?a.length-1:0))).inflate(.01);
-        var bb=new net.minecraft.world.phys.AABB(net.minecraft.world.phys.Vec3.atCenterOf(b.placement.block(0,0,0)),net.minecraft.world.phys.Vec3.atCenterOf(b.placement.block(b.width()-1,b.height()-1,b.kind==Kind.TRACK?b.length-1:0))).inflate(.01);
+        var aa=new net.minecraft.world.phys.AABB(net.minecraft.world.phys.Vec3.atCenterOf(a.placement.block(0,0,0)),net.minecraft.world.phys.Vec3.atCenterOf(a.placement.block(a.width()-1,a.height()-1,a.depth()-1))).inflate(.01);
+        var bb=new net.minecraft.world.phys.AABB(net.minecraft.world.phys.Vec3.atCenterOf(b.placement.block(0,0,0)),net.minecraft.world.phys.Vec3.atCenterOf(b.placement.block(b.width()-1,b.height()-1,b.depth()-1))).inflate(.01);
         // Compare occupied block centres, excluding adjacent structures.
         return aa.intersects(bb);
     }
     public static Part find(ServerLevel level,Kind kind,Placement p){return parts(level).stream().filter(a->a.kind==kind&&a.placement.equals(p)).findFirst().orElse(null);}
+    static List<Part> ofKind(ServerLevel level,Kind kind){return parts(level).stream().filter(part->part.kind==kind).toList();}
     public static Part at(ServerLevel level,BlockPos pos){
-        for(var part:parts(level))if(part.kind!=Kind.TRACK)for(int y=0;y<part.height();y++)for(int x=0;x<part.width();x++)
-            if(part.placement.block(x,y,0).equals(pos))return part;
+        for(var part:parts(level))if(part.kind!=Kind.TRACK)for(int y=0;y<part.height();y++)for(int z=0;z<part.depth();z++)for(int x=0;x<part.width();x++)
+            if(part.occupied(x,y)&&part.placement.block(x,y,z).equals(pos))return part;
         return null;
     }
     public static Status integrity(ServerLevel level,Part part){
         boolean broken=false;
-        for(int y=0;y<part.height();y++)for(int z=0;z<(part.kind==Kind.TRACK?part.length:1);z++)for(int x=0;x<part.width();x++){
+        for(int y=0;y<part.height();y++)for(int z=0;z<part.depth();z++)for(int x=0;x<part.width();x++){
+            if(!part.occupied(x,y))continue;
             var pos=part.placement.block(x,y,z);if(!level.hasChunkAt(pos))return Status.UNLOADED;
             var state=level.getBlockState(pos);var id=BuiltInRegistries.BLOCK.getKey(state.getBlock());
-            String expected=switch(part.kind){case HEAD->"head_"+x+"_"+y;case PLAYER->"name_panel";case SONG->"song_panel";case TRACK->x==0?"track_left":x==8?"track_right":"track";};
+            String expected=switch(part.kind){case HEAD->"head_"+x+"_"+y;case PLAYER->"name_panel";case SONG->"song_panel";case TRACK->x==0?"track_left":x==8?"track_right":"track";case GROUND_SLIDE->"ground_slide_"+x+"_"+z;
+                case AIR_LEFT,AIR_RIGHT->y==0?AirSensors.baseName(part.kind==Kind.AIR_LEFT,x,z):AirSensors.tileName(part.kind==Kind.AIR_LEFT,y-1,z);};
             if(!id.getNamespace().equals(MinecraftChunithm.MOD_ID)||!id.getPath().equals(expected))broken=true;
             else if(!state.hasProperty(HeadTile.FACING)||state.getValue(HeadTile.FACING)!=(part.kind==Kind.TRACK?part.placement.forward().getOpposite():part.placement.forward()))broken=true;
         }
@@ -86,8 +92,11 @@ public final class PartConnections {
         case TRACK->new Placement(head.block(1,0,1),head.forward());
         case PLAYER->new Placement(head.block(-7,1,0),head.forward());
         case SONG->new Placement(head.block(11,1,0),head.forward());
+        case GROUND_SLIDE->throw new IllegalArgumentException("Ground Slide target requires the track length");
+        case AIR_LEFT,AIR_RIGHT->throw new IllegalArgumentException("AIR sensor target requires the Ground Slide placement");
         default->head;
     };}
+    public static Placement groundTarget(Placement track,int length){return new Placement(track.block(-GroundSlide.TRACK_SIDE_EXTENSION,0,length),track.forward());}
     public static List<Link> links(ServerLevel level,Part head){
         List<Link> links=new ArrayList<>();var own=integrity(level,head);
         for(var kind:new Kind[]{Kind.TRACK,Kind.PLAYER,Kind.SONG}){

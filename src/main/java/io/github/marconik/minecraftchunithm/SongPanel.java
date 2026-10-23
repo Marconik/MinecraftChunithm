@@ -106,6 +106,8 @@ public final class SongPanel {
         // Generated item sprites face the opposite direction to text displays.
         // A half turn shows the readable front rather than its mirrored rear.
         cover.setYRot(p.yaw()+180);
+        // Generated sprites protrude 1/32 block from their centre plane.
+        DisplayFinish.polish(level,p,TAG,.16,.16,2.20,2.20,1.095,false,false);
     }
     public static int command(CommandSourceStack source,String json){
         try{

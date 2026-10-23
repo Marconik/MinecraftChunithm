@@ -44,6 +44,8 @@ public final class TrackCommands {
                                             }
                                         })))
                         .then(Commands.literal("head").executes(context -> TrackHead.generate(context.getSource())))
+                        .then(Commands.literal("ground_slide").executes(context -> GroundSlide.generate(context.getSource())))
+                        .then(Commands.literal("air_sensors").executes(context -> AirSensors.generate(context.getSource())))
                         .then(Commands.literal("track_empty")
                                 .executes(context -> generate(context.getSource(),24))
                                 .then(Commands.argument("length",IntegerArgumentType.integer(2,1024))

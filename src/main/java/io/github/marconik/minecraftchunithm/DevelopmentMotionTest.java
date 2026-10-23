@@ -32,11 +32,15 @@ public final class DevelopmentMotionTest {
                 var head=PartConnections.find(server.overworld(),PartConnections.Kind.HEAD,Placement.head(anchor));
                 if(PartConnections.links(server.overworld(),head).stream().anyMatch(l->l.status()!=PartConnections.Status.CONNECTED))
                     throw new IllegalStateException("Assembly ports failed to connect");
+                var track=PartConnections.find(server.overworld(),PartConnections.Kind.TRACK,PartConnections.target(head.placement,PartConnections.Kind.TRACK));
+                var ground=PartConnections.find(server.overworld(),PartConnections.Kind.GROUND_SLIDE,PartConnections.groundTarget(track.placement,track.length));
+                if(ground==null||PartConnections.integrity(server.overworld(),ground)!=PartConnections.Status.CONNECTED)
+                    throw new IllegalStateException("Ground Slide failed to connect to the track end");
                 commands.performPrefixedCommand(player.createCommandSourceStack(),"tp @s 128.5 -60 -3.5 0 7");
                 PartWindows.open(player,server.overworld(),head,0);
                 if(!(player.containerMenu instanceof HeadControlMenu menu)||menu.enabled(0)||!menu.enabled(1)||!menu.enabled(2))
                     throw new IllegalStateException("Native head menu or no-chart transport buttons were not initialized correctly");
-                MinecraftChunithm.LOGGER.info("Connection smoke test passed: all five ports connected; head window opened.");
+                MinecraftChunithm.LOGGER.info("Connection smoke test passed: all five head ports and Ground Slide connected; head window opened.");
                 return;
             }
             commands.performPrefixedCommand(source, "gamemode creative");

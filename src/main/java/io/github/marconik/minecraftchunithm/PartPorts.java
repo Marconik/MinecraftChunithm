@@ -47,6 +47,7 @@ final class PartPorts {
             case TRACK->{for(double x:new double[]{.5,4.5,8.5})socket(level,p,owner,x,.34,-.02,true);}
             case PLAYER->{side(level,p,owner,7,1.5);window(level,p,owner,3.5,1.5);}
             case SONG->{side(level,p,owner,0,1.5);window(level,p,owner,3.5,1.5);}
+            case GROUND_SLIDE,AIR_LEFT,AIR_RIGHT->{}
         }
     }
     private static void socket(ServerLevel l,Placement p,String tag,double x,double y,double z,boolean back){

@@ -1,0 +1,20 @@
+﻿{
+    "variants":  {
+                     "facing=south":  {
+                                          "model":  "minecraftchunithm:block/air_sensor_base_right_4_1",
+                                          "y":  0
+                                      },
+                     "facing=west":  {
+                                         "model":  "minecraftchunithm:block/air_sensor_base_right_4_1",
+                                         "y":  90
+                                     },
+                     "facing=north":  {
+                                          "model":  "minecraftchunithm:block/air_sensor_base_right_4_1",
+                                          "y":  180
+                                      },
+                     "facing=east":  {
+                                         "model":  "minecraftchunithm:block/air_sensor_base_right_4_1",
+                                         "y":  270
+                                     }
+                 }
+}
