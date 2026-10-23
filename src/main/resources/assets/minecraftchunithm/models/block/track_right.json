@@ -12,7 +12,7 @@
     "highlight": "minecraftchunithm:block/highlight",
     "beat_gray": "minecraftchunithm:block/beat_gray",
     "rail_gold_left": "minecraftchunithm:block/rail_gold_left",
-    "rail_gold_right": "minecraft:block/gold_block",
+    "rail_gold_right": "minecraftchunithm:block/rail_gold_right",
     "gold_inner": "minecraftchunithm:block/gold_inner",
     "gold_outer": "minecraftchunithm:block/gold_outer",
     "particle": "minecraftchunithm:block/deck"
@@ -167,7 +167,8 @@
         12,
         16
       ],
-      "shade": true,
+      "shade": false,
+      "light_emission": 8,
       "faces": {
         "up": {
           "uv": [
@@ -189,9 +190,9 @@
         },
         "north": {
           "uv": [
-            0,
-            0,
             16,
+            0,
+            0,
             16
           ],
           "texture": "#rail_gold_right"
@@ -212,7 +213,7 @@
             16,
             16
           ],
-          "texture": "#rail_gold_right"
+          "texture": "#gold_outer"
         },
         "west": {
           "uv": [
@@ -221,7 +222,7 @@
             16,
             16
           ],
-          "texture": "#rail_gold_right"
+          "texture": "#gold_inner"
         }
       }
     }

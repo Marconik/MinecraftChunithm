@@ -1,6 +1,6 @@
 # Cabinet material finishes
 
-- The two track rails use `minecraft:block/gold_block` on all faces, with ordinary world lighting. Track dimensions and collision remain unchanged.
+- The two track rails use a mirrored inner-bright gold gradient. Two narrow specular bands, shaded lower edges and subtle seamless grain add a polished-metal finish while preserving the original rail dimensions and night-time brightness.
 - `DisplayFinish.polish` places a thin transparent quad over a portrait, song cover, progress bar or progress cell. It uses a soft diagonal highlight, a small bright bevel and a darker lower/right edge. Imported images and blue/gold progress colors remain visible underneath.
 - The progress-cell coating uses the same shear as the cell. Coatings carry their parent's display tag, so updating a panel removes the old coating together with its artwork.
 - MAX COMBO, SCORE and both values retain their dark font and layout, surrounded by two full-bright white outline rings with decreasing opacity. Score formatting remains comma-separated.

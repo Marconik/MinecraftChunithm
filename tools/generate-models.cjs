@@ -39,14 +39,51 @@ function texture(name, top, bottom = top, axis = 'y') {
     Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR', ihdr),
     chunk('IDAT', zlib.deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]));
 }
+function pngTexture(name, size, pixel) {
+  const raw = Buffer.alloc(size * (size * 4 + 1));
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const at = y * (size * 4 + 1) + 1 + x * 4;
+    const rgba = pixel(x, y, size);
+    for (let c = 0; c < 4; c++) raw[at+c] = Math.max(0, Math.min(255, Math.round(rgba[c])));
+  }
+  const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(size, 0); ihdr.writeUInt32BE(size, 4);
+  ihdr[8] = 8; ihdr[9] = 6;
+  write(`${assets}/textures/block/${name}.png`, Buffer.concat([
+    Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR', ihdr),
+    chunk('IDAT', zlib.deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]));
+}
+function railTexture(name, innerOnRight) {
+  const outer=[213,149,29], inner=[255,239,149];
+  pngTexture(name,64,(x,y,size)=>{
+    const innerT=(innerOnRight?x:size-1-x)/(size-1);
+    const highlight=42*Math.exp(-Math.pow((innerT-.68)/.075,2))
+      +20*Math.exp(-Math.pow((innerT-.94)/.035,2));
+    const shadow=15*Math.exp(-Math.pow((innerT-.08)/.08,2));
+    // Periodic, low-contrast grain reads as brushed metal without making a
+    // visible seam when the one-block texture repeats along the track.
+    const canonicalX=innerOnRight?x:size-1-x;
+    const brush=2.2*Math.cos(Math.PI*2*y/(size-1))
+      +(((canonicalX*13+(y%(size-1))*7)%7)-3)*.45;
+    return [...outer.map((value,c)=>value+(inner[c]-value)*innerT+highlight-shadow+brush),255];
+  });
+}
+function railSideTexture(name, color) {
+  pngTexture(name,64,(x,y,size)=>{
+    const v=y/(size-1);
+    const highlight=30*Math.exp(-Math.pow((v-.22)/.09,2));
+    const shade=18*Math.exp(-Math.pow((v-.88)/.12,2));
+    const brush=1.5*Math.cos(Math.PI*2*x/(size-1));
+    return [...color.map(value=>value+highlight-shade+brush),255];
+  });
+}
 texture('deck', [17,19,29]);
 texture('side', [38,40,53], [15,16,24]);
 texture('lane', [130,105,46]);
 texture('gold', [255,239,149], [213,149,29]);
-texture('rail_gold_left', [213,149,29], [255,239,149], 'x');
-texture('rail_gold_right', [255,239,149], [213,149,29], 'x');
-texture('gold_inner', [255,239,149]);
-texture('gold_outer', [213,149,29]);
+railTexture('rail_gold_left',true);
+railTexture('rail_gold_right',false);
+railSideTexture('gold_inner',[255,239,149]);
+railSideTexture('gold_outer',[213,149,29]);
 texture('white', [255,255,247], [199,214,229]);
 texture('tap_red', [255,156,171], [222,14,60]);
 texture('tap_shadow', [111,17,49], [49,13,35]);
@@ -83,9 +120,12 @@ for (const [name, labels] of Object.entries(trackNames)) {
   if (name === 'track_left' || name === 'track_right') {
     const isLeft = name === 'track_left';
     const x = isLeft ? 0 : 8;
-    // The vanilla gold-block bevel and highlights give every rail face the
-    // same metal finish as Minecraft gold. Keep ordinary directional lighting.
-    const rail = box([x,10,0],[x+8,12,16],isLeft?'rail_gold_left':'rail_gold_right');
+    // Restore the inner-bright gold gradient, with a pair of baked specular
+    // bands. Constant end-face textures prevent a repeated along-track ramp.
+    const rail = box([x,10,0],[x+8,12,16],isLeft?'rail_gold_left':'rail_gold_right',8);
+    rail.faces.north.uv = [16,0,0,16];
+    rail.faces.west.texture = isLeft ? '#gold_outer' : '#gold_inner';
+    rail.faces.east.texture = isLeft ? '#gold_inner' : '#gold_outer';
     elements.push(rail);
   }
   if (name === 'track_judgment') {
@@ -102,9 +142,7 @@ for (const [name, labels] of Object.entries(trackNames)) {
   }
   json(`${assets}/models/block/${name}.json`, {
     parent:'minecraft:block/block', ambientocclusion:false,
-    textures:{...textures, particle:textures.deck,
-      ...(name==='track_left'?{rail_gold_left:'minecraft:block/gold_block'}:{}),
-      ...(name==='track_right'?{rail_gold_right:'minecraft:block/gold_block'}:{})}, elements
+    textures:{...textures, particle:textures.deck}, elements
   });
   json(`${assets}/blockstates/${name}.json`, {variants:Object.fromEntries(
     ['north','east','south','west'].map((direction,index) =>

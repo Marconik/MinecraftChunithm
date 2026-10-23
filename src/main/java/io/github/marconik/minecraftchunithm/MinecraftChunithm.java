@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 public final class MinecraftChunithm implements ModInitializer {
     public static final String MOD_ID = "minecraftchunithm";
-    public static final String BUILD_LABEL = "cabinet-metal-polish-glow-3";
+    public static final String BUILD_LABEL = "gradient-gold-metal-gloss-4";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override

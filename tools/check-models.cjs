@@ -10,11 +10,33 @@ for (const [model, x] of [[left,0],[right,8]]) {
   assert.deepEqual(rail.to, [x+8,12,16]);
   assert.equal(Math.max(...model.elements.map(e=>e.to[1])), 12);
   assert.equal(Math.min(...model.elements.map(e=>e.from[1])), 0);
-  for (const face of Object.values(rail.faces))
-    assert.equal(model.textures[face.texture.slice(1)],'minecraft:block/gold_block');
-  assert.equal(rail.shade,true,'Metal rails must respond to normal world lighting');
-  assert.equal(rail.light_emission,undefined);
+  assert.equal(rail.faces.west.texture,x===0?'#gold_outer':'#gold_inner');
+  assert.equal(rail.faces.east.texture,x===0?'#gold_inner':'#gold_outer');
+  assert.equal(rail.shade,false);
+  assert.equal(rail.light_emission,8,'Gold gloss must stay readable at night');
 }
+// Inspect actual RGBA pixels without file hashes. The paired textures must be
+// exact mirrors, seamless along travel and visibly brighter on their inner edge.
+function pixels(name) {
+  const png=fs.readFileSync(path.resolve(base,`../textures/block/${name}.png`));
+  const width=png.readUInt32BE(16),height=png.readUInt32BE(20),data=[];
+  for(let offset=8;offset<png.length;) {
+    const length=png.readUInt32BE(offset),type=png.toString('ascii',offset+4,offset+8);
+    if(type==='IDAT')data.push(png.subarray(offset+8,offset+8+length));
+    offset+=length+12;
+  }
+  const raw=require('node:zlib').inflateSync(Buffer.concat(data)),stride=width*4+1;
+  return {width,height,at:(x,y)=>Array.from(raw.subarray(y*stride+1+x*4,y*stride+1+x*4+4))};
+}
+const leftPixels=pixels('rail_gold_left'),rightPixels=pixels('rail_gold_right');
+assert.equal(leftPixels.width,64);assert.equal(leftPixels.height,64);
+for(let x=0;x<64;x++)for(let y=0;y<64;y++)
+  assert.deepEqual(leftPixels.at(x,y),rightPixels.at(63-x,y),'Rails must mirror outer-to-inner');
+for(let x=0;x<64;x++)assert.deepEqual(leftPixels.at(x,0),leftPixels.at(x,63),'Track repeat must be seamless');
+const luminance=p=>p[0]+p[1]+p[2];
+assert.ok(luminance(leftPixels.at(63,0))>luminance(leftPixels.at(0,0))+180,'Inner edge must be much brighter');
+assert.ok(luminance(leftPixels.at(43,0))>luminance(leftPixels.at(32,0))+55,'Metallic specular band missing');
+assert.notDeepEqual(leftPixels.at(32,16),leftPixels.at(32,31),'Subtle brushed-metal variation missing');
 for (const name of ['track','track_judgment']) {
   const model = read(`block/${name}.json`);
   assert.equal(Math.max(...model.elements.map(e=>e.to[1])), 10);
@@ -44,4 +66,4 @@ for (let lanes=1; lanes<=16; lanes++) {
     assert.ok(e.from[axis] < e.to[axis]);
   }
 }
-console.log('Model checks passed: 7 dividers / 8 regions; all 16 TAP widths have 0.5-block travel depth and centred white stripes; rails retain dimensions and use vanilla gold-block metal on all faces.');
+console.log('Model checks passed: 7 dividers / 8 regions; all 16 TAP widths have 0.5-block travel depth and centred white stripes; mirrored gold-gradient rails include seamless metallic highlights.');
