@@ -20,8 +20,9 @@ public final class TrackHead {
         for(int row=0;row<4;row++)for(int col=0;col<11;col++) {
             var id=Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"head_"+col+"_"+row);
             var key=ResourceKey.create(Registries.BLOCK,id);
-            TILES[row][col]=Registry.register(BuiltInRegistries.BLOCK,key,new HeadTile(
-                    BlockBehaviour.Properties.of().setId(key).strength(2).sound(SoundType.METAL)));
+            var properties=BlockBehaviour.Properties.of().setId(key).strength(2).sound(SoundType.METAL);
+            if(HeadTerminal.opening(col,row)!=null)properties.noOcclusion();
+            TILES[row][col]=Registry.register(BuiltInRegistries.BLOCK,key,new HeadTile(properties,col,row));
         }
     }
     public static int generate(CommandSourceStack source) {

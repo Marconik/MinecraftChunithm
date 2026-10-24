@@ -11,7 +11,7 @@
 /chunithm song_data {"cover":"minecraftchunithm:cover/default","title":"The First Seeker of Souls","artist":"Creator A vs Creator B","track":3,"difficulty":"MASTER","level":"15+","speed":8.0,"mirror":false}
 ```
 
-`difficulty` 支持 MASTER（紫）、EXPERT（红）、ULTIMA（黑），不区分输入大小写。`track` 最小 1；`level` 是文本，可输入 15+ 等格式；`speed` 是有限正数，范围大于 0 且不超过 100；`mirror` 为布尔值。速度和镜像在此处只显示，不修改当前运动测试。
+`difficulty` 支持 MASTER（紫）、EXPERT（红）、ULTIMA（黑），不区分输入大小写。输入的`track`为1～3，对应待播队列位置；`level`是文本，可输入15+等格式；`speed`范围0.25～20，`mirror`为布尔值。速度与镜像是连接机台的统一设置，控制界面和面板输入均会更新世界中的面板显示及已加载谱面，保留播放/暂停时间，不影响无关机台。
 
 公共 Java 数据接口：
 
@@ -21,7 +21,16 @@ SongPanel.update(level, placement, new SongDisplayData(
     SongDisplayData.Difficulty.MASTER, "15+", 8.0, false));
 ```
 
-`placement` 为面板最左下方块与正面朝向的坐标系，可使用 `SongPanel.placement(commandSource)` 得到。更新会清理该面板上的旧显示实体并重建，显示实体可随存档保存，业务层自行保存原始数据。不计算评分或加载歌曲。
+`placement`为面板最左下方块与正面朝向的坐标系，可使用`SongPanel.placement(commandSource)`得到。单曲更新会写入对应TRACK槽位，保留其他槽位；空曲名清空对应位置。头部Music窗口直接读取面板输入，不自动添加默认曲目。系统保存原始三槽输入、设置与已播标记，更新会清理该面板上的旧显示实体并重建；关联到目录中实际已导入的谱面时，可准备给已连接轨道播放，不计算评分。
+
+三曲输入也可一次替换，缺少的位置使用null；空数组清空全部位置：
+
+```mcfunction
+/chunithm song_data {"songs":[null,{"cover":"minecraftchunithm:cover/default","title":"Custom song","artist":"Creator","difficulty":"MASTER","level":"14+"},null],"speed":10.25,"mirror":true}
+/chunithm song_data {"songs":[],"speed":10.00,"mirror":false}
+```
+
+数组顺序为TRACK 1～3，最多三项；没有填满时其余位置为空。Java调用`SongPanel.setQueue(level, placement, SongQueueData.empty().withSlot(1, song), speed, mirror)`；`song.track()`必须为2，与其位置一致。三曲元数据无需依靠测试示例生成，即使自定义曲目没有可播放谱面，也会按输入显示。
 
 ## 自定义封面
 

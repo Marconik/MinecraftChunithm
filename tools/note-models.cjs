@@ -129,7 +129,7 @@ module.exports=function({box,texture,textures,json,write,assets,ns,en,zh}) {
     const elements=name==='chart_slide_body'?Array.from({length:16},(_,i)=>
       box([i,0,0],[i+1,16,16],`slide_band_${i}`,12)):[box([0,0,0],[16,16,16],color,15)];
     json(`${assets}/models/item/${name}.json`,{parent:'minecraft:block/block',ambientocclusion:false,
-      textures,elements,display:{fixed:{scale:[1,1,1]}}});
+      textures:{...textures,particle:textures[color]},elements,display:{fixed:{scale:[1,1,1]}}});
     json(`${assets}/items/${name}.json`,{model:{type:'minecraft:model',model:`${ns}:item/${name}`}});
   }
   for(let lanes=1;lanes<=16;lanes++)for(const kind of ['slide_node','air_arrow','action_bar']) {

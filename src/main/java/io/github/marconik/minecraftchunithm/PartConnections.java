@@ -14,10 +14,15 @@ public final class PartConnections {
     public enum Kind { HEAD, TRACK, PLAYER, SONG, GROUND_SLIDE, AIR_LEFT, AIR_RIGHT }
     public enum Status { CONNECTED, MISSING, UNLOADED, BROKEN }
     public record Link(String port,Status status){}
+    public record Endpoint(Part part,Status status){public boolean connected(){return status==Status.CONNECTED;}}
+    /** Each status includes every upstream hop, not just the device's own blocks. */
+    public record InputRoute(Endpoint track,Endpoint ground,Endpoint leftAir,Endpoint rightAir){}
     public static final class Part {
         public final Kind kind; public final Placement placement; public final int length;
         public NameDisplayData player=NameDisplayData.defaults();
         public SongDisplayData song=SongDisplayData.defaults();
+        public MusicQueueData music=MusicQueueData.empty();
+        public SongQueueData songInputs=SongQueueData.empty();
         Part(Kind kind,Placement placement,int length){this.kind=kind;this.placement=placement;this.length=length;}
         boolean air(){return kind==Kind.AIR_LEFT||kind==Kind.AIR_RIGHT;}
         int width(){return air()?AirSensors.BASE_WIDTH:kind==Kind.HEAD?11:kind==Kind.GROUND_SLIDE?GroundSlide.WIDTH:kind==Kind.TRACK?9:7;}
@@ -41,6 +46,13 @@ public final class PartConnections {
                 if(part.length<1||part.length>1024)throw new IllegalArgumentException("Invalid length");
                 if(o.has("player"))part.player=decodePlayer(o.getAsJsonObject("player"));
                 if(o.has("song"))part.song=decodeSong(o.getAsJsonObject("song"));
+                if(o.has("musicQueue"))part.music=MusicQueueData.decode(o.getAsJsonObject("musicQueue"));
+                if(part.kind==Kind.SONG){
+                    if(o.has("songInputs"))part.songInputs=SongQueueData.decode(o.getAsJsonArray("songInputs"));
+                    else if(!part.song.title().isBlank()&&!part.song.title().equals("NO TRACK")&&part.song.track()<=3)
+                        part.songInputs=part.songInputs.withSlot(part.song.track()-1,part.song);
+                    if(!o.has("musicQueue"))part.music=new MusicQueueData(Math.clamp(part.song.speed(),MusicQueueData.MIN_SPEED,MusicQueueData.MAX_SPEED),part.song.mirror(),part.music.slots());
+                }
                 list.add(part);
             }
         }catch(Exception e){throw new IllegalStateException("Cannot read part registry "+path,e);}
@@ -52,7 +64,7 @@ public final class PartConnections {
             o.addProperty("x",pos.getX());o.addProperty("y",pos.getY());o.addProperty("z",pos.getZ());
             o.addProperty("facing",part.placement.forward().name());o.addProperty("length",part.length);
             if(part.kind==Kind.PLAYER)o.add("player",encodePlayer(part.player));
-            if(part.kind==Kind.SONG)o.add("song",encodeSong(part.song));array.add(o);
+            if(part.kind==Kind.SONG){o.add("song",encodeSong(part.song));o.add("musicQueue",part.music.encode());o.add("songInputs",part.songInputs.encode());}array.add(o);
         }
         try{Path path=file(level);Files.createDirectories(path.getParent());Path temporary=path.resolveSibling(path.getFileName()+".tmp");
             Files.writeString(temporary,array.toString());Files.move(temporary,path,StandardCopyOption.REPLACE_EXISTING);
@@ -97,6 +109,27 @@ public final class PartConnections {
         default->head;
     };}
     public static Placement groundTarget(Placement track,int length){return new Placement(track.block(-GroundSlide.TRACK_SIDE_EXTENSION,0,length),track.forward());}
+    private static Endpoint endpoint(ServerLevel level,Kind kind,Placement placement,Status upstream){
+        var part=find(level,kind,placement);
+        return new Endpoint(part,upstream!=Status.CONNECTED?upstream:part==null?Status.MISSING:integrity(level,part));
+    }
+    public static InputRoute inputRoute(ServerLevel level,Placement placement){
+        var head=find(level,Kind.HEAD,placement);
+        var own=head==null?Status.MISSING:integrity(level,head);
+        var track=endpoint(level,Kind.TRACK,target(placement,Kind.TRACK),own);
+        if(!track.connected()){
+            var offline=new Endpoint(null,track.status());
+            return new InputRoute(track,offline,offline,offline);
+        }
+        var ground=endpoint(level,Kind.GROUND_SLIDE,groundTarget(track.part().placement,track.part().length),track.status());
+        if(!ground.connected()){
+            var offline=new Endpoint(null,ground.status());
+            return new InputRoute(track,ground,offline,offline);
+        }
+        return new InputRoute(track,ground,
+                endpoint(level,Kind.AIR_LEFT,AirSensors.target(ground.part().placement,true),ground.status()),
+                endpoint(level,Kind.AIR_RIGHT,AirSensors.target(ground.part().placement,false),ground.status()));
+    }
     public static List<Link> links(ServerLevel level,Part head){
         List<Link> links=new ArrayList<>();var own=integrity(level,head);
         for(var kind:new Kind[]{Kind.TRACK,Kind.PLAYER,Kind.SONG}){
@@ -111,6 +144,6 @@ public final class PartConnections {
     public static void songUpdated(ServerLevel level,Placement p,SongDisplayData data){var a=find(level,Kind.SONG,p);if(a!=null){a.song=data;save(level);}}
     private static JsonObject encodePlayer(NameDisplayData d){var o=new JsonObject();o.addProperty("team",d.team());o.addProperty("title",d.title());o.addProperty("titleColor",d.titleColor().name());o.addProperty("level",d.level());o.addProperty("name",d.name());o.addProperty("character",d.characterModel().toString());o.addProperty("rating",d.rating());return o;}
     private static NameDisplayData decodePlayer(JsonObject o){return new NameDisplayData(o.get("team").getAsString(),o.get("title").getAsString(),NameDisplayData.TitleColor.valueOf(o.get("titleColor").getAsString()),o.get("level").getAsString(),o.get("name").getAsString(),net.minecraft.resources.Identifier.parse(o.get("character").getAsString()),o.get("rating").getAsString());}
-    private static JsonObject encodeSong(SongDisplayData d){var o=new JsonObject();o.addProperty("cover",d.coverModel().toString());o.addProperty("title",d.title());o.addProperty("artist",d.artist());o.addProperty("track",d.track());o.addProperty("difficulty",d.difficulty().name());o.addProperty("level",d.level());o.addProperty("speed",d.speed());o.addProperty("mirror",d.mirror());return o;}
-    private static SongDisplayData decodeSong(JsonObject o){return new SongDisplayData(net.minecraft.resources.Identifier.parse(o.get("cover").getAsString()),o.get("title").getAsString(),o.get("artist").getAsString(),o.get("track").getAsInt(),SongDisplayData.Difficulty.valueOf(o.get("difficulty").getAsString()),o.get("level").getAsString(),o.get("speed").getAsDouble(),o.get("mirror").getAsBoolean());}
+    static JsonObject encodeSong(SongDisplayData d){var o=new JsonObject();o.addProperty("cover",d.coverModel().toString());o.addProperty("title",d.title());o.addProperty("artist",d.artist());o.addProperty("track",d.track());o.addProperty("difficulty",d.difficulty().name());o.addProperty("level",d.level());o.addProperty("speed",d.speed());o.addProperty("mirror",d.mirror());return o;}
+    static SongDisplayData decodeSong(JsonObject o){return new SongDisplayData(net.minecraft.resources.Identifier.parse(o.get("cover").getAsString()),o.get("title").getAsString(),o.get("artist").getAsString(),o.get("track").getAsInt(),SongDisplayData.Difficulty.valueOf(o.get("difficulty").getAsString()),o.get("level").getAsString(),o.get("speed").getAsDouble(),o.get("mirror").getAsBoolean());}
 }

@@ -67,3 +67,4 @@ foreach($surface in @(@('purple','#7000c0'),@('black','#08090c'))) {
  $solid.Save((Join-Path $textureRoot ($surface[0]+'.png')),[Drawing.Imaging.ImageFormat]::Png);$solid.Dispose()
 }
 Write-Output 'Head generated: width 11, main height 3, pedestal height 1, depth 1, progress frame width 8.'
+& (Join-Path $PSScriptRoot 'generate-head-terminal-models.ps1')

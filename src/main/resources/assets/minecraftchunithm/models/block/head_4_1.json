@@ -1,12 +1,219 @@
-﻿{
-    "textures":  {
-                     "north":  "minecraftchunithm:block/head/black",
-                     "south":  "minecraftchunithm:block/head/head_4_1",
-                     "up":  "minecraftchunithm:block/gold",
-                     "west":  "minecraftchunithm:block/head/purple",
-                     "particle":  "minecraftchunithm:block/gold",
-                     "east":  "minecraftchunithm:block/head/purple",
-                     "down":  "minecraftchunithm:block/gold"
-                 },
-    "parent":  "minecraft:block/cube"
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "north": "minecraftchunithm:block/head/black",
+    "south": "minecraftchunithm:block/head/head_4_1",
+    "up": "minecraftchunithm:block/gold",
+    "west": "minecraftchunithm:block/head/purple",
+    "particle": "minecraftchunithm:block/gold",
+    "east": "minecraftchunithm:block/head/purple",
+    "down": "minecraftchunithm:block/gold"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        2
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#south",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#east",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#west",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#up",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#down",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        11,
+        16,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#south",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#east",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#west",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#up",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#down",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        13,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#south",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#east",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#west",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#up",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#down",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
 }

@@ -78,6 +78,23 @@ public final class TrackBoundsCheck {
                 var midpoint=AirSensors.portPoint(groundConnected,true,port).add(AirSensors.portPoint(groundConnected,false,port)).scale(.5);
                 if(!midpoint.equals(groundConnected.point(6.5,AirSensors.portHeight(port),1.5)))
                     throw new AssertionError("AIR IR sensors must face one another at mirrored coordinates");
+                for(boolean left:new boolean[]{true,false}){
+                    var sensor=AirSensors.target(groundConnected,left);
+                    var area=AirSensors.sensingArea(sensor,left,port);
+                    var center=area.getCenter();
+                    var contact=new net.minecraft.world.phys.AABB(center.x-.01,center.y-.01,center.z-.01,
+                            center.x+.01,center.y+.01,center.z+.01);
+                    var signal=AirSensors.contacts(sensor,left,java.util.List.of(contact));
+                    if(signal.mask()!=(1<<port)||signal.strength()!=(port+1)/5.0)
+                        throw new AssertionError("AIR height channel or strength mismatch in "+direction);
+                    if(AirSensors.contacts(AirSensors.target(groundConnected,!left),!left,java.util.List.of(contact)).mask()!=0)
+                        throw new AssertionError("AIR response leaked into the opposite side");
+                    if(AirSensors.contacts(sensor,left,java.util.List.of()).mask()!=0)
+                        throw new AssertionError("AIR release must clear all height channels");
+                    var outside=contact.move(direction.getStepX(),0,direction.getStepZ());
+                    if(AirSensors.contacts(sensor,left,java.util.List.of(outside)).mask()!=0)
+                        throw new AssertionError("AIR must ignore entities outside the aperture depth");
+                }
             }
             if(!groundConnected.block(0,0,0).equals(track.block(-2,0,24))
                     ||!groundConnected.block(12,0,2).equals(track.block(10,0,26)))
@@ -238,5 +255,7 @@ public final class TrackBoundsCheck {
         }
         System.out.println("120 BPM / 10 blocks per second timing, despawn and random widths passed.");
         ChartPlaybackCheck.run();
+        MusicQueueCheck.run();
+        HeadTerminalCheck.run();
     }
 }

@@ -76,6 +76,30 @@ public final class ChartPlayback {
     }
     private static int missing(CommandSourceStack source){source.sendFailure(Component.literal("尚未加载谱面：/chunithm chart load 180 10 false"));return 0;}
     public static void unload(ServerLevel level){var s=SESSIONS.remove(level);if(s!=null)s.clear();}
+    public static void unload(ServerLevel level,Placement head){
+        var session=SESSIONS.get(level);if(session!=null&&session.track.placement.equals(PartConnections.target(head,PartConnections.Kind.TRACK)))unload(level);
+    }
+    public static String queueStatus(ServerLevel level,Placement head,int songId,String difficulty){
+        var s=SESSIONS.get(level);
+        if(s==null||s.songId!=songId||!s.difficulty.equals(difficulty)||!s.track.placement.equals(PartConnections.target(head,PartConnections.Kind.TRACK)))return "";
+        return switch(s.state){case PLAYING->"PLAYING";case PAUSED->"PAUSED";case FINISHED->"PLAYED";case STOPPED->"READY";};
+    }
+    public static boolean busyElsewhere(ServerLevel level,Placement head){
+        var s=SESSIONS.get(level);return s!=null&&!s.track.placement.equals(PartConnections.target(head,PartConnections.Kind.TRACK))
+            &&(s.state==HeadControlServices.Playback.PLAYING||s.state==HeadControlServices.Playback.PAUSED);
+    }
+    public static void configure(ServerLevel level,Placement head,double speed,boolean mirror){
+        if(!Double.isFinite(speed)||speed<.25||speed>20)throw new IllegalArgumentException("Invalid track speed");
+        var s=SESSIONS.get(level);if(s==null||!s.track.placement.equals(PartConnections.target(head,PartConnections.Kind.TRACK)))return;
+        var preview=new Session(s.chart,s.track,speed,mirror);
+        preview.time=s.state==HeadControlServices.Playback.STOPPED?preview.initialTime():s.time;preview.frame();
+        s.speed=speed;s.mirror=mirror;s.time=preview.time;s.clear();
+        if(s.state==HeadControlServices.Playback.PLAYING||s.state==HeadControlServices.Playback.PAUSED)s.render(level);
+    }
+    public static void loadSong(ServerLevel level,PartConnections.Part track,SongLibrary.Chart song,double speed,boolean mirror)throws java.io.IOException{
+        load(level,track,ChartDefinition.load(level,song.resource()),speed,mirror);
+        var s=SESSIONS.get(level);s.songId=song.songId();s.difficulty=song.difficulty();
+    }
     /** Load onto an existing registered track without generating or replacing blocks. */
     public static void load(ServerLevel level,PartConnections.Part track,ChartDefinition chart,double speed,boolean mirror){
         if(track.kind!=PartConnections.Kind.TRACK||!Double.isFinite(speed)||speed<.25||speed>20
@@ -115,6 +139,9 @@ public final class ChartPlayback {
         try{
             var definition=ChartDefinition.load(level,resource);
             load(level,track,definition,speed,mirror);var session=SESSIONS.get(level);
+            for(var song:SongLibrary.charts(level))if(song.resource().equals(resource)||resource.matches("\\d+")&&song.songId()==Integer.parseInt(resource)&&song.difficulty().equals("MASTER")){
+                session.songId=song.songId();session.difficulty=song.difficulty();break;
+            }
             if(start)session.action(level,HeadControlServices.Action.START_OR_RESUME);
             source.sendSuccess(()->Component.literal("已加载 "+definition.title()+" MASTER，"+speed+" 格/秒，镜像="+mirror
                 +"。预滚后从音乐时间0开始；当前仅呈现谱面，不计分、不自动播放音频。"),false);return 1;
@@ -122,7 +149,8 @@ public final class ChartPlayback {
     }
     private record Spec(String item,double x,double y,double z,double sx,double sy,double sz,double shear,double lift,boolean bright){}
     private static final class Session {
-        final ChartDefinition chart;final PartConnections.Part track;final double speed;final boolean mirror;
+        final ChartDefinition chart;final PartConnections.Part track;double speed;boolean mirror;
+        int songId;String difficulty="MASTER";
         final Map<String,Display.ItemDisplay> entities=new HashMap<>();
         final Map<String,Spec> lastSpecs=new HashMap<>();
         final Map<String,Long> retiring=new HashMap<>();
@@ -138,7 +166,8 @@ public final class ChartPlayback {
             case START_OR_RESUME->{if(state==HeadControlServices.Playback.FINISHED)time=initialTime();state=HeadControlServices.Playback.PLAYING;render(level);}
         }}
         void tick(ServerLevel level){if(state!=HeadControlServices.Playback.PLAYING)return;time+=50;render(level);
-            if(time>chart.lastTimeMs()+Math.max(1000,track.length/speed*1000)){clear();state=HeadControlServices.Playback.FINISHED;}}
+            if(time>chart.lastTimeMs()+Math.max(1000,track.length/speed*1000)){clear();state=HeadControlServices.Playback.FINISHED;
+                if(songId>0)MusicQueue.finished(level,track,songId,difficulty);}}
         double z(double t,boolean marker){return chart.position(t,time,speed,track.length,marker);}
         void cap(Map<String,Spec> frame,String key,String item,double t,double lane,double width,double height,boolean marker){
             double z=z(t,marker),depth=marker||item.equals("beat_line")?.03125:.5,lo=Math.max(0,z-depth/2),hi=Math.min(track.length,z+depth/2);

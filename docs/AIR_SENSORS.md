@@ -10,6 +10,23 @@
 
 `/chunithm assemble [长度]` 一并生成左右感应器。独立命令只生成感应器，不修改中间的 Ground Slide。生成前检查左右两侧全部占用位置，避免因世界边界或区块未加载而生成半套。已生成部件记录在世界的部件登记文件中，空出来的底座上方不作为结构必需方块。
 
-本阶段仅包含外观、常亮镜片和实体方块碰撞；尚未实现红外检测、遮挡判断、判定或信号传输，控制界面的 Air 输入仍由后续设备提供器接入。
+## 输入与连接
+
+默认输入已接入 `Air → Ground Slide → Track → CHUNITHM`。左右分别按登记位置、朝向、全部底座与立板方块验证；Ground Slide、整条轨道及头部也必须完整且区块已加载。左右独立，单侧损坏仅切断本侧；任一共用上游部件损坏会切断两侧输入。修复原方块后自动恢复，不强制加载区块。已有正确登记的整机重启后直接生效，无需重新生成。
+
+每侧五个高度通道对应五个实际窗口。默认实体检测区域为从本侧窗口内沿到 Ground Slide 中心的半侧范围，纵深与竖直方向各以窗口中心 ±0.125 格形成感应带。玩家、生物等实体碰到对应高度就置位，排除旁观者和忽略方块触发的实体，离开后立即归零。实体可同时触发多个高度；左右区域在中心衔接，两侧独立采样。头部 Air 亮度为最高触发高度的通道序号 / 5，无输入时仍显示连接绿边。镜片外观保持左绿右红，不随 UI 强度修改。当前为实体范围检测，未实现物块对真实红外光束的遮挡或音符判定。
+
+后续硬件或其他控制器可在服务器线程替换 Air 采样，不需要替换整套头部输入提供器：
+
+```java
+AirSensors.setInputProvider((level, sensorPlacement, left) -> new AirSensors.Signal(fiveBitMask));
+AirSensors.resetInputProvider(); // 恢复默认实体采样
+var route = PartConnections.inputRoute(level, headPlacement);
+var input = HeadControlServices.physicalInput(level, headPlacement);
+```
+
+`Signal.mask` 只接受 0～31，最低位对应最下面的窗口。只对完整链路调用提供器；断路通道输出零，不会将上次输入残留到 UI。采样不保存、不评分、不输出红石，Provider 不应执行阻塞 I/O。
+
+开发回归：先将 `run/saves/New World` 复制到 `build/air-input-test/saves/New World`（只在客户端完全关闭时复制），再运行 `dev.ps1 runClient -PinputQuickPlay --offline`。这个专用启动配置使用独立 gameDir，验证四朝向完整连接、左右五路信号、16 路压感、缺块/旋转错误断路、恢复重连、实体检测与释放、原生菜单同步；保存 `build/air-input-test/screenshots/air-input-connected.png` 后自动退出。测试会在该副本内生成临时机台，不应指向用户正式世界。
 
 资源由 `tools/generate-air-sensors.ps1` 生成。`tools/check-air-sensors.ps1` 检查左右镜像、白色外壳、五个窗口高度、精确白边、发光颜色、石纹、三枚朝外箭头及四方向模型映射。新增分块底座注册和孔位修改需要完全重启客户端，并重新执行生成命令；旧版统一白色底座 ID 保留以兼容存档。

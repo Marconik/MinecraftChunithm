@@ -19,11 +19,18 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
     private final double[] glow=new double[18];
     private float zoom=1;
     private long lastFrame=System.nanoTime();
+    private boolean musicOpen;
+    private MusicQueueView musicView;
     public HeadControlScreen(HeadControlMenu menu,Inventory inventory,Component title){super(menu,inventory,title,W,H);}
     @Override protected void init(){
         super.init();controls.clear();
         zoom=Math.min(1f,Math.min((width-12f)/W,(height-12f)/H));zoom=Math.max(.1f,zoom);
         leftPos=(width-Math.round(W*zoom))/2;topPos=(height-Math.round(H*zoom))/2;
+        if(musicOpen){
+            musicView=new MusicQueueView(menu,font);
+            musicView.init(leftPos,topPos,zoom,button->addRenderableWidget(button),this::request,()->super.onClose());
+            request(HeadControlMenu.OPEN_MUSIC);return;
+        }
         add(16,36,48,60,"Air",HeadControlMenu.AIR_LEFT,-1,0);
         add(88,36,256,60,"Ground Slide",HeadControlMenu.GROUND,-1,1);
         add(368,36,48,60,"Air",HeadControlMenu.AIR_RIGHT,-1,2);
@@ -40,8 +47,14 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
         controls.add(button);addRenderableWidget(button);
     }
     private void request(int action){if(minecraft.gameMode!=null)minecraft.gameMode.handleInventoryButtonClick(menu.containerId,action);}
+    void showMusic(boolean open){musicOpen=open;rebuildWidgets();}
+    @Override public void onClose(){if(musicOpen)showMusic(false);else super.onClose();}
     @Override protected void extractLabels(GuiGraphicsExtractor g,int mx,int my){} // No inventory title or player slots.
     @Override public void extractContents(GuiGraphicsExtractor g,int mx,int my,float delta){
+        if(musicOpen){
+            g.pose().pushMatrix();g.pose().translate(leftPos,topPos);g.pose().scale(zoom,zoom);musicView.draw(g);g.pose().popMatrix();
+            super.extractContents(g,mx,my,delta);return;
+        }
         double elapsed=Math.min(.2,(System.nanoTime()-lastFrame)/1e9);lastFrame=System.nanoTime();
         for(int i=0;i<18;i++){
             boolean live=i<2?menu.connected(i==0?HeadControlMenu.AIR_LEFT:HeadControlMenu.AIR_RIGHT):menu.connected(HeadControlMenu.GROUND);
@@ -72,7 +85,8 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
         super.extractContents(g,mx,my,delta);
     }
     private String reason(int key){
-        if(key>=HeadControlMenu.AIR_LEFT)return menu.connected(key)?"已连接 · 实时输入监视":"未接入输入设备";
+        if(key>=HeadControlMenu.AIR_LEFT)return menu.connected(key)?"已连接":
+                "输入链路断开：请检查设备位置、朝向及 Ground Slide / Track 完整性";
         return switch(menu.status(key)){
             case CONNECTED->"已连接";case MISSING->"未连接或接口未对齐";case BROKEN->"结构损坏";case UNLOADED->"区块未加载";
         };
@@ -97,15 +111,17 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
         }
         void update(){
             active=state==-2?menu.enabled(action):state<0||menu.connected(state);
-            String tip=label+"\n"+(state==-2?playbackReason(action):state>=0?reason(state):icon==4?
+            // The rear control diagram is mirrored relative to the player at the slide.
+            String tipLabel=state==HeadControlMenu.AIR_LEFT?"Right Air":state==HeadControlMenu.AIR_RIGHT?"Left Air":label;
+            String tip=tipLabel+"\n"+(state==-2?playbackReason(action):state>=0?reason(state):icon==4?
                     "轨道左 / 中 / 右："+reason(HeadControlMenu.TRACK)+"\nMusic："+reason(HeadControlMenu.MUSIC)+"\nPlayer："+reason(HeadControlMenu.PLAYER)+"\n点击刷新":"关闭窗口");
             if(!tip.equals(lastTip)){lastTip=tip;setTooltip(Tooltip.create(Component.literal(tip)));setMessage(Component.literal(tip));}
         }
         @Override public void onPress(net.minecraft.client.input.InputWithModifiers input){
             pressedUntil=System.nanoTime()+100_000_000L;
             if(action==-2){onClose();return;}
-            // Connected Music/Player cards are visual placeholders for now.
-            if(action==HeadControlMenu.OPEN_MUSIC||action==HeadControlMenu.OPEN_PLAYER)return;
+            if(action==HeadControlMenu.OPEN_MUSIC){showMusic(true);return;}
+            if(action==HeadControlMenu.OPEN_PLAYER)return;
             request(action>=0?action:HeadControlMenu.REFRESH);
         }
         @Override protected void extractContents(GuiGraphicsExtractor g,int mx,int my,float delta){
@@ -218,7 +234,7 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
         g.fill(a-2,b-2,a+w+2,b+h+2,0xff606060);g.fill(a,b,a+w,b+h,on?dim(color,.75):0xff8c8c8c);
         g.fill(x-2,y-2,x+3,y+3,on?color:0xff898989);g.fill(x2-2,y2-2,x2+3,y2+3,on?color:0xff898989);
     }
-    private static void bevel(GuiGraphicsExtractor g,int x,int y,int w,int h,int face,boolean inset){
+    static void bevel(GuiGraphicsExtractor g,int x,int y,int w,int h,int face,boolean inset){
         g.fill(x,y,x+w,y+h,0xff373737);g.fill(x+1,y+1,x+w-1,y+h-1,face);
         int hi=inset?0xff606060:0xffffffff,lo=inset?0xffeeeeee:0xff656565;
         g.fill(x+1,y+1,x+w-1,y+3,hi);g.fill(x+1,y+1,x+3,y+h-1,hi);

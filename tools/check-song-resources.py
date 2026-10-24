@@ -15,6 +15,9 @@ def main():
         assert not any(path.startswith("data/minecraftchunithm/charts/") for path in archive.namelist()), "Stale chart resources in JAR"
         catalog = json.loads(archive.read("data/minecraftchunithm/songs/index.json"))
         sounds = json.loads(archive.read("assets/minecraftchunithm/sounds.json"))
+        item_atlas = json.loads(archive.read("assets/minecraft/atlases/items.json"))
+        assert any(source.get("type") == "minecraft:directory" and source.get("source") == "song"
+                   and source.get("prefix") == "song/" for source in item_atlas["sources"]), "Song covers missing from item atlas"
         source_catalog = json.loads((resources / "data/minecraftchunithm/songs/index.json").read_text(encoding="utf-8"))
         assert catalog == source_catalog and catalog["songs"], "Packaged song catalog is stale or empty"
         assert len({entry["id"] for entry in catalog["songs"]}) == len(catalog["songs"])

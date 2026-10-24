@@ -12,6 +12,20 @@ loom {
     }
     runs {
         client {
+            if (project.hasProperty('inputQuickPlay')) {
+                // Loom's runDir controls --gameDir as well as the process directory.
+                runDir 'build/air-input-test'
+                vmArg '-Dminecraftchunithm.inputQuickPlay=true'
+                programArg '--quickPlaySingleplayer'
+                programArg 'New World'
+            }
+            if (project.hasProperty('musicUiPreview')) {
+                vmArg '-Dminecraftchunithm.musicUiPreview=true'
+                programArg '--width'
+                programArg '1280'
+                programArg '--height'
+                programArg '800'
+            }
             if (project.hasProperty('motionQuickPlay') || project.hasProperty('modelQuickPlay') || project.hasProperty('nameplateQuickPlay') || project.hasProperty('connectionQuickPlay')) {
                 vmArg project.hasProperty('connectionQuickPlay') ? '-Dminecraftchunithm.connectionQuickPlay=true' :
                     project.hasProperty('nameplateQuickPlay') ? '-Dminecraftchunithm.nameplateQuickPlay=true' :

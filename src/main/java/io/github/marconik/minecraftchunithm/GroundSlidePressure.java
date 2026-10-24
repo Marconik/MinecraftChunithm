@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 
-/** Local contact-to-colour effect; deliberately independent of input/score/redstone services. */
+/** Contact-to-colour effect and the same 16 physical input channels for the head. */
 final class GroundSlidePressure {
     private GroundSlidePressure(){}
     static void initialize(){ServerTickEvents.END_LEVEL_TICK.register(GroundSlidePressure::tick);}
@@ -38,6 +38,18 @@ final class GroundSlidePressure {
             if(lane>=0&&lane<16&&(lanes&(1<<lane))!=0)mask|=1<<half;
         }
         return mask;
+    }
+
+    static double[] responses(ServerLevel level,Placement placement){
+        double[] response=new double[16];
+        for(int lane=0;lane<16;lane++){
+            int half=lane+GroundSlide.WIDTH-GroundSlide.LIGHT_WIDTH;
+            int x=half/2;
+            var state=level.getBlockState(placement.block(x,0,1));
+            if(GroundSlide.matchesTile(state,x,1,placement.forward()))
+                response[lane]=(state.getValue(GroundSlideBlock.PRESSED)&(1<<(half%2)))!=0?1:0;
+        }
+        return response;
     }
 
     private static void tick(ServerLevel level){

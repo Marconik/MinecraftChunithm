@@ -44,7 +44,7 @@ public final class SongPanel {
         }
         for(int y=0;y<3;y++)for(int x=0;x<7;x++)level.setBlock(p.block(x,y,0),tile.defaultBlockState().setValue(HeadTile.FACING,p.forward()),Block.UPDATE_ALL);
         PartConnections.register(level,PartConnections.Kind.SONG,p,1);
-        update(level,p,SongDisplayData.defaults());
+        display(level,p,SongDisplayData.defaults());
         source.sendSuccess(()->Component.literal("已生成曲目面板：左下角在玩家所在方格前一格，正面朝向玩家，宽7、高3、厚1。"),false);return 21;
     }
     private static void add(ServerLevel level,Placement p,Display e,double x,double y,double z,Vector3f scale){
@@ -79,6 +79,18 @@ public final class SongPanel {
         return value.codePoints().map(c->(c>255?9:6)+(bold?1:0)).sum();
     }
     public static void update(ServerLevel level,Placement p,SongDisplayData data){
+        var panel=PartConnections.find(level,PartConnections.Kind.SONG,p);
+        if(panel==null)throw new IllegalArgumentException("歌曲面板不存在");
+        var inputs=panel.songInputs.withSlot(data.track()-1,data.title().isBlank()||data.title().equals("NO TRACK")?null:data);
+        setQueue(level,p,inputs,data.speed(),data.mirror());
+    }
+    public static void setQueue(ServerLevel level,Placement p,SongQueueData inputs,double speed,boolean mirror){
+        var panel=PartConnections.find(level,PartConnections.Kind.SONG,p);
+        if(panel==null)throw new IllegalArgumentException("歌曲面板不存在");
+        MusicQueue.setPanelInputs(level,panel,inputs,speed,mirror);
+    }
+    /** Output only: never turns a rendered song or placeholder into a queue input. */
+    static void display(ServerLevel level,Placement p,SongDisplayData data){
         PartConnections.songUpdated(level,p,data);
         for(var e:level.getEntitiesOfClass(Display.class,new AABB(p.point(-.1,0,.9),p.point(7.1,3.1,1.3)),e->e.entityTags().contains(TAG)))e.discard();
         String theme=switch(data.difficulty()){case MASTER->"purple_concrete";case EXPERT->"red_concrete";case ULTIMA->"black_concrete";};
@@ -112,14 +124,25 @@ public final class SongPanel {
     public static int command(CommandSourceStack source,String json){
         try{
             var o=com.google.gson.JsonParser.parseString(json).getAsJsonObject();
-            var data=new SongDisplayData(Identifier.parse(o.get("cover").getAsString()),o.get("title").getAsString(),
-                    o.get("artist").getAsString(),o.get("track").getAsInt(),SongDisplayData.Difficulty.valueOf(o.get("difficulty").getAsString().toUpperCase(java.util.Locale.ROOT)),
-                    o.get("level").getAsString(),o.get("speed").getAsDouble(),o.get("mirror").getAsBoolean());
             var p=placement(source);
             for(int y=0;y<3;y++)for(int x=0;x<7;x++)if(source.getLevel().getBlockState(p.block(x,y,0)).getBlock()!=tile){
                 source.sendFailure(Component.literal("请先在相同位置和朝向执行 /chunithm song。"));return 0;
             }
-            update(source.getLevel(),p,data);source.sendSuccess(()->Component.literal("曲目信息已更新。"),false);return 1;
-        }catch(RuntimeException invalid){source.sendFailure(Component.literal("曲目数据无效，请检查 JSON 字段、难度和封面模型资源 ID。"));return 0;}
+            if(o.has("songs")){
+                var songs=o.getAsJsonArray("songs");if(songs.size()>3)throw new IllegalArgumentException("最多输入三首曲目");
+                var inputs=SongQueueData.empty();
+                for(int i=0;i<songs.size();i++)if(!songs.get(i).isJsonNull()){
+                    var entry=songs.get(i).getAsJsonObject().deepCopy();entry.addProperty("track",i+1);
+                    entry.addProperty("speed",o.get("speed").getAsDouble());entry.addProperty("mirror",o.get("mirror").getAsBoolean());
+                    entry.addProperty("difficulty",entry.get("difficulty").getAsString().toUpperCase(java.util.Locale.ROOT));
+                    var data=PartConnections.decodeSong(entry);inputs=inputs.withSlot(i,data.title().isBlank()?null:data);
+                }
+                setQueue(source.getLevel(),p,inputs,o.get("speed").getAsDouble(),o.get("mirror").getAsBoolean());
+            }else{
+                o.addProperty("difficulty",o.get("difficulty").getAsString().toUpperCase(java.util.Locale.ROOT));
+                update(source.getLevel(),p,PartConnections.decodeSong(o));
+            }
+            source.sendSuccess(()->Component.literal("曲目信息已更新。"),false);return 1;
+        }catch(RuntimeException invalid){source.sendFailure(Component.literal("曲目数据无效："+(invalid.getMessage()==null?"请检查 JSON 字段、TRACK 1～3、难度和封面模型资源 ID。":invalid.getMessage())));return 0;}
     }
 }

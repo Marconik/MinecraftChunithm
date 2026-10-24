@@ -16,9 +16,16 @@ import org.joml.Vector3f;
 final class PartPorts {
     private static final String TAG="minecraftchunithm.part_ports";
     private static Block headLogo;
+    private static final java.util.Map<ServerLevel,java.util.Set<PartConnections.Part>> UPDATED=new java.util.WeakHashMap<>();
     static void initialize(){
         var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"head_control_logo"));
         headLogo=Registry.register(BuiltInRegistries.BLOCK,key,new Block(BlockBehaviour.Properties.of().setId(key)));
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
+            if(level.getGameTime()%20!=0)return;
+            var updated=UPDATED.computeIfAbsent(level,keyLevel->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));
+            for(var head:PartConnections.ofKind(level,PartConnections.Kind.HEAD))
+                if(!updated.contains(head)&&PartConnections.integrity(level,head)==PartConnections.Status.CONNECTED)draw(level,head);
+        });
     }
     static boolean ready(){return headLogo!=null;}
     static boolean checkReady(net.minecraft.commands.CommandSourceStack source){
@@ -42,7 +49,8 @@ final class PartPorts {
             case HEAD->{
                 for(double x:new double[]{1.5,5.5,9.5})socket(level,p,owner,x,.34,1.02,false);
                 side(level,p,owner,0,2.5);side(level,p,owner,11,2.5);
-                headWindow(level,p,owner,5.5,2.3);
+                headWindow(level,p,owner);
+                UPDATED.computeIfAbsent(level,keyLevel->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>())).add(part);
             }
             case TRACK->{for(double x:new double[]{.5,4.5,8.5})socket(level,p,owner,x,.34,-.02,true);}
             case PLAYER->{side(level,p,owner,7,1.5);window(level,p,owner,3.5,1.5);}
@@ -63,14 +71,20 @@ final class PartPorts {
         cube(l,p,tag,x-.52,y-.28,-.055,1.04,.56,.015,"cyan_concrete");
         cube(l,p,tag,x-.40,y-.06,-.075,.80,.12,.015,"black_concrete");
     }
-    private static void headWindow(ServerLevel level,Placement p,String tag,double x,double y){
-        cube(level,p,tag,x-.6,y-.36,-.035,1.2,.72,.025,"gray_concrete");
-        cube(level,p,tag,x-.52,y-.28,-.055,1.04,.56,.015,"black_concrete");
+    private static void headWindow(ServerLevel level,Placement p,String tag){
+        double x=HeadTerminal.X,y=HeadTerminal.Y,w=HeadTerminal.WIDTH,h=HeadTerminal.HEIGHT,b=HeadTerminal.BORDER;
+        // The four frame edges begin exactly at the rear surface (z=0).
+        // A real opening in the six surrounding head tiles exposes the inset panel.
+        cube(level,p,tag,x-w/2,y-h/2,0,w,b,HeadTerminal.DEPTH,"gray_concrete");
+        cube(level,p,tag,x-w/2,y+h/2-b,0,w,b,HeadTerminal.DEPTH,"gray_concrete");
+        cube(level,p,tag,x-w/2,y-h/2+b,0,b,h-2*b,HeadTerminal.DEPTH,"gray_concrete");
+        cube(level,p,tag,x+w/2-b,y-h/2+b,0,b,h-2*b,HeadTerminal.DEPTH,"gray_concrete");
+        cube(level,p,tag,x-w/2+b,y-h/2+b,HeadTerminal.DEPTH-.003,w-2*b,h-2*b,.002,"black_concrete");
         var logo=EntityTypes.BLOCK_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);if(logo==null)throw new IllegalStateException();
         // Native north-facing block UVs show the supplied image readable from
         // the head's rear. Preserve the original 380:164 aspect ratio.
-        float width=.96f,height=width*164/380;
-        var pos=p.point(x-width/2,y-height/2,-.075);logo.setPos(pos.x,pos.y,pos.z);logo.setYRot(p.yaw());
+        float width=(float)HeadTerminal.LOGO_WIDTH,height=width*164/380;
+        var pos=p.point(x-width/2,y-height/2,HeadTerminal.DEPTH-.005);logo.setPos(pos.x,pos.y,pos.z);logo.setYRot(p.yaw());
         logo.setBlockState(headLogo.defaultBlockState());
         logo.setTransformation(new Transformation(null,null,new Vector3f(width,height,.01f),null));
         logo.setBrightnessOverride(new net.minecraft.util.Brightness(15,15));logo.setWidth(2);logo.setHeight(1);

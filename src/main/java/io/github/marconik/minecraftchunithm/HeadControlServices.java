@@ -3,7 +3,7 @@ package io.github.marconik.minecraftchunithm;
 import java.util.Objects;
 import net.minecraft.server.level.ServerLevel;
 
-/** Server-thread extension points. Default devices and playback are deliberately unavailable. */
+/** Server-thread extension points, with physical cabinet input routing by default. */
 public final class HeadControlServices {
     private HeadControlServices(){}
     public enum Playback { STOPPED, PLAYING, PAUSED, FINISHED }
@@ -29,14 +29,13 @@ public final class HeadControlServices {
         Transport snapshot(ServerLevel level,Placement head);
         void execute(ServerLevel level,Placement head,Action action);
     }
-    private static Input physicalInput(ServerLevel level,Placement head){
-        var track=PartConnections.find(level,PartConnections.Kind.TRACK,PartConnections.target(head,PartConnections.Kind.TRACK));
-        boolean connected=false;
-        if(track!=null&&PartConnections.integrity(level,track)==PartConnections.Status.CONNECTED){
-            var ground=PartConnections.find(level,PartConnections.Kind.GROUND_SLIDE,PartConnections.groundTarget(track.placement,track.length));
-            connected=ground!=null&&PartConnections.integrity(level,ground)==PartConnections.Status.CONNECTED;
-        }
-        return new Input(false,false,connected,0,0,new double[16]);
+    public static Input physicalInput(ServerLevel level,Placement head){
+        var route=PartConnections.inputRoute(level,head);
+        boolean left=route.leftAir().connected(),right=route.rightAir().connected(),ground=route.ground().connected();
+        return new Input(left,right,ground,
+                left?AirSensors.read(level,route.leftAir().part()).strength():0,
+                right?AirSensors.read(level,route.rightAir().part()).strength():0,
+                ground?GroundSlidePressure.responses(level,route.ground().part().placement):new double[16]);
     }
     private static InputProvider inputs=HeadControlServices::physicalInput;
     private static PlaybackBackend playback;

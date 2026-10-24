@@ -37,7 +37,8 @@
     "slide_band_12": "minecraftchunithm:block/slide_band_12",
     "slide_band_13": "minecraftchunithm:block/slide_band_13",
     "slide_band_14": "minecraftchunithm:block/slide_band_14",
-    "slide_band_15": "minecraftchunithm:block/slide_band_15"
+    "slide_band_15": "minecraftchunithm:block/slide_band_15",
+    "particle": "minecraftchunithm:block/air_green"
   },
   "elements": [
     {

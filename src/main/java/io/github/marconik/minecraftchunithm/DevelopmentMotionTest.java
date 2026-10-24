@@ -6,14 +6,17 @@ import net.minecraft.world.phys.Vec3;
 
 /** Opt-in local smoke test for the existing development-only superflat world. */
 public final class DevelopmentMotionTest {
+    private static volatile boolean inputCheckComplete;
+    public static boolean inputCheckComplete(){return inputCheckComplete;}
     private DevelopmentMotionTest() {}
 
     public static void initialize() {
         boolean models=Boolean.getBoolean("minecraftchunithm.modelQuickPlay");
         boolean nameplates=Boolean.getBoolean("minecraftchunithm.nameplateQuickPlay");
         boolean connections=Boolean.getBoolean("minecraftchunithm.connectionQuickPlay");
+        boolean inputs=Boolean.getBoolean("minecraftchunithm.inputQuickPlay");
         if (!FabricLoader.getInstance().isDevelopmentEnvironment()
-                || (!models && !nameplates && !connections && !Boolean.getBoolean("minecraftchunithm.motionQuickPlay"))) return;
+                || (!models && !nameplates && !connections && !inputs && !Boolean.getBoolean("minecraftchunithm.motionQuickPlay"))) return;
         int[] ticks = {0};
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getPlayerList().getPlayers().isEmpty() || ticks[0] >= 100) return;
@@ -21,6 +24,7 @@ public final class DevelopmentMotionTest {
             var player = server.getPlayerList().getPlayers().getFirst();
             var source = player.createCommandSourceStack();
             var commands = server.getCommands();
+            if(inputs){DevelopmentInputCheck.run(source);inputCheckComplete=true;return;}
             if(connections){
                 commands.performPrefixedCommand(source,"gamemode creative");
                 commands.performPrefixedCommand(source,"time set day");
