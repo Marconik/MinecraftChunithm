@@ -23,10 +23,19 @@ import org.joml.Vector3f;
 public final class NamePanel {
     private static final String TAG="minecraftchunithm.name_display";
     private static Block tile;
+    private static final java.util.Map<ServerLevel,java.util.Set<PartConnections.Part>> UPDATED=new java.util.WeakHashMap<>();
     private NamePanel(){}
     public static void initialize(){
         var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"name_panel"));
-        tile=Registry.register(BuiltInRegistries.BLOCK,key,new HeadTile(BlockBehaviour.Properties.of().setId(key).strength(2)));
+        tile=Registry.register(BuiltInRegistries.BLOCK,key,new PanelTile(BlockBehaviour.Properties.of().setId(key).strength(2).noOcclusion(),true));
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
+            if(level.getGameTime()%20!=0)return;
+            var refreshed=UPDATED.computeIfAbsent(level,l->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));
+            for(var part:PartConnections.ofKind(level,PartConnections.Kind.PLAYER))
+                if(!refreshed.contains(part)&&PartConnections.integrity(level,part)==PartConnections.Status.CONNECTED){
+                    update(level,part.placement,part.player);refreshed.add(part);
+                }
+        });
     }
     public static Placement placement(CommandSourceStack source){
         return placement(net.minecraft.core.BlockPos.containing(source.getPosition()),Placement.looking(source));
@@ -52,8 +61,8 @@ public final class NamePanel {
         return 21;
     }
     private static void add(ServerLevel level,Placement p,Display e,double x,double y,double z,Vector3f scale){
-        var pos=p.point(x,y,z);e.setPos(pos.x,pos.y,pos.z);e.setYRot(p.yaw());
-        e.setTransformation(new Transformation(null,null,scale,null));e.setBrightnessOverride(new Brightness(15,15));
+        var pos=p.point(x,y,FacadeSurface.depth(z));e.setPos(pos.x,pos.y,pos.z);e.setYRot(p.yaw());
+        e.setTransformation(new Transformation(null,null,new Vector3f(scale).mul(1,1,FacadeSurface.DEPTH_SCALE),null));e.setBrightnessOverride(new Brightness(15,15));
         e.setWidth(8);e.setHeight(4);e.addTag(TAG);level.addFreshEntity(e);
     }
     private static void image(ServerLevel level,Placement p,double x,double y,double w,double h,double z,Identifier model){
@@ -67,29 +76,62 @@ public final class NamePanel {
         return Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"name_panel/"+name);
     }
     private static void text(ServerLevel level,Placement p,double x,double y,String value,float desired,double maxWidth,int color,boolean bold,boolean left){
-        var e=EntityTypes.TEXT_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);if(e==null)throw new IllegalStateException();
         double units=NameplateTypography.width(value,bold);
         float scale=(float)Math.min(desired,maxWidth/Math.max(.025,units*.025));
-        double center=left?x+units*.025*scale/2-.025*scale:x;
+        textLayer(level,p,x,y,value,scale,scale,color,bold,left,1.09);
+    }
+    private static Display.TextDisplay textLayer(ServerLevel level,Placement p,double x,double y,String value,float scaleX,float scaleY,int color,boolean bold,boolean left,double depth){
+        var e=EntityTypes.TEXT_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);if(e==null)throw new IllegalStateException();
+        double center=left?x+NameplateTypography.width(value,bold)*.025*scaleX/2-.025*scaleX:x;
         e.setText(Component.literal(value).withStyle(s->s.withColor(color).withBold(bold)
                 .withFont(new net.minecraft.network.chat.FontDescription.Resource(Identifier.fromNamespaceAndPath("minecraft","uniform")))));
         e.setBackgroundColor(0);e.setLineWidth(4096);e.setFlags((byte)0);
         // Centre the uniform font's eight-pixel ink height, not the line box.
-        add(level,p,e,center,y-scale*.1375,1.09,new Vector3f(scale));
+        add(level,p,e,center,y-scaleY*.1375,depth,new Vector3f(scaleX,scaleY,1));
+        return e;
+    }
+    private static void spacedText(ServerLevel level,Placement p,double x,double centerY,String value,float size,double maxWidth,int color,boolean left){
+        var glyphs=value.codePoints().mapToObj(c->new String(Character.toChars(c))).toList();
+        double spacing=1.5;
+        double units=glyphs.stream().mapToDouble(glyph->NameplateTypography.width(glyph,true)).sum()
+                +Math.max(0,glyphs.size()-1)*spacing;
+        float fitted=(float)Math.min(size,maxWidth/Math.max(.025,units*.025));
+        double cursor=left?x:x-units*.025*fitted/2;
+        for(var glyph:glyphs){
+            textLayer(level,p,cursor,centerY+.025*size,glyph,fitted,size,color,true,true,1.09);
+            cursor+=(NameplateTypography.width(glyph,true)+spacing)*.025*fitted;
+        }
+    }
+    /** Preserve row height for long names; only their horizontal extent is fitted. */
+    private static void rowText(ServerLevel level,Placement p,double x,double centerY,String value,float size,double width,int color,boolean outline){
+        // Uniform's Latin capitals occupy 11 native pixels (5.5 logical
+        // pixels); their ink centre sits one logical pixel below the line centre.
+        centerY+=.025*size;
+        float fitted=(float)Math.min(size,width/Math.max(.025,NameplateTypography.width(value,true)*.025));
+        if(outline){
+            double border=.025*size*.65;
+            for(int dx=-1;dx<=1;dx++)for(int dy=-1;dy<=1;dy++)if(dx!=0||dy!=0)
+                textLayer(level,p,x+dx*border,centerY+dy*border,value,fitted,size,0x000000,true,true,1.085).setBrightnessOverride(null);
+        }
+        var ink=textLayer(level,p,x,centerY,value,fitted,size,color,true,true,1.09);
+        // The rating keeps its crisp black outline but follows world lighting.
+        if(outline)ink.setBrightnessOverride(null);
     }
     public static void update(ServerLevel level,Placement p,NameDisplayData data){
         PartConnections.playerUpdated(level,p,data);
         for(var e:level.getEntitiesOfClass(Display.class,new AABB(p.point(-.1,0,.9),p.point(7.1,3.1,1.3)),e->e.entityTags().contains(TAG)))e.discard();
         image(level,p,3.5,1.5,7,3,1.025,art("background"));
-        text(level,p,.70,2.57,"TEAM",.78f,.76,0x25252c,true,false);
-        text(level,p,1.25,2.57,data.team(),.92f,5.35,0xffffff,false,true);
+        // The supplied component already includes its TEAM label and crest.
+        spacedText(level,p,1.48,2.585,data.team(),.76f,5.10,0xffffff,true);
         boolean gold=data.titleColor()==NameDisplayData.TitleColor.GOLD;
         image(level,p,3.5,2.00,6.50,.5625,1.045,art(gold?"gold":"silver"));
-        text(level,p,3.5,2.00,data.title(),.98f,6.10,0x24242b,true,false);
-        text(level,p,.32,1.17,"Lv. "+data.level(),1.00f,1.05,0x18181c,false,true);
-        text(level,p,1.42,1.17,data.name(),1.55f,3.68,0x141418,false,true);
-        text(level,p,.32,.49,"RATING",.74f,1.02,0x34343b,false,true);
-        text(level,p,1.42,.49,data.rating(),.95f,3.68,0x34343b,false,true);
+        spacedText(level,p,3.5,2.00,data.title(),1.47f,6.10,0x24242b,false);
+        // Keep the shared ink bottom as the name shrinks and the level grows.
+        double nameBottom=.833;
+        rowText(level,p,.32,nameBottom+.1375,"Lv. "+data.level(),2.00f,1.05,0x000000,false);
+        rowText(level,p,1.42,nameBottom+.2908125,data.name(),4.23f,3.68,0x000000,false);
+        rowText(level,p,.32,.49,"RATING",1.184f,1.45,0xffffff,true);
+        rowText(level,p,1.95,.49,data.rating(),1.52f,3.15,0xffffff,true);
         image(level,p,6.00,.797,1.18,1.18,1.055,data.characterModel());
         DisplayFinish.polish(level,p,TAG,5.41,.207,1.18,1.18,1.058,false,false);
     }

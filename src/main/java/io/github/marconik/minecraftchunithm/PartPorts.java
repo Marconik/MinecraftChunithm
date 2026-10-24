@@ -16,16 +16,23 @@ import org.joml.Vector3f;
 final class PartPorts {
     private static final String TAG="minecraftchunithm.part_ports";
     private static Block headLogo;
+    private static Block playerLogo,songLogo;
     private static final java.util.Map<ServerLevel,java.util.Set<PartConnections.Part>> UPDATED=new java.util.WeakHashMap<>();
     static void initialize(){
         var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"head_control_logo"));
         headLogo=Registry.register(BuiltInRegistries.BLOCK,key,new Block(BlockBehaviour.Properties.of().setId(key)));
+        playerLogo=registerLogo("player_control_logo");songLogo=registerLogo("song_control_logo");
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
             if(level.getGameTime()%20!=0)return;
             var updated=UPDATED.computeIfAbsent(level,keyLevel->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));
-            for(var head:PartConnections.ofKind(level,PartConnections.Kind.HEAD))
-                if(!updated.contains(head)&&PartConnections.integrity(level,head)==PartConnections.Status.CONNECTED)draw(level,head);
+            for(var kind:new PartConnections.Kind[]{PartConnections.Kind.HEAD,PartConnections.Kind.PLAYER,PartConnections.Kind.SONG})
+                for(var part:PartConnections.ofKind(level,kind))
+                    if(!updated.contains(part)&&PartConnections.integrity(level,part)==PartConnections.Status.CONNECTED)draw(level,part);
         });
+    }
+    private static Block registerLogo(String name){
+        var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));
+        return Registry.register(BuiltInRegistries.BLOCK,key,new Block(BlockBehaviour.Properties.of().setId(key)));
     }
     static boolean ready(){return headLogo!=null;}
     static boolean checkReady(net.minecraft.commands.CommandSourceStack source){
@@ -53,9 +60,13 @@ final class PartPorts {
                 UPDATED.computeIfAbsent(level,keyLevel->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>())).add(part);
             }
             case TRACK->{for(double x:new double[]{.5,4.5,8.5})socket(level,p,owner,x,.34,-.02,true);}
-            case PLAYER->{side(level,p,owner,7,1.5);window(level,p,owner,3.5,1.5);}
-            case SONG->{side(level,p,owner,0,1.5);window(level,p,owner,3.5,1.5);}
+            case PLAYER->{side(level,p,owner,7,1.5);window(level,p,owner,3.5,1.5,true);}
+            case SONG->{side(level,p,owner,0,1.5);window(level,p,owner,3.5,1.5,false);}
             case GROUND_SLIDE,AIR_LEFT,AIR_RIGHT->{}
+        }
+        if(part.kind==PartConnections.Kind.PLAYER||part.kind==PartConnections.Kind.SONG){
+            PanelTile.refresh(level,part);
+            UPDATED.computeIfAbsent(level,keyLevel->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>())).add(part);
         }
     }
     private static void socket(ServerLevel l,Placement p,String tag,double x,double y,double z,boolean back){
@@ -66,13 +77,17 @@ final class PartPorts {
         cube(l,p,tag,x-.018,y-.22,.25,.036,.44,.5,"black_concrete");
         cube(l,p,tag,x-.025,y-.12,.36,.05,.24,.28,"cyan_concrete");
     }
-    private static void window(ServerLevel l,Placement p,String tag,double x,double y){
-        cube(l,p,tag,x-.6,y-.36,-.035,1.2,.72,.025,"gray_concrete");
-        cube(l,p,tag,x-.52,y-.28,-.055,1.04,.56,.015,"cyan_concrete");
-        cube(l,p,tag,x-.40,y-.06,-.075,.80,.12,.015,"black_concrete");
+    private static void window(ServerLevel l,Placement p,String tag,double x,double y,boolean player){
+        double height=.70,width=height*(player?690.0/343:576.0/228);
+        terminalWindow(l,p,tag,x,y,PanelTile.width(player),1,player?playerLogo:songLogo,width,height);
     }
     private static void headWindow(ServerLevel level,Placement p,String tag){
-        double x=HeadTerminal.X,y=HeadTerminal.Y,w=HeadTerminal.WIDTH,h=HeadTerminal.HEIGHT,b=HeadTerminal.BORDER;
+        terminalWindow(level,p,tag,HeadTerminal.X,HeadTerminal.Y,HeadTerminal.WIDTH,HeadTerminal.HEIGHT,
+                headLogo,HeadTerminal.LOGO_WIDTH,HeadTerminal.LOGO_WIDTH*164/380);
+    }
+    private static void terminalWindow(ServerLevel level,Placement p,String tag,double x,double y,double w,double h,
+                                       Block artwork,double artworkWidth,double artworkHeight){
+        double b=HeadTerminal.BORDER;
         // The four frame edges begin exactly at the rear surface (z=0).
         // A real opening in the six surrounding head tiles exposes the inset panel.
         cube(level,p,tag,x-w/2,y-h/2,0,w,b,HeadTerminal.DEPTH,"gray_concrete");
@@ -83,9 +98,9 @@ final class PartPorts {
         var logo=EntityTypes.BLOCK_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);if(logo==null)throw new IllegalStateException();
         // Native north-facing block UVs show the supplied image readable from
         // the head's rear. Preserve the original 380:164 aspect ratio.
-        float width=(float)HeadTerminal.LOGO_WIDTH,height=width*164/380;
+        float width=(float)artworkWidth,height=(float)artworkHeight;
         var pos=p.point(x-width/2,y-height/2,HeadTerminal.DEPTH-.005);logo.setPos(pos.x,pos.y,pos.z);logo.setYRot(p.yaw());
-        logo.setBlockState(headLogo.defaultBlockState());
+        logo.setBlockState(artwork.defaultBlockState());
         logo.setTransformation(new Transformation(null,null,new Vector3f(width,height,.01f),null));
         logo.setBrightnessOverride(new net.minecraft.util.Brightness(15,15));logo.setWidth(2);logo.setHeight(1);
         logo.addTag(TAG);logo.addTag(tag);level.addFreshEntity(logo);

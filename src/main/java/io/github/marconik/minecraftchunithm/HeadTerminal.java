@@ -11,13 +11,20 @@ final class HeadTerminal {
     static final double LOGO_WIDTH=4.0/3;
     record Opening(double x0,double y0,double x1,double y1){}
     private HeadTerminal(){}
+    static double sideWidth(boolean player){return player?1.75:2.1;}
     static Opening opening(int col,int row){
-        double x0=Math.max(0,X-WIDTH/2-col),x1=Math.min(1,X+WIDTH/2-col);
-        double y0=Math.max(0,Y-HEIGHT/2-row),y1=Math.min(1,Y+HEIGHT/2-row);
+        return opening(col,row,X,Y,WIDTH,HEIGHT);
+    }
+    static Opening opening(int col,int row,double cx,double cy,double width,double height){
+        double x0=Math.max(0,cx-width/2-col),x1=Math.min(1,cx+width/2-col);
+        double y0=Math.max(0,cy-height/2-row),y1=Math.min(1,cy+height/2-row);
         return x0<x1&&y0<y1?new Opening(x0,y0,x1,y1):null;
     }
     static VoxelShape shape(int col,int row,Direction forward){
-        var cut=opening(col,row);if(cut==null)return Shapes.block();
+        return shape(opening(col,row),forward);
+    }
+    static VoxelShape shape(Opening cut,Direction forward){
+        if(cut==null)return Shapes.block();
         return Shapes.or(box(forward,0,0,DEPTH,1,1,1),
                 box(forward,0,0,0,cut.x0(),1,DEPTH),box(forward,cut.x1(),0,0,1,1,DEPTH),
                 box(forward,cut.x0(),0,0,cut.x1(),cut.y0(),DEPTH),
@@ -33,10 +40,13 @@ final class HeadTerminal {
         return Shapes.box(Math.min(ax,bx),y0,Math.min(az,bz),Math.max(ax,bx),y1,Math.max(az,bz));
     }
     static boolean contains(Placement head,Vec3 hit){
+        return contains(head,hit,X,Y,WIDTH,HEIGHT);
+    }
+    static boolean contains(Placement head,Vec3 hit,double cx,double cy,double width,double height){
         var delta=hit.subtract(head.point(0,0,0));
         double x=delta.x*head.across().getStepX()+delta.z*head.across().getStepZ();
         double z=delta.x*head.forward().getStepX()+delta.z*head.forward().getStepZ();
-        return Math.abs(x-X)<=WIDTH/2+.0001&&Math.abs(delta.y-Y)<=HEIGHT/2+.0001
+        return Math.abs(x-cx)<=width/2+.0001&&Math.abs(delta.y-cy)<=height/2+.0001
                 &&z>=-.001&&z<=DEPTH+.001;
     }
 }

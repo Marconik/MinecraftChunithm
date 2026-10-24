@@ -7,6 +7,8 @@ import net.minecraft.world.phys.Vec3;
 /** Opt-in local smoke test for the existing development-only superflat world. */
 public final class DevelopmentMotionTest {
     private static volatile boolean inputCheckComplete;
+    private static volatile Placement inputHead;
+    public static Placement inputHead(){return inputHead;}
     public static boolean inputCheckComplete(){return inputCheckComplete;}
     private DevelopmentMotionTest() {}
 
@@ -24,7 +26,7 @@ public final class DevelopmentMotionTest {
             var player = server.getPlayerList().getPlayers().getFirst();
             var source = player.createCommandSourceStack();
             var commands = server.getCommands();
-            if(inputs){DevelopmentInputCheck.run(source);inputCheckComplete=true;return;}
+            if(inputs){inputHead=DevelopmentInputCheck.run(source);inputCheckComplete=true;return;}
             if(connections){
                 commands.performPrefixedCommand(source,"gamemode creative");
                 commands.performPrefixedCommand(source,"time set day");

@@ -13,14 +13,15 @@ import net.minecraft.world.phys.Vec3;
 final class DevelopmentInputCheck {
     private DevelopmentInputCheck(){}
     private static void require(boolean condition,String message){if(!condition)throw new AssertionError(message);}
-    static void run(CommandSourceStack source){
-        var level=source.getLevel();int index=0;
+    static Placement run(CommandSourceStack source){
+        var level=source.getLevel();int index=0;Placement lastHead=null;
         for(var direction:Direction.Plane.HORIZONTAL){
             int x=4096+48*index++;
             for(int cx=(x-16)>>4;cx<=(x+16)>>4;cx++)for(int cz=4080>>4;cz<=4112>>4;cz++)level.getChunk(cx,cz);
             var anchor=source.withPosition(new Vec3(x+.5,-60,4096.5)).withRotation(new Vec2(0,direction.toYRot()));
             require(PartAssembly.generate(anchor,4)==1,"Input test assembly failed");
             var head=Placement.head(anchor);
+            lastHead=head;
             var route=PartConnections.inputRoute(level,head);
             require(route.track().connected()&&route.ground().connected()&&route.leftAir().connected()&&route.rightAir().connected(),
                     "Every input hop must be connected in "+direction);
@@ -72,22 +73,24 @@ final class DevelopmentInputCheck {
                 }finally{PartConnections.register(level,PartConnections.Kind.AIR_LEFT,left.placement,1);}
             }finally{AirSensors.resetInputProvider();}
             // Physical detection and release: entities on one side must not activate the other.
+            var baseline=HeadControlServices.physicalInput(level,head);
             var entity=EntityTypes.ARMOR_STAND.create(level,EntitySpawnReason.TRIGGERED);
             require(entity!=null,"Could not create physical AIR test entity");
             var point=route.leftAir().part().placement.point(2.5,1,1.5);
             entity.setPos(point.x,point.y,point.z);level.addFreshEntity(entity);
             try{
                 var input=HeadControlServices.physicalInput(level,head);
-                require(input.leftAir()>0&&input.rightAir()==0,"Physical AIR response is not isolated by side");
+                require(input.leftAir()>0&&input.rightAir()==baseline.rightAir(),"Physical AIR response is not isolated by side");
             }finally{entity.discard();}
             var released=HeadControlServices.physicalInput(level,head);
-            require(released.leftAir()==0&&released.rightAir()==0,"AIR response did not clear after release");
+            require(released.leftAir()==baseline.leftAir()&&released.rightAir()==baseline.rightAir(),"AIR response did not return to baseline after release");
             var player=source.getEntity();
             if(player instanceof net.minecraft.server.level.ServerPlayer owner){
                 var menu=new HeadControlMenu(0,owner.getInventory(),level,PartConnections.find(level,PartConnections.Kind.HEAD,head),owner);
                 require(menu.connected(HeadControlMenu.AIR_LEFT)&&menu.connected(HeadControlMenu.AIR_RIGHT)
                         &&menu.connected(HeadControlMenu.GROUND),"Native menu did not publish physical input connectivity");
                 if(index==4){
+                    TrackHeadDisplay.update(level,head,new HeadDisplayData(20,3,0,1,240,455_000));
                     var camera=head.point(5.5,1,-3);
                     level.getServer().getCommands().performPrefixedCommand(source,
                             "tp @s "+camera.x+" "+camera.y+" "+camera.z+" "+head.forward().toYRot()+" 5");
@@ -96,5 +99,6 @@ final class DevelopmentInputCheck {
             }
         }
         MinecraftChunithm.LOGGER.info("AIR input pipeline checks passed: four facings; independent height channels; 16 Ground lanes; broken, rotated and restored hops; physical detection/release; native menu connectivity.");
+        return lastHead;
     }
 }

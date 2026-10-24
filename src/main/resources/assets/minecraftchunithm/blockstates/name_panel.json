@@ -1,8 +1,228 @@
 {
   "variants": {
-    "facing=south": {"model":"minecraftchunithm:block/name_panel","y":0},
-    "facing=west": {"model":"minecraftchunithm:block/name_panel","y":90},
-    "facing=north": {"model":"minecraftchunithm:block/name_panel","y":180},
-    "facing=east": {"model":"minecraftchunithm:block/name_panel","y":270}
+    "facing=south,column=0,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=south,column=0,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=west,column=0,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=west,column=0,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=north,column=0,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=north,column=0,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=east,column=0,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=east,column=0,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=south,column=1,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=south,column=1,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=west,column=1,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=west,column=1,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=north,column=1,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=north,column=1,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=east,column=1,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=east,column=1,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=south,column=2,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=south,column=2,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_2",
+      "y": 0
+    },
+    "facing=west,column=2,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=west,column=2,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_2",
+      "y": 90
+    },
+    "facing=north,column=2,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=north,column=2,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_2",
+      "y": 180
+    },
+    "facing=east,column=2,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=east,column=2,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_2",
+      "y": 270
+    },
+    "facing=south,column=3,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=south,column=3,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_3",
+      "y": 0
+    },
+    "facing=west,column=3,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=west,column=3,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_3",
+      "y": 90
+    },
+    "facing=north,column=3,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=north,column=3,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_3",
+      "y": 180
+    },
+    "facing=east,column=3,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=east,column=3,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_3",
+      "y": 270
+    },
+    "facing=south,column=4,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=south,column=4,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_4",
+      "y": 0
+    },
+    "facing=west,column=4,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=west,column=4,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_4",
+      "y": 90
+    },
+    "facing=north,column=4,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=north,column=4,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_4",
+      "y": 180
+    },
+    "facing=east,column=4,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=east,column=4,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel_terminal_4",
+      "y": 270
+    },
+    "facing=south,column=5,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=south,column=5,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=west,column=5,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=west,column=5,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=north,column=5,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=north,column=5,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=east,column=5,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=east,column=5,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=south,column=6,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=south,column=6,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 0
+    },
+    "facing=west,column=6,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=west,column=6,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 90
+    },
+    "facing=north,column=6,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=north,column=6,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 180
+    },
+    "facing=east,column=6,terminal=false": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    },
+    "facing=east,column=6,terminal=true": {
+      "model": "minecraftchunithm:block/name_panel",
+      "y": 270
+    }
   }
 }

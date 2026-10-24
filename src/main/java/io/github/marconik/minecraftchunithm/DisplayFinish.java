@@ -26,10 +26,10 @@ public final class DisplayFinish {
         entity.setItemStack(stack);entity.setItemTransform(ItemDisplayContext.FIXED);
         float shear=slanted?(float)(height*.4):0;
         entity.setTransformation(new Transformation(new Matrix4f().m00((float)width)
-                .m11((float)height).m10(shear).m22(.001f)));
+                .m11((float)height).m10(shear).m22(.001f*FacadeSurface.DEPTH_SCALE)));
         // The explicit SOUTH quad faces like block displays, not generated sprites.
         // Account for the shear at the centre so it exactly covers the parallelogram.
-        var pos=p.point(x+width/2+shear/2,y+height/2,z);
+        var pos=p.point(x+width/2+shear/2,y+height/2,FacadeSurface.depth(z));
         entity.setPos(pos.x,pos.y,pos.z);entity.setYRot(p.yaw());
         entity.setBrightnessOverride(new Brightness(15,15));
         entity.setWidth((float)(width+Math.abs(shear)+.1));entity.setHeight((float)(height+.1));

@@ -16,6 +16,8 @@ import org.joml.Vector3f;
 /** World-space data display, aligned with the SOUTH-facing 11x4 facade. */
 public final class TrackHeadDisplay {
     private static final String TAG="minecraftchunithm.head_display";
+    private static final String SURFACE_TAG=TAG+".surface2";
+    private static final java.util.Map<String,net.minecraft.world.level.block.Block> CELL_BLOCKS=new java.util.HashMap<>();
     private TrackHeadDisplay(){}
     public static void update(ServerLevel level,Placement placement,HeadDisplayData data) {
         for(var entity:level.getEntitiesOfClass(Display.class,new AABB(placement.point(-.1,0,.9),placement.point(11.1,4.1,1.3)),e->e.entityTags().contains(TAG)))entity.discard();
@@ -32,15 +34,56 @@ public final class TrackHeadDisplay {
         if(data.barFraction()>0)fill(level,placement,200/128.0,(512-296)/128.0,
                 1008/128.0*data.barFraction(),57/128.0,data.goldBar());
         DisplayFinish.polish(level,placement,TAG,200/128.0,216/128.0,1008/128.0,57/128.0,1.052,false,true);
+        cells(level,placement,data.filledCells());
+        text(level,placement,4.047,1.55,"CLEAR",.42f,0xfff7b3,true);
+    }
+    private static void cells(ServerLevel level,Placement placement,int filled){
         for(int i=0;i<10;i++) {
             double x=i<3?2+i*.55:3.65+(i-3)*.8;
             double width=i<3?.42:.65,height=i<3?.28:.36;
-            panel(level,placement,x,1.115,width,height,"white_concrete",true,1.003);
-            panel(level,placement,x+.045,1.15,width-.09,height-.07,
-                    i<data.filledCells()?(i>=3?"yellow_concrete":"light_blue_concrete"):"gray_concrete",true,1.02);
-            DisplayFinish.polish(level,placement,TAG,x+.045,1.15,width-.09,height-.07,1.038,true,true);
+            var entity=EntityTypes.BLOCK_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);
+            if(entity==null)throw new IllegalStateException("Cannot create progress cell");
+            String appearance=(i<3?"small_":"large_")+(i<filled?(i<3?"blue":"gold"):"empty");
+            entity.setBlockState(CELL_BLOCKS.get(appearance).defaultBlockState());
+            double fullWidth=width+height*.4;
+            var pos=placement.point(x,1.115,FacadeSurface.depth(1.035));
+            entity.setPos(pos.x,pos.y,pos.z);entity.setYRot(placement.yaw());
+            entity.setTransformation(new Transformation(null,null,new Vector3f((float)fullWidth,(float)height,.01f*FacadeSurface.DEPTH_SCALE),null));
+            entity.setBrightnessOverride(new Brightness(15,15));entity.setWidth(1);entity.setHeight(1);
+            entity.addTag(TAG);entity.addTag(SURFACE_TAG);level.addFreshEntity(entity);
         }
-        text(level,placement,4.047,1.55,"CLEAR",.42f,0xfff7b3,true);
+    }
+    /** Migrate legacy cell displays without resetting the counters, score or current progress. */
+    static void initialize(){
+        for(String size:new String[]{"small","large"})for(String state:new String[]{"empty","blue","gold"}){
+            String name=size+"_"+state;
+            var key=net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.BLOCK,
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"progress_cell_"+name));
+            CELL_BLOCKS.put(name,net.minecraft.core.Registry.register(net.minecraft.core.registries.BuiltInRegistries.BLOCK,key,
+                    new net.minecraft.world.level.block.Block(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().setId(key))));
+        }
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
+            if(level.getGameTime()%20!=0)return;
+            for(var head:PartConnections.ofKind(level,PartConnections.Kind.HEAD)){
+                if(PartConnections.integrity(level,head)!=PartConnections.Status.CONNECTED)continue;
+                var p=head.placement;
+                var old=level.getEntitiesOfClass(Display.class,new AABB(p.point(-.1,0,.9),p.point(11.1,4.1,1.3)),e->e.entityTags().contains(TAG));
+                if(old.stream().noneMatch(e->e instanceof Display.TextDisplay&&!e.entityTags().contains(SURFACE_TAG)))continue;
+                long[] values=new long[6];boolean[] found=new boolean[6];
+                for(var entity:old)if(entity instanceof Display.TextDisplay text){
+                    var delta=entity.position().subtract(p.point(0,0,0));
+                    double x=delta.x*p.across().getStepX()+delta.z*p.across().getStepZ();
+                    for(int i=0;i<6;i++){
+                        double expectedX=i<4?(i+.5)*2.75:i==4?4.75:8.75;
+                        double expectedY=i<4?3.5625-2*.1125:2.66015625-1.5625*.1125;
+                        if(Math.abs(x-expectedX)<.0001&&Math.abs(delta.y-expectedY)<.0001)
+                            try{values[i]=Long.parseLong(text.getText().getString().replace(",",""));found[i]=true;}catch(NumberFormatException ignored){}
+                    }
+                }
+                boolean complete=true;for(boolean value:found)complete&=value;
+                if(complete)update(level,p,new HeadDisplayData(values[0],values[1],values[2],values[3],values[4],values[5]));
+            }
+        });
     }
     private static void text(ServerLevel level,Placement placement,double x,double centerY,String text,float scale,int color,boolean bold) {
         textLayer(level,placement,x,centerY,text,scale,color,bold,1.06,255);
@@ -67,8 +110,8 @@ public final class TrackHeadDisplay {
         entity.setLineWidth(4096);entity.setBackgroundColor(0);entity.setFlags((byte)0);
         entity.setTextOpacity((byte)opacity);
         entity.setTransformation(new Transformation(null,null,new Vector3f(scale),null));
-        var pos=placement.point(x,centerY-scale*.1125,depth);entity.setPos(pos.x,pos.y,pos.z);entity.setYRot(placement.yaw());
-        entity.setBrightnessOverride(new Brightness(15,15));entity.addTag(TAG);level.addFreshEntity(entity);
+        var pos=placement.point(x,centerY-scale*.1125,FacadeSurface.depth(depth));entity.setPos(pos.x,pos.y,pos.z);entity.setYRot(placement.yaw());
+        entity.setBrightnessOverride(new Brightness(15,15));entity.addTag(TAG);entity.addTag(SURFACE_TAG);level.addFreshEntity(entity);
     }
     private static void fill(ServerLevel level,Placement placement,double x,double y,double width,double height,boolean gold) {
         panel(level,placement,x,y,width,height,gold?"yellow_concrete":"light_blue_concrete",false,1.035);
@@ -78,11 +121,11 @@ public final class TrackHeadDisplay {
         if(entity==null)throw new IllegalStateException("Cannot create progress display");
         entity.setBlockState(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft",material)).defaultBlockState());
-        var matrix=new org.joml.Matrix4f().m00((float)width).m11((float)height).m22(.012f);
+        var matrix=new org.joml.Matrix4f().m00((float)width).m11((float)height).m22(.012f*FacadeSurface.DEPTH_SCALE);
         if(slanted)matrix.m10((float)(height*.4));
         entity.setTransformation(new Transformation(matrix));
-        var pos=placement.point(x,y,z);entity.setPos(pos.x,pos.y,pos.z);entity.setYRot(placement.yaw());
-        entity.setBrightnessOverride(new Brightness(15,15));entity.addTag(TAG);level.addFreshEntity(entity);
+        var pos=placement.point(x,y,FacadeSurface.depth(z));entity.setPos(pos.x,pos.y,pos.z);entity.setYRot(placement.yaw());
+        entity.setBrightnessOverride(new Brightness(15,15));entity.addTag(TAG);entity.addTag(SURFACE_TAG);level.addFreshEntity(entity);
     }
     public static int command(CommandSourceStack source,int critical,int justice,int attack,int miss,int combo,int score) {
         var placement=Placement.head(source);

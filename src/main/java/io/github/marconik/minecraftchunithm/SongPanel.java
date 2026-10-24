@@ -23,10 +23,19 @@ import org.joml.Vector3f;
 public final class SongPanel {
     private static final String TAG="minecraftchunithm.song_display";
     private static Block tile;
+    private static final java.util.Map<ServerLevel,java.util.Set<PartConnections.Part>> REFRESHED=new java.util.WeakHashMap<>();
     private SongPanel(){}
     public static void initialize(){
         var key=ResourceKey.create(Registries.BLOCK,id("song_panel"));
-        tile=Registry.register(BuiltInRegistries.BLOCK,key,new HeadTile(BlockBehaviour.Properties.of().setId(key).strength(2)));
+        tile=Registry.register(BuiltInRegistries.BLOCK,key,new PanelTile(BlockBehaviour.Properties.of().setId(key).strength(2).noOcclusion(),false));
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
+            if(level.getGameTime()%20!=0)return;
+            var refreshed=REFRESHED.computeIfAbsent(level,l->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));
+            for(var part:PartConnections.ofKind(level,PartConnections.Kind.SONG))
+                if(!refreshed.contains(part)&&PartConnections.integrity(level,part)==PartConnections.Status.CONNECTED){
+                    display(level,part.placement,part.song);refreshed.add(part);
+                }
+        });
     }
     private static Identifier id(String path){return Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,path);}
     public static Placement placement(CommandSourceStack source){
@@ -48,8 +57,8 @@ public final class SongPanel {
         source.sendSuccess(()->Component.literal("已生成曲目面板：左下角在玩家所在方格前一格，正面朝向玩家，宽7、高3、厚1。"),false);return 21;
     }
     private static void add(ServerLevel level,Placement p,Display e,double x,double y,double z,Vector3f scale){
-        var pos=p.point(x,y,z);e.setPos(pos.x,pos.y,pos.z);e.setYRot(p.yaw());
-        e.setTransformation(new Transformation(null,null,scale,null));e.setBrightnessOverride(new Brightness(15,15));
+        var pos=p.point(x,y,FacadeSurface.depth(z));e.setPos(pos.x,pos.y,pos.z);e.setYRot(p.yaw());
+        e.setTransformation(new Transformation(null,null,new Vector3f(scale).mul(1,1,FacadeSurface.DEPTH_SCALE),null));e.setBrightnessOverride(new Brightness(15,15));
         e.setWidth(8);e.setHeight(4);e.addTag(TAG);level.addFreshEntity(e);
     }
     private static void rect(ServerLevel level,Placement p,double x,double y,double w,double h,String material,double z){
@@ -92,7 +101,9 @@ public final class SongPanel {
     /** Output only: never turns a rendered song or placeholder into a queue input. */
     static void display(ServerLevel level,Placement p,SongDisplayData data){
         PartConnections.songUpdated(level,p,data);
-        for(var e:level.getEntitiesOfClass(Display.class,new AABB(p.point(-.1,0,.9),p.point(7.1,3.1,1.3)),e->e.entityTags().contains(TAG)))e.discard();
+        // Block displays have a zero-height entity box. Include a margin below
+        // the base at y=0 so previous full-panel layers are actually removed.
+        for(var e:level.getEntitiesOfClass(Display.class,new AABB(p.point(-.1,-.1,.9),p.point(7.1,3.1,1.3)),e->e.entityTags().contains(TAG)))e.discard();
         String theme=switch(data.difficulty()){case MASTER->"purple_concrete";case EXPERT->"red_concrete";case ULTIMA->"black_concrete";};
         rect(level,p,0,0,7,3,theme,1.001);
         rect(level,p,.06,2.5,6.88,.44,"black_concrete",1.014);

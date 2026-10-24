@@ -20,16 +20,18 @@ function OutlineText($text,$x,$y,$size){
  $pen=[Drawing.Pen]::new([Drawing.Color]::White,5);$pen.LineJoin=[Drawing.Drawing2D.LineJoin]::Round;$g.DrawPath($pen,$p);$b=Brush '#252733';$g.FillPath($b,$p)
  $b.Dispose();$pen.Dispose();$p.Dispose()
 }
-# Gold background continues through the full one-block pedestal.
-Rect '#ffd72c' 0 0 1408 512
-for($i=-512;$i -lt 1550;$i+=96){
- $points=[Drawing.PointF[]]@([Drawing.PointF]::new($i,512),[Drawing.PointF]::new(($i+35),512),[Drawing.PointF]::new(($i+547),0),[Drawing.PointF]::new(($i+512),0))
- $b=Brush '#ffe65b';$g.FillPolygon($b,$points);$b.Dispose()
+# User-supplied DDS decoded losslessly to PNG. Fit the full head width, keep
+# aspect ratio and anchor to the HEAD top, before overlaying the counter panel.
+$cover=[Drawing.Bitmap]::new((Join-Path $PSScriptRoot 'assets/head-cover.png'))
+$coverHeight=[int][Math]::Ceiling($cover.Height*1408.0/$cover.Width)
+$g.InterpolationMode=[Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+$g.DrawImage($cover,[Drawing.Rectangle]::new(0,0,1408,$coverHeight))
+if($coverHeight-lt 512){
+ # Extend the final scanline if a replacement image is shorter than the facade.
+ $g.DrawImage($cover,[Drawing.Rectangle]::new(0,$coverHeight,1408,(512-$coverHeight)),
+     0,($cover.Height-1),$cover.Width,1,[Drawing.GraphicsUnit]::Pixel)
 }
-for($i=0;$i -lt 6;$i++){
- $pen=[Drawing.Pen]::new([Drawing.ColorTranslator]::FromHtml('#83e5d4'),3)
- $g.DrawLine($pen,($i*11),378,($i*11+112),266);$g.DrawLine($pen,(1336+$i*10),510,(1406+$i*10),440);$pen.Dispose()
-}
+$cover.Dispose()
 # Four equal counter sections. Numbers are decorative placeholders only.
 Rect '#0a0b0e' 0 0 1408 112
 $labels=@('JUSTICE CRITICAL:  0','JUSTICE:  0','ATTACK:  0','MISS:  0')

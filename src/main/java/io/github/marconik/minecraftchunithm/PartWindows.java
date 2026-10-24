@@ -19,7 +19,7 @@ final class PartWindows {
             // Restrict activation to the blocks behind the visible terminal.
             boolean terminal=part.kind==PartConnections.Kind.HEAD?HeadTerminal.contains(part.placement,hit.getLocation()):
                     (part.kind==PartConnections.Kind.PLAYER||part.kind==PartConnections.Kind.SONG)
-                    &&(part.placement.block(3,1,0).equals(hit.getBlockPos())||part.placement.block(3,2,0).equals(hit.getBlockPos()));
+                    &&HeadTerminal.contains(part.placement,hit.getLocation(),3.5,1.5,PanelTile.width(part.kind==PartConnections.Kind.PLAYER),1);
             if(!terminal)return InteractionResult.PASS;
             if(PartConnections.integrity(level,part)!=PartConnections.Status.CONNECTED){sp.sendSystemMessage(Component.literal("部件损坏或区块未加载，请恢复完整结构。"));return InteractionResult.SUCCESS;}
             open(sp,level,part,0);return InteractionResult.SUCCESS;

@@ -1,0 +1,32 @@
+{
+  "textures": {
+    "particle": "minecraftchunithm:block/player_control_logo",
+    "logo": "minecraftchunithm:block/player_control_logo"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        0.1
+      ],
+      "shade": false,
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#logo"
+        }
+      }
+    }
+  ]
+}
