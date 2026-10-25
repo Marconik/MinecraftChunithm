@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 3000,
+  "title": "Linked Tune",
+  "artist": "水野健治",
+  "sortName": "LINKEDTUNE",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20260423",
+  "defaultBpm": 136.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/3000/cover.png",
+    "itemModel": "minecraftchunithm:cover/3000",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.3000",
+    "resource": "minecraftchunithm:sounds/songs/3000/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 172522.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 2,
+      "levelDecimal": 0,
+      "internalLevel": 2.0,
+      "sourceFile": "3000_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 6,
+      "levelDecimal": 0,
+      "internalLevel": 6.0,
+      "sourceFile": "3000_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 10,
+      "levelDecimal": 70,
+      "internalLevel": 10.7,
+      "sourceFile": "3000_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 13,
+      "levelDecimal": 50,
+      "internalLevel": 13.5,
+      "sourceFile": "3000_03.c2s",
+      "notesDesigner": "プレイヤーさん、ありがとう！またね！",
+      "chartResource": "minecraftchunithm:songs/3000/master.json",
+      "imported": true,
+      "firstNoteMs": 8823.529412,
+      "lastNoteMs": 162231.853248,
+      "logicalNoteCount": 946,
+      "judgmentCount": 1687,
+      "speedChangeMarkerCount": 2,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music3000",
+    "metadataFile": "Music.xml"
+  }
+}

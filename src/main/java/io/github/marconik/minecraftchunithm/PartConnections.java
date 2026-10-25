@@ -20,6 +20,7 @@ public final class PartConnections {
     public static final class Part {
         public final Kind kind; public final Placement placement; public final int length;
         public NameDisplayData player=NameDisplayData.defaults();
+        public String playerId="";
         public SongDisplayData song=SongDisplayData.defaults();
         public MusicQueueData music=MusicQueueData.empty();
         public SongQueueData songInputs=SongQueueData.empty();
@@ -45,6 +46,7 @@ public final class PartConnections {
                 var part=new Part(Kind.valueOf(o.get("kind").getAsString()),p,o.get("length").getAsInt());
                 if(part.length<1||part.length>1024)throw new IllegalArgumentException("Invalid length");
                 if(o.has("player"))part.player=decodePlayer(o.getAsJsonObject("player"));
+                if(o.has("playerId")){String id=o.get("playerId").getAsString();if(id.matches("\\d{16}"))part.playerId=id;}
                 if(o.has("song"))part.song=decodeSong(o.getAsJsonObject("song"));
                 if(o.has("musicQueue"))part.music=MusicQueueData.decode(o.getAsJsonObject("musicQueue"));
                 if(part.kind==Kind.SONG){
@@ -63,7 +65,7 @@ public final class PartConnections {
             var o=new JsonObject();o.addProperty("kind",part.kind.name());var pos=part.placement.origin();
             o.addProperty("x",pos.getX());o.addProperty("y",pos.getY());o.addProperty("z",pos.getZ());
             o.addProperty("facing",part.placement.forward().name());o.addProperty("length",part.length);
-            if(part.kind==Kind.PLAYER)o.add("player",encodePlayer(part.player));
+            if(part.kind==Kind.PLAYER){o.add("player",encodePlayer(part.player));if(!part.playerId.isEmpty())o.addProperty("playerId",part.playerId);}
             if(part.kind==Kind.SONG){o.add("song",encodeSong(part.song));o.add("musicQueue",part.music.encode());o.add("songInputs",part.songInputs.encode());}array.add(o);
         }
         try{Path path=file(level);Files.createDirectories(path.getParent());Path temporary=path.resolveSibling(path.getFileName()+".tmp");

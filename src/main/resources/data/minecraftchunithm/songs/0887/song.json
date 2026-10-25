@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": 887,
+  "title": "SON OF SUN",
+  "artist": "Hosoe Shinji",
+  "sortName": "SONOFSUN",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20200319",
+  "defaultBpm": 200.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0887/cover.png",
+    "itemModel": "minecraftchunithm:cover/0887",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0887",
+    "resource": "minecraftchunithm:sounds/songs/0887/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 106816.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "0887_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 7,
+      "levelDecimal": 50,
+      "internalLevel": 7.5,
+      "sourceFile": "0887_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 80,
+      "internalLevel": 13.8,
+      "sourceFile": "0887_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 40,
+      "internalLevel": 14.4,
+      "sourceFile": "0887_03.c2s",
+      "notesDesigner": "Techno Kitchen MX",
+      "chartResource": "minecraftchunithm:songs/0887/master.json",
+      "imported": true,
+      "firstNoteMs": 1200.0,
+      "lastNoteMs": 101700.0,
+      "logicalNoteCount": 1025,
+      "judgmentCount": 1540,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    },
+    "ULTIMA": {
+      "difficultyId": 4,
+      "level": 15,
+      "levelDecimal": 10,
+      "internalLevel": 15.1,
+      "sourceFile": "0887_04.c2s",
+      "notesDesigner": "Techno Kitchen SC",
+      "chartResource": "minecraftchunithm:songs/0887/ultima.json",
+      "imported": true,
+      "firstNoteMs": 1200.0,
+      "lastNoteMs": 101700.0,
+      "logicalNoteCount": 1331,
+      "judgmentCount": 1866,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0887",
+    "metadataFile": "Music.xml"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "formatVersion": 1,
+  "characters": [
+    {
+      "id": "0000",
+      "texture": "minecraftchunithm:character/0000",
+      "itemModel": "minecraftchunithm:character/0000",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "0011",
+      "texture": "minecraftchunithm:character/0011",
+      "itemModel": "minecraftchunithm:character/0011",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "1524",
+      "texture": "minecraftchunithm:character/1524",
+      "itemModel": "minecraftchunithm:character/1524",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "2466",
+      "texture": "minecraftchunithm:character/2466",
+      "itemModel": "minecraftchunithm:character/2466",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "2540",
+      "texture": "minecraftchunithm:character/2540",
+      "itemModel": "minecraftchunithm:character/2540",
+      "width": 128,
+      "height": 128
+    },
+    {
+      "id": "2553",
+      "texture": "minecraftchunithm:character/2553",
+      "itemModel": "minecraftchunithm:character/2553",
+      "width": 128,
+      "height": 128
+    }
+  ]
+}

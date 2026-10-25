@@ -41,6 +41,10 @@ final class PartWindows {
             player.openMenu(new SimpleMenuProvider((id,inventory,p)->new SongPanelMenu(id,inventory,level,part,player),Component.literal("MUSIC / TRACK SELECT")));
             return;
         }
+        if(part.kind==PartConnections.Kind.PLAYER){
+            player.openMenu(new SimpleMenuProvider((id,inventory,p)->new PlayerPanelMenu(id,inventory,level,part,player),Component.literal("PLAYER / ACCOUNT")));
+            return;
+        }
         String title=switch(part.kind){case HEAD->"头部 · 部件连接状态";case PLAYER->"玩家面板 · 导入信息";case SONG->"歌曲面板 · 播放设置";default->"部件";};
         player.openMenu(new SimpleMenuProvider((id,inventory,p)->new Window(id,inventory,player,level,part,page,new SimpleContainer(27),sourceHead),Component.literal(title)));
     }
@@ -54,25 +58,12 @@ final class PartWindows {
             if(part.kind==PartConnections.Kind.HEAD){
                 return; // Head uses its own native control screen.
             }
-            if(part.kind==PartConnections.Kind.PLAYER){
-                button(0,Items.NAME_TAG,"当前玩家："+part.player.name(),()->{});
-                List<NameDisplayData> choices;
-                try{choices=PanelServices.playerChoices(owner);}catch(RuntimeException e){MinecraftChunithm.LOGGER.error("Player info provider failed",e);choices=List.of();}
-                final var list=choices;int start=page*17;
-                if(list.isEmpty())button(13,Items.PAPER,"暂无可导入玩家信息（等待提供器）",()->{});
-                for(int i=start;i<Math.min(start+17,list.size());i++){var value=list.get(i);button(9+i-start,Items.PLAYER_HEAD,"导入："+value.name(),()->{NamePanel.update(level,part.placement,value);reopen(page);});}
-                // Navigation occupies the top row, separate from selectable profiles.
-                buttons.setItem(26,ItemStack.EMPTY);actions.remove(26);
-                button(8,Items.BARRIER,"关闭",owner::closeContainer);
-                if(page>0)button(6,Items.ARROW,"上一页",()->reopen(page-1));
-                if(start+17<list.size())button(7,Items.ARROW,"下一页",()->reopen(page+1));return;
-            }
         }
         void reopen(int page){open(owner,level,part,page,sourceHead);}
         void button(int slot,Item item,String label,Runnable action){var stack=new ItemStack(item);stack.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME,Component.literal(label));buttons.setItem(slot,stack);actions.put(slot,action);}
         @Override public void clicked(int slot,int button,ContainerInput input,Player player){
             if(player!=owner||!stillValid(player))return;
-            if(slot==26||slot==8&&part.kind==PartConnections.Kind.PLAYER){owner.closeContainer();return;}
+            if(slot==26){owner.closeContainer();return;}
             if(part.kind!=PartConnections.Kind.HEAD&&!net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS).test(owner.createCommandSourceStack())){
                 owner.sendSystemMessage(Component.literal("修改面板需要管理员权限。"));return;}
             var action=actions.get(slot);if(action!=null)try{action.run();}catch(RuntimeException invalid){owner.sendSystemMessage(Component.literal(invalid.getMessage()==null?"面板设置失败":invalid.getMessage()));}

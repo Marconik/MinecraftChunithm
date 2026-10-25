@@ -34,6 +34,22 @@
       "metadata": "minecraftchunithm:songs/0258/song.json"
     },
     {
+      "id": 386,
+      "title": "神威",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0386/song.json"
+    },
+    {
+      "id": 393,
+      "title": "Dengeki Tube",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0393/song.json"
+    },
+    {
       "id": 428,
       "title": "Aleph-0",
       "difficulties": [
@@ -75,12 +91,29 @@
       "metadata": "minecraftchunithm:songs/0697/song.json"
     },
     {
+      "id": 887,
+      "title": "SON OF SUN",
+      "difficulties": [
+        "MASTER",
+        "ULTIMA"
+      ],
+      "metadata": "minecraftchunithm:songs/0887/song.json"
+    },
+    {
       "id": 1035,
       "title": "赤壁、大炎上！！",
       "difficulties": [
         "MASTER"
       ],
       "metadata": "minecraftchunithm:songs/1035/song.json"
+    },
+    {
+      "id": 1086,
+      "title": "祈 -我ら神祖と共に歩む者なり-",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/1086/song.json"
     },
     {
       "id": 1100,
@@ -164,6 +197,14 @@
       "metadata": "minecraftchunithm:songs/2838/song.json"
     },
     {
+      "id": 2966,
+      "title": "月葬",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2966/song.json"
+    },
+    {
       "id": 2967,
       "title": "YOUNITHM",
       "difficulties": [
@@ -188,6 +229,14 @@
         "ULTIMA"
       ],
       "metadata": "minecraftchunithm:songs/2999/song.json"
+    },
+    {
+      "id": 3000,
+      "title": "Linked Tune",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/3000/song.json"
     }
   ]
 }

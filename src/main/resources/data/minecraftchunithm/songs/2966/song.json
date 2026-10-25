@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2966,
+  "title": "月葬",
+  "artist": "黒魔 × rintaro soma",
+  "sortName": "ケツソウ",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20260423",
+  "defaultBpm": 190.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2966/cover.png",
+    "itemModel": "minecraftchunithm:cover/2966",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2966",
+    "resource": "minecraftchunithm:sounds/songs/2966/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 164864.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "2966_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 0,
+      "internalLevel": 9.0,
+      "sourceFile": "2966_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 30,
+      "internalLevel": 14.3,
+      "sourceFile": "2966_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 50,
+      "internalLevel": 15.5,
+      "sourceFile": "2966_03.c2s",
+      "notesDesigner": "TraNsforM \"VERSE\"",
+      "chartResource": "minecraftchunithm:songs/2966/master.json",
+      "imported": true,
+      "firstNoteMs": 1263.157895,
+      "lastNoteMs": 163026.315789,
+      "logicalNoteCount": 1467,
+      "judgmentCount": 3341,
+      "speedChangeMarkerCount": 8,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2966",
+    "metadataFile": "Music.xml"
+  }
+}

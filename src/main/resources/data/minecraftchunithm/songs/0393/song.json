@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 393,
+  "title": "Dengeki Tube",
+  "artist": "BACO",
+  "sortName": "DENGEKITUBE",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20170720",
+  "defaultBpm": 155.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0393/cover.png",
+    "itemModel": "minecraftchunithm:cover/0393",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0393",
+    "resource": "minecraftchunithm:sounds/songs/0393/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 142464.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "0393_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 7,
+      "levelDecimal": 50,
+      "internalLevel": 7.5,
+      "sourceFile": "0393_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 12,
+      "levelDecimal": 50,
+      "internalLevel": 12.5,
+      "sourceFile": "0393_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 20,
+      "internalLevel": 15.2,
+      "sourceFile": "0393_03.c2s",
+      "notesDesigner": "チャン@16kf.゜ω゜",
+      "chartResource": "minecraftchunithm:songs/0393/master.json",
+      "imported": true,
+      "firstNoteMs": 1548.387097,
+      "lastNoteMs": 139258.064516,
+      "logicalNoteCount": 1352,
+      "judgmentCount": 1513,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0393",
+    "metadataFile": "Music.xml"
+  }
+}

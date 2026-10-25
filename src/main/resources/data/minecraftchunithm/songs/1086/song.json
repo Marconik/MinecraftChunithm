@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 1086,
+  "title": "祈 -我ら神祖と共に歩む者なり-",
+  "artist": "光吉猛修 VS 穴山大輔 VS Kai VS 水野健治 VS 大国奏音",
+  "sortName": "イノリワレラシンソトトモニアユムモノナリ",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20210930",
+  "defaultBpm": 219.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/1086/cover.png",
+    "itemModel": "minecraftchunithm:cover/1086",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.1086",
+    "resource": "minecraftchunithm:sounds/songs/1086/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 177941.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 6,
+      "levelDecimal": 0,
+      "internalLevel": 6.0,
+      "sourceFile": "1086_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 10,
+      "levelDecimal": 0,
+      "internalLevel": 10.0,
+      "sourceFile": "1086_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 50,
+      "internalLevel": 14.5,
+      "sourceFile": "1086_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 70,
+      "internalLevel": 15.7,
+      "sourceFile": "1086_03.c2s",
+      "notesDesigner": "譜面ボーイズからの祈り -Pray for \"JUSTICE\"-",
+      "chartResource": "minecraftchunithm:songs/1086/master.json",
+      "imported": true,
+      "firstNoteMs": 2191.780822,
+      "lastNoteMs": 172822.995359,
+      "logicalNoteCount": 2505,
+      "judgmentCount": 4444,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music1086",
+    "metadataFile": "Music.xml"
+  }
+}

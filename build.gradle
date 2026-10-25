@@ -35,6 +35,16 @@ loom {
                 programArg '--height'
                 programArg '800'
             }
+            if (project.hasProperty('playerUiPreview')) {
+                runDir 'build/air-input-test'
+                vmArg '-Dminecraftchunithm.playerUiPreview=true'
+                programArg '--quickPlaySingleplayer'
+                programArg 'New World'
+                programArg '--width'
+                programArg '1280'
+                programArg '--height'
+                programArg '800'
+            }
             if (project.hasProperty('motionQuickPlay') || project.hasProperty('modelQuickPlay') || project.hasProperty('nameplateQuickPlay') || project.hasProperty('connectionQuickPlay')) {
                 vmArg project.hasProperty('connectionQuickPlay') ? '-Dminecraftchunithm.connectionQuickPlay=true' :
                     project.hasProperty('nameplateQuickPlay') ? '-Dminecraftchunithm.nameplateQuickPlay=true' :

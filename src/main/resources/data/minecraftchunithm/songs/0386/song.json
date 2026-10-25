@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 386,
+  "title": "神威",
+  "artist": "TJ.hangneil",
+  "sortName": "カムイ",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20170209",
+  "defaultBpm": 210.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0386/cover.png",
+    "itemModel": "minecraftchunithm:cover/0386",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0386",
+    "resource": "minecraftchunithm:sounds/songs/0386/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 151594.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "0386_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 50,
+      "internalLevel": 8.5,
+      "sourceFile": "0386_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 80,
+      "internalLevel": 13.8,
+      "sourceFile": "0386_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 20,
+      "internalLevel": 15.2,
+      "sourceFile": "0386_03.c2s",
+      "notesDesigner": "Revo2LC  -CODENAME : AIRPLUS-",
+      "chartResource": "minecraftchunithm:songs/0386/master.json",
+      "imported": true,
+      "firstNoteMs": 1428.571429,
+      "lastNoteMs": 147428.571429,
+      "logicalNoteCount": 2113,
+      "judgmentCount": 3390,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0386",
+    "metadataFile": "Music.xml"
+  }
+}

@@ -11,6 +11,7 @@ public final class MinecraftChunithmClient implements ClientModInitializer {
         SongPanelTextRenderer.initialize();
         net.minecraft.client.gui.screens.MenuScreens.register(io.github.marconik.minecraftchunithm.HeadControlMenu.TYPE,HeadControlScreen::new);
         net.minecraft.client.gui.screens.MenuScreens.register(io.github.marconik.minecraftchunithm.SongPanelMenu.TYPE,SongPanelScreen::new);
+        net.minecraft.client.gui.screens.MenuScreens.register(io.github.marconik.minecraftchunithm.PlayerPanelMenu.TYPE,PlayerPanelScreen::new);
         net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(
             io.github.marconik.minecraftchunithm.SongPanelMenu.Snapshot.TYPE,(payload,context)->context.client().execute(()->{
                 var player=context.client().player;
@@ -22,6 +23,12 @@ public final class MinecraftChunithmClient implements ClientModInitializer {
                 if(player!=null&&player.containerMenu instanceof io.github.marconik.minecraftchunithm.HeadControlMenu menu&&menu.containerId==payload.containerId())
                     menu.receiveMusic(payload.json());
             }));
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(
+            io.github.marconik.minecraftchunithm.PlayerPanelMenu.Snapshot.TYPE,(payload,context)->context.client().execute(()->{
+                var player=context.client().player;
+                if(player!=null&&player.containerMenu instanceof io.github.marconik.minecraftchunithm.PlayerPanelMenu menu&&menu.containerId==payload.containerId())
+                    menu.receive(payload.json());
+            }));
         DevelopmentHeadUiCapture.initialize();
         DevelopmentNoteCueCheck.initialize();
         DevelopmentReverseCapture.initialize();
@@ -29,6 +36,7 @@ public final class MinecraftChunithmClient implements ClientModInitializer {
         DevelopmentMineCapture.initialize();
         DevelopmentScoreCapture.initialize();
         DevelopmentMusicUiPreview.initialize();
+        DevelopmentPlayerUiPreview.initialize();
         MinecraftChunithm.LOGGER.info("MinecraftChunithm client initialized: build={}",MinecraftChunithm.BUILD_LABEL);
     }
 }

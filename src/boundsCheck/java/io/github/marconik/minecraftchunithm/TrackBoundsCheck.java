@@ -76,6 +76,22 @@ public final class TrackBoundsCheck {
         }
         try {new NameDisplayData("A","B",null,"1","C",NameDisplayData.defaults().characterModel(),"0");
             throw new AssertionError("Missing title color accepted");}catch(IllegalArgumentException expected) { }
+        var account=new PlayerLibrary.Profile("5276027620366606","Chunithm","1524",1,new java.math.BigDecimal("17.58"),
+                "NEW COMER",NameDisplayData.TitleColor.GOLD,"GiGO");
+        if(!account.id().matches("\\d{16}")||account.rating().compareTo(new java.math.BigDecimal("17.58"))!=0)
+            throw new AssertionError("Player profile fields were not preserved");
+        var view=new PlayerPanelMenu.ProfileView(account.id(),account.name(),account.characterId(),
+                "minecraftchunithm:textures/character/1524.png","1","17.58",account.title(),"GOLD",account.team(),0);
+        var playerState=PlayerPanelMenu.decode(PlayerPanelMenu.encode(new PlayerPanelMenu.State(true,view)));
+        if(playerState.profile()==null||!playerState.profile().id().equals(account.id())||playerState.profile().completion()!=0)
+            throw new AssertionError("Player panel network state lost account data");
+        var guest=new PlayerPanelMenu.ProfileView(PlayerPanelMenu.GUEST_ID,"GUEST","0000",
+                "minecraftchunithm:textures/character/0000.png","****","**.**","","SILVER","",0);
+        if(PlayerPanelMenu.decode(PlayerPanelMenu.encode(new PlayerPanelMenu.State(true,guest))).profile()==null)
+            throw new AssertionError("Guest player state was rejected");
+        try {PlayerPanelMenu.decode("{\"writable\":true,\"profile\":{\"id\":\"123\",\"name\":\"X\",\"characterId\":\"0000\",\"texture\":\"x\",\"level\":\"1\",\"rating\":\"0.00\",\"title\":\"\",\"titleColor\":\"SILVER\",\"team\":\"\",\"completion\":0}}");
+            throw new AssertionError("Malformed player ID accepted by client state");}catch(IllegalArgumentException expected) { }
+        System.out.println("Player accounts: 16-digit lookup state, guest masking, zero completion and malformed-ID rejection passed.");
         for(var direction:new net.minecraft.core.Direction[]{net.minecraft.core.Direction.NORTH,net.minecraft.core.Direction.SOUTH,
                 net.minecraft.core.Direction.WEST,net.minecraft.core.Direction.EAST}) {
             var track=new Placement(standing.relative(direction.getCounterClockWise(),-4),direction);
