@@ -25,6 +25,8 @@ public final class MinecraftChunithm implements ModInitializer {
         SongPanelMenu.initialize();
         MusicQueue.initialize();
         TrackMotion.initialize();
+        RailAudio.initialize();
+        NoteCueAudio.initialize();
         ChartPlayback.initialize();
         DevelopmentMotionTest.initialize();
         LOGGER.info("MinecraftChunithm initialized: build={}, control logo registered={}",BUILD_LABEL,PartPorts.ready());

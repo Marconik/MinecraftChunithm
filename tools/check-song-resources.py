@@ -46,13 +46,14 @@ def main():
             geometry = json.loads(archive.read(f"assets/{namespace}/models/{model}.json"))
             namespace, texture = geometry["textures"]["layer0"].split(":", 1)
             assert metadata["cover"]["texture"] == f"{namespace}:textures/{texture}.png"
-            for chart in metadata["charts"].values():
+            for difficulty, chart in metadata["charts"].items():
                 if chart["imported"]:
                     chart_namespace,chart_path=chart["chartResource"].split(":",1)
                     assert Path(chart_path).parent.as_posix() == f"songs/{metadata['id']:04d}", "Chart must be stored in its song directory"
                     definition=json.loads(archive.read(f"data/{chart_namespace}/{chart_path}"))
                     assert archive.read(f"data/{chart_namespace}/{chart_path}") == (resources / f"data/{chart_namespace}/{chart_path}").read_bytes()
                     assert definition["songId"]==metadata["id"] and definition["notes"]
+                    assert definition["difficulty"]==difficulty, "Wrong chart difficulty"
                 else:
                     assert chart["chartResource"] is None
             print(f"Verified song {entry['id']}: audio, cover, model, metadata and streaming references in JAR")

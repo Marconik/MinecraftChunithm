@@ -26,6 +26,14 @@
       "metadata": "minecraftchunithm:songs/0258/song.json"
     },
     {
+      "id": 464,
+      "title": "World Vanquisher",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0464/song.json"
+    },
+    {
       "id": 465,
       "title": "macrocosmos",
       "difficulties": [
@@ -40,6 +48,14 @@
         "MASTER"
       ],
       "metadata": "minecraftchunithm:songs/0697/song.json"
+    },
+    {
+      "id": 1035,
+      "title": "赤壁、大炎上！！",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/1035/song.json"
     },
     {
       "id": 1100,
@@ -58,6 +74,14 @@
       "metadata": "minecraftchunithm:songs/2241/song.json"
     },
     {
+      "id": 2279,
+      "title": "グラウンドスライダー協奏曲第一番「風唄」",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2279/song.json"
+    },
+    {
       "id": 2354,
       "title": "月の光",
       "difficulties": [
@@ -72,6 +96,32 @@
         "MASTER"
       ],
       "metadata": "minecraftchunithm:songs/2475/song.json"
+    },
+    {
+      "id": 2712,
+      "title": "Theatore Creatore",
+      "difficulties": [
+        "MASTER",
+        "ULTIMA"
+      ],
+      "metadata": "minecraftchunithm:songs/2712/song.json"
+    },
+    {
+      "id": 2838,
+      "title": "神鳴",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2838/song.json"
+    },
+    {
+      "id": 2967,
+      "title": "YOUNITHM",
+      "difficulties": [
+        "MASTER",
+        "ULTIMA"
+      ],
+      "metadata": "minecraftchunithm:songs/2967/song.json"
     }
   ]
 }

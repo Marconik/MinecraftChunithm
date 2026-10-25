@@ -16,6 +16,10 @@ loom {
                 // Loom's runDir controls --gameDir as well as the process directory.
                 runDir 'build/air-input-test'
                 vmArg '-Dminecraftchunithm.inputQuickPlay=true'
+                if (project.hasProperty('ultimaQuickPlay')) vmArg '-Dminecraftchunithm.ultimaQuickPlay=true'
+                if (project.hasProperty('decorationQuickPlay')) vmArg '-Dminecraftchunithm.decorationQuickPlay=true'
+                if (project.hasProperty('theatoreQuickPlay')) vmArg '-Dminecraftchunithm.theatoreQuickPlay=true'
+                if (project.hasProperty('noteCueQuickPlay')) vmArg '-Dminecraftchunithm.noteCueQuickPlay=true'
                 programArg '--quickPlaySingleplayer'
                 programArg 'New World'
             }

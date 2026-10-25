@@ -1,0 +1,149 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "minecraftchunithm:block/air_sensors/white",
+    "white": "minecraftchunithm:block/air_sensors/white",
+    "top": "minecraftchunithm:block/air_sensors/top",
+    "bottom": "minecraftchunithm:block/air_sensors/bottom",
+    "black": "minecraftchunithm:block/air_sensors/black",
+    "green": "minecraftchunithm:block/air_sensors/green",
+    "red": "minecraftchunithm:block/air_sensors/red",
+    "surface": "minecraftchunithm:block/air_sensors/air_sensor_left_3_0"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "shade": true,
+      "light_emission": 0,
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bottom"
+        },
+        "north": {
+          "texture": "#white",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#white",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#white",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        16,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        3
+      ],
+      "shade": true,
+      "faces": {
+        "east": {
+          "texture": "#top",
+          "uv": [
+            13,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        16,
+        13,
+        3
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "shade": true,
+      "faces": {
+        "east": {
+          "texture": "#top",
+          "uv": [
+            0,
+            0,
+            13,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        16,
+        0,
+        3
+      ],
+      "to": [
+        16,
+        13,
+        16
+      ],
+      "shade": true,
+      "faces": {
+        "east": {
+          "texture": "#surface",
+          "uv": [
+            0,
+            3,
+            13,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

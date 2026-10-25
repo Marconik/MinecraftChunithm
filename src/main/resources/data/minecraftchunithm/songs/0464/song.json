@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 464,
+  "title": "World Vanquisher",
+  "artist": "void (Mournfinale)",
+  "sortName": "WORLDVANQUISHER",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20171005",
+  "defaultBpm": 170.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0464/cover.png",
+    "itemModel": "minecraftchunithm:cover/0464",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0464",
+    "resource": "minecraftchunithm:sounds/songs/0464/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 165376.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "0464_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "0464_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 80,
+      "internalLevel": 13.8,
+      "sourceFile": "0464_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 50,
+      "internalLevel": 15.5,
+      "sourceFile": "0464_03.c2s",
+      "notesDesigner": "譜面ボーイズからの挑戦状",
+      "chartResource": "minecraftchunithm:songs/0464/master.json",
+      "imported": true,
+      "firstNoteMs": 2470.588235,
+      "lastNoteMs": 160941.176471,
+      "logicalNoteCount": 2156,
+      "judgmentCount": 3000,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0464",
+    "metadataFile": "Music.xml"
+  }
+}

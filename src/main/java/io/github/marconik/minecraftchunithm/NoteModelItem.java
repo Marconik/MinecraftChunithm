@@ -13,7 +13,7 @@ public final class NoteModelItem extends TapModelItem {
         definition=new NoteDefinition(base.id(),kind,base.timeMs(),base.lane(),base.width(),base.durationMs(),
                 kind==NoteDefinition.Kind.AIR?direction:base.direction(),base.parentId(),
                 base.nodes().stream().map(n->new NoteDefinition.Node(n.offsetMs(),n.lane(),n.width(),
-                        kind==NoteDefinition.Kind.AIR_ACTION?1:n.height(),connection)).toList());
+                        kind==NoteDefinition.Kind.AIR_ACTION?NoteDefinition.AIR_ACTION_HEIGHT:n.height(),connection)).toList());
     }
     public NoteDefinition definition() { return definition; }
     @Override

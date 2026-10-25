@@ -2,23 +2,26 @@
   "parent": "minecraft:block/block",
   "ambientocclusion": false,
   "textures": {
-    "effect": "minecraftchunithm:block/effect_yel",
+    "effect": {
+      "sprite": "minecraftchunithm:block/effect_yel",
+      "force_translucent": true
+    },
     "particle": "minecraftchunithm:block/effect_yel"
   },
   "elements": [
     {
       "from": [
         0,
-        0,
+        8,
         0
       ],
       "to": [
         16,
-        16,
+        8,
         16
       ],
       "shade": false,
-      "light_emission": 12,
+      "light_emission": 15,
       "faces": {
         "up": {
           "uv": [
@@ -37,25 +40,23 @@
             16
           ],
           "texture": "#effect"
-        },
-        "north": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#effect"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            16,
-            16
-          ],
-          "texture": "#effect"
-        },
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        0,
+        0
+      ],
+      "to": [
+        8,
+        16,
+        16
+      ],
+      "shade": false,
+      "light_emission": 15,
+      "faces": {
         "east": {
           "uv": [
             0,
@@ -63,7 +64,8 @@
             16,
             16
           ],
-          "texture": "#effect"
+          "texture": "#effect",
+          "rotation": 90
         },
         "west": {
           "uv": [
@@ -72,7 +74,8 @@
             16,
             16
           ],
-          "texture": "#effect"
+          "texture": "#effect",
+          "rotation": 90
         }
       }
     }

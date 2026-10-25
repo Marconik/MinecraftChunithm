@@ -8,4 +8,5 @@ out/
 .vscode/
 local.properties
 *.log
+logs/
 __pycache__/

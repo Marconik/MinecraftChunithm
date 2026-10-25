@@ -39,7 +39,7 @@ public record ChartDefinition(String title,List<Note> notes,List<Speed> speeds,L
                 throw new IllegalArgumentException("Invalid chart note: "+n.id);
             if(Set.of("HLD","HXD","SLD","SLC","SXD","SXC","AHD","ASC","ASD","ALD").contains(n.type)!=(n.end>n.time))
                 throw new IllegalArgumentException("Invalid sustain duration: "+n.id);
-            if(n.type.equals("ALD")&&!Set.of("GRY","AQA","RED","BLK","DEF","DGR","BLU","ORN","YEL","PPL","NON").contains(n.color))
+            if(n.type.equals("ALD")&&!Set.of("GRY","AQA","RED","BLK","DEF","DGR","GRN","PNK","CYN","BLU","ORN","YEL","PPL","NON").contains(n.color))
                 throw new IllegalArgumentException("Unsupported effect color: "+n.color);
         }
         double previousEnd=-1;
@@ -74,6 +74,8 @@ public record ChartDefinition(String title,List<Note> notes,List<Speed> speeds,L
     }
     public static ChartDefinition fromJson(JsonObject json){
         if(json.get("schemaVersion").getAsInt()!=1)throw new IllegalArgumentException("Unsupported chart schema");
+        if(json.has("visualWarnings"))for(var warning:json.getAsJsonArray("visualWarnings"))
+            MinecraftChunithm.LOGGER.warn("Chart {} {}: {}",json.get("title"),json.get("difficulty"),warning.getAsString());
         List<Note> notes=new ArrayList<>();
         for(var value:json.getAsJsonArray("notes")){
             var n=value.getAsJsonObject();double t=n.get("timeMs").getAsDouble(),l=n.get("lane").getAsDouble(),w=n.get("width").getAsDouble();

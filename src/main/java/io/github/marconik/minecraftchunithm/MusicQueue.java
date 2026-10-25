@@ -14,7 +14,7 @@ public final class MusicQueue {
     private MusicQueue(){}
     public record Row(int songId,String title,String artist,String texture,String coverModel,String difficulty,String level,String constant,String status){}
     public record View(double speed,boolean mirror,boolean connected,boolean writable,boolean canSelect,List<Row> rows){
-        public static View empty(){return new View(10,false,false,false,false,List.of(emptyRow(),emptyRow(),emptyRow()));}
+        public static View empty(){return new View(MusicQueueData.DEFAULT_SPEED,false,false,false,false,List.of(emptyRow(),emptyRow(),emptyRow()));}
     }
     private static Row emptyRow(){return new Row(0,"","","","","","","","EMPTY");}
     public record Snapshot(int containerId,String json) implements CustomPacketPayload {

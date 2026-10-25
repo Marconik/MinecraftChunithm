@@ -10,7 +10,62 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 /** Explicit development test only; run in a disposable copy of the test world. */
-final class DevelopmentInputCheck {
+public final class DevelopmentInputCheck {
+    public static void showDecorativeLines(CommandSourceStack source,int songId){
+        var level=source.getLevel();var track=PartConnections.inputRoute(level,DevelopmentMotionTest.inputHead()).track().part();
+        if(songId>0){
+            var chart=SongLibrary.charts(level).stream().filter(song->song.songId()==songId&&song.difficulty().equals(songId==2967?"ULTIMA":"MASTER")).findFirst().orElseThrow();
+            try{ChartPlayback.loadSong(level,track,chart,1.5,false);}catch(java.io.IOException error){throw new IllegalStateException(error);}
+            level.getServer().getCommands().performPrefixedCommand(source,"chunithm chart seek "+(songId==2967?145:110));
+            return;
+        }
+        var colors=java.util.List.of("GRY","AQA","RED","BLK","DEF","DGR","GRN","PNK","CYN","BLU","ORN","YEL","PPL");
+        var notes=new java.util.ArrayList<ChartDefinition.Note>();
+        for(int i=0;i<colors.size();i++)notes.add(new ChartDefinition.Note("color_"+i,"ALD",500,2000,i,1,i,1,"",false,false,5,5,colors.get(i)));
+        notes.add(new ChartDefinition.Note("air_reference","AHD",500,2000,14,1,14,1,"AIR",true,true,5,5,"DEF"));
+        ChartPlayback.load(level,track,new ChartDefinition("ALD/Air same-width palette",notes,java.util.List.of(),java.util.List.of(),java.util.List.of(),2000),1.5,false);
+        level.getServer().getCommands().performPrefixedCommand(source,"chunithm chart seek 0");
+    }
+    public static void showYounithm(CommandSourceStack source,String difficulty){
+        showSongDifficulties(source,2967,difficulty);
+    }
+    public static void showSongDifficulties(CommandSourceStack source,int songId,String difficulty){
+        var level=source.getLevel();var head=PartConnections.find(level,PartConnections.Kind.HEAD,DevelopmentMotionTest.inputHead());
+        var panel=PartConnections.find(level,PartConnections.Kind.SONG,PartConnections.target(head.placement,PartConnections.Kind.SONG));
+        ChartPlayback.unload(level);
+        MusicQueue.setPanelInputs(level,panel,SongQueueData.empty(),MusicQueueData.DEFAULT_SPEED,false);
+        MusicQueue.setPanelChoice(level,panel,0,new MusicQueueData.Choice(songId,difficulty,false));
+        MusicQueue.setPanelChoice(level,panel,1,new MusicQueueData.Choice(songId,difficulty.equals("MASTER")?"ULTIMA":"MASTER",false));
+        MusicQueue.prepare(level,head);
+        require(panel.song.difficulty().name().equals(difficulty),"YOUNITHM panel difficulty did not follow selection");
+        var catalog=SongLibrary.catalog(level).stream().filter(song->song.songId()==songId).findFirst().orElseThrow();
+        require(catalog.difficulties().stream().filter(d->d.available()&&(d.name().equals("MASTER")||d.name().equals("ULTIMA"))).count()==2,
+                "Both YOUNITHM difficulties must be selectable");
+        var p=panel.placement;
+        long backgrounds=level.getEntitiesOfClass(net.minecraft.world.entity.Display.BlockDisplay.class,
+                new net.minecraft.world.phys.AABB(p.point(-.1,-.1,.9),p.point(7.1,3.1,1.3)),
+                entity->net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(entity.getBlockState().getBlock()).getPath().equals("song_ultima_background")).size();
+        require(backgrounds==(difficulty.equals("ULTIMA")?1:0),"Stale or missing ULTIMA panel background");
+        require(panel.song.speed()==20&&panel.music.speed()==20,"Default speed did not reach the physical panel");
+        MinecraftChunithm.LOGGER.info("Song {} native selection verified: {}, title={}, level={}, speed={}, patterned layers={}",songId,difficulty,panel.song.title(),panel.song.level(),panel.song.speed(),backgrounds);
+    }
+    public static void openYounithmPanel(CommandSourceStack source){
+        var owner=(net.minecraft.server.level.ServerPlayer)source.getEntity();
+        var panel=PartConnections.find(source.getLevel(),PartConnections.Kind.SONG,
+                PartConnections.target(DevelopmentMotionTest.inputHead(),PartConnections.Kind.SONG));
+        PartWindows.open(owner,source.getLevel(),panel,0);
+    }
+    public static void showAirActions(CommandSourceStack source){
+        var level=source.getLevel();var track=PartConnections.inputRoute(level,DevelopmentMotionTest.inputHead()).track().part();
+        var notes=java.util.List.of(
+                new ChartDefinition.Note("held","AHD",500,2000,2,2,2,2,"AIR",true,true,0,0,"DEF"),
+                new ChartDefinition.Note("slant","ASC",500,2000,7,2,12,2,"AIR",true,true,2,8,"DEF"),
+                new ChartDefinition.Note("down","ADW",2000,2000,12,2,12,2,"",false,false,0,0,"DEF"),
+                new ChartDefinition.Note("deck","TAP",1000,1000,4,4,4,4,"",false,false,0,0,"DEF"));
+        var chart=new ChartDefinition("Air Action height/glow check",notes,java.util.List.of(),java.util.List.of(),java.util.List.of(),2000);
+        ChartPlayback.load(level,track,chart,1.5,false);
+        level.getServer().getCommands().performPrefixedCommand(source,"chunithm chart seek 0");
+    }
     private DevelopmentInputCheck(){}
     private static void require(boolean condition,String message){if(!condition)throw new AssertionError(message);}
     static Placement run(CommandSourceStack source){
@@ -25,6 +80,19 @@ final class DevelopmentInputCheck {
             var route=PartConnections.inputRoute(level,head);
             require(route.track().connected()&&route.ground().connected()&&route.leftAir().connected()&&route.rightAir().connected(),
                     "Every input hop must be connected in "+direction);
+            for(var sensor:new PartConnections.Part[]{route.leftAir().part(),route.rightAir().part()}){
+                int wall=sensor.kind==PartConnections.Kind.AIR_LEFT?0:AirSensors.BASE_WIDTH-1;
+                var top=sensor.placement.block(wall,AirSensors.PANEL_HEIGHT,0);
+                var saved=level.getBlockState(top);
+                for(int z=0;z<AirSensors.DEPTH;z++)level.setBlock(sensor.placement.block(wall,AirSensors.PANEL_HEIGHT,z),Blocks.AIR.defaultBlockState(),Block.UPDATE_CLIENTS);
+                // A single occupied cell must prevent a partial or destructive extension.
+                level.setBlock(top,saved,Block.UPDATE_CLIENTS);
+                AirSensors.upgradeLegacy(level,sensor);
+                require(level.getBlockState(sensor.placement.block(wall,AirSensors.PANEL_HEIGHT,1)).isAir(),"Obstructed AIR extension changed other top cells");
+                level.setBlock(top,Blocks.AIR.defaultBlockState(),Block.UPDATE_CLIENTS);
+                AirSensors.upgradeLegacy(level,sensor);
+                require(PartConnections.integrity(level,sensor)==PartConnections.Status.CONNECTED,"Legacy AIR extension did not restore the full structure");
+            }
             var ground=route.ground().part().placement;
             AirSensors.setInputProvider((l,p,left)->new AirSensors.Signal(left?4:8));
             try{

@@ -51,7 +51,7 @@ public final class ModModels {
             chartModels.add("chart_"+kind+"_"+width);
         for(int width=1;width<=16;width++)for(String variant:List.of("up_left","up_right","down","down_left","down_right"))
             chartModels.add("chart_air_arrow_"+variant+"_"+width);
-        for(String color:List.of("gry","aqa","red","blk","def","dgr","blu","orn","yel","ppl"))
+        for(String color:List.of("gry","aqa","red","blk","def","dgr","grn","pnk","cyn","blu","orn","yel","ppl"))
             chartModels.add("chart_effect_"+color+"_body");
         for(String name:chartModels){
             var key=ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));

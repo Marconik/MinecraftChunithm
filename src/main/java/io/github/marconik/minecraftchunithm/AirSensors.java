@@ -20,7 +20,7 @@ import java.util.Objects;
 
 /** Mirrored AIR housings and five independent height channels per side. */
 public final class AirSensors {
-    public static final int BASE_WIDTH=5,DEPTH=3,BASE_HEIGHT=1,PANEL_HEIGHT=3,PORT_COUNT=5;
+    public static final int BASE_WIDTH=5,DEPTH=3,BASE_HEIGHT=1,PANEL_HEIGHT=4,PORT_COUNT=5;
     public static final double BORDER=1.0/6;
     private static final Block[][][] BASES=new Block[2][BASE_WIDTH][DEPTH];
     private static final Block[][][] PANELS=new Block[2][PANEL_HEIGHT][DEPTH];
@@ -64,7 +64,12 @@ public final class AirSensors {
         for(int side=0;side<2;side++)for(int x=0;x<BASE_WIDTH;x++)for(int z=0;z<DEPTH;z++)
             BASES[side][x][z]=register(baseName(side==0,x,z),0);
         for(int side=0;side<2;side++)for(int row=0;row<PANEL_HEIGHT;row++)for(int z=0;z<DEPTH;z++)
-            PANELS[side][row][z]=register(tileName(side==0,row,z),z==1?4:0);
+            PANELS[side][row][z]=register(tileName(side==0,row,z),z==1&&row>=1?7:0);
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
+            if(level.getGameTime()%20!=0)return;
+            for(var kind:new PartConnections.Kind[]{PartConnections.Kind.AIR_LEFT,PartConnections.Kind.AIR_RIGHT})
+                for(var part:PartConnections.ofKind(level,kind))upgradeLegacy(level,part);
+        });
     }
     private static Block register(String name,int light){
         var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));
@@ -79,7 +84,24 @@ public final class AirSensors {
     }
     public static double portHeight(int port){
         if(port<0||port>=PORT_COUNT)throw new IllegalArgumentException("Invalid AIR port");
-        return BASE_HEIGHT+.5+port*.5;
+        return BASE_HEIGHT+PANEL_HEIGHT/2.0-(PORT_COUNT-1)*.25+port*.5;
+    }
+    /** Extend intact old housings only where the new top row is unobstructed. */
+    static void upgradeLegacy(ServerLevel level,PartConnections.Part part){
+        boolean left=part.kind==PartConnections.Kind.AIR_LEFT;int side=left?0:1;
+        int wall=left?0:BASE_WIDTH-1;
+        var p=part.placement;
+        for(int y=0;y<=PANEL_HEIGHT;y++)for(int z=0;z<DEPTH;z++)for(int x=0;x<BASE_WIDTH;x++){
+            if(!occupied(left,x,y))continue;
+            var pos=p.block(x,y,z);
+            if(!level.isInWorldBounds(pos)||!level.hasChunkAt(pos)||!level.getWorldBorder().isWithinBounds(pos))return;
+            var state=level.getBlockState(pos);
+            if(y==PANEL_HEIGHT){if(!state.isAir())return;}
+            else if(state.getBlock()!=(y==0?BASES[side][x][z]:PANELS[side][y-1][z])
+                    ||state.getValue(HeadTile.FACING)!=p.forward())return;
+        }
+        for(int z=0;z<DEPTH;z++)level.setBlock(p.block(wall,PANEL_HEIGHT,z),
+                PANELS[side][PANEL_HEIGHT-1][z].defaultBlockState().setValue(HeadTile.FACING,p.forward()),Block.UPDATE_ALL);
     }
     public static Vec3 portPoint(Placement ground,boolean left,int port){
         return ground.point(left?1-BASE_WIDTH:GroundSlide.WIDTH+BASE_WIDTH-1,portHeight(port),DEPTH/2.0);

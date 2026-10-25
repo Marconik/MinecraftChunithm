@@ -34,7 +34,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     header, statistics, events, records = {}, {}, [], []
-    unclassified = []
+    unclassified, visual_controls = [], []
     counts = Counter()
     for line_number, line in enumerate(args.source.read_text(encoding="utf-8-sig").splitlines(), 1):
         if not line.strip():
@@ -52,6 +52,10 @@ def main():
             if len(fields) != expected:
                 raise ValueError(f"Unexpected event fields at line {line_number}: {line}")
             events.append(row)
+        elif command in ("SLP", "SLA"):
+            if len(fields) != (5 if command == "SLP" else 6):
+                raise ValueError(f"Unexpected visual control at line {line_number}: {line}")
+            visual_controls.append(row)
         elif command.startswith("T_"):
             statistics[command] = fields
         elif command in HEADER_COMMANDS:
@@ -108,6 +112,24 @@ def main():
             row.update(durationTicks=duration, endTick=end, endTimeMs=time_ms(end),
                        durationMs=round(time_ms(end) - time_ms(tick), 6),
                        multiplier=float(multiplier))
+
+    # Preserve 1.13 controls separately. Their rendering semantics have not yet
+    # been verified; never silently treat them as supported SFL events.
+    for row in visual_controls:
+        fields = row['fields']
+        measure, offset = map(int, fields[:2])
+        duration = int(fields[2] if row['command'] == 'SLP' else fields[4])
+        if measure < 0 or not 0 <= offset < resolution or duration <= 0:
+            raise ValueError('Invalid SLP/SLA bounds')
+        tick = measure * resolution + offset
+        row.update(tick=tick,timeMs=time_ms(tick),endTick=tick+duration,endTimeMs=time_ms(tick+duration))
+        if row['command'] == 'SLP':
+            row.update(multiplier=float(Fraction(fields[3])),profileId=int(fields[4]))
+        else:
+            lane,width,profile=map(int,(fields[2],fields[3],fields[5]))
+            if not 0 <= lane < 16 or not 0 < width <= 16-lane:
+                raise ValueError('Invalid SLA lane bounds')
+            row.update(lane=lane,width=width,profileId=profile)
 
     anchors = defaultdict(list)
     slide_segments, air_holds = [], []
@@ -182,7 +204,9 @@ def main():
             and other["lane"] == row["endLane"] and other["width"] == row["endWidth"]
             and other["fields"][4] == row["command"] for other in air_holds
         )
-    playable = [row for row in records if row["command"] != "ALD"]
+    # Source first/final statistics include NON action bars, but exclude coloured ALD trails.
+    # In 2838 MASTER the final two NON bars end five ticks after the last ground/Air note.
+    playable = [row for row in records if row["command"] != "ALD" or row.get("color") == "NON"]
     first_tick = min(row["tick"] for row in playable)
     last_tick = max(row.get("endTick", row["tick"]) for row in playable)
     ahd_starts = sum(row["fields"][4] not in AIR_SUSTAIN_TYPES for row in air_holds)
@@ -233,6 +257,8 @@ def main():
         "speedChangeMarkers": build_speed_change_markers(
             [row for row in events if row["command"] == "SFL"], time_ms),
         "unclassifiedRecords": unclassified, "sourceStatistics": statistics,
+        "sourceVisualControls": visual_controls,
+        "visualWarnings": (["SLP/SLA visual controls are preserved but not rendered; visual playback is a preview, not arcade-fidelity."] if visual_controls else []),
         "recordCounts": dict(sorted(counts.items())), "noteRecordCountIncludingControls": len(records),
         "slide": {"segments": len(slide_segments), "rootSegments": len(roots),
                   "ambiguousSegmentIds": ambiguous, "rootIds": roots},

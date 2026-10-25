@@ -96,8 +96,11 @@ final class MusicQueueView {
         text(g,row.title(),101,y+10,144,1.25f,true,played?0xffcccccc:WHITE);
         text(g,row.artist(),101,y+29,144,.8f,false,MUTED);
         if(filled){
-            int difficultyColor=switch(row.difficulty()){case "EXPERT"->0xffc7414d;case "ULTIMA"->0xff111111;case "MASTER"->0xff8a38b5;default->0xff477c67;};
+            int difficultyColor=switch(row.difficulty()){case "EXPERT"->0xffc7414d;case "ULTIMA"->0xff21112e;case "MASTER"->0xff8a38b5;default->0xff477c67;};
             g.fill(253,y+14,354,y+37,difficultyColor);g.outline(253,y+14,101,23,0xffbdbdbd);
+            if(row.difficulty().equals("ULTIMA")){
+                g.fill(254,y+32,353,y+36,0xff352042);g.fill(254,y+34,353,y+36,0xff603078);
+            }
             text(g,row.difficulty(),267,y+22,47,.88f,true,WHITE);
             int levelX=267+Math.round(font.width(Component.literal("MASTER ").withStyle(s->s.withBold(true)))*.88f);
             text(g,row.level(),levelX,y+22,350-levelX,.88f,true,WHITE);

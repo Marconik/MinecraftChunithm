@@ -9,6 +9,23 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 /** Server data-pack catalog; only real, imported chart resources are selectable. */
 public final class SongLibrary {
+    public record Audio(String event,String resource,double duration,double offset){}
+    public static Audio audio(ServerLevel level,int songId){
+        try{
+            var manager=level.getServer().getResourceManager();
+            for(var entry:read(manager,"minecraftchunithm:songs/index.json").getAsJsonArray("songs")){
+                var index=entry.getAsJsonObject();if(index.get("id").getAsInt()!=songId)continue;
+                var audio=read(manager,index.get("metadata").getAsString()).getAsJsonObject("audio");
+                if(audio==null)return null;
+                var result=new Audio(audio.get("soundEvent").getAsString(),audio.get("resource").getAsString(),
+                        audio.get("durationMs").getAsDouble(),audio.has("offsetMs")?audio.get("offsetMs").getAsDouble():0);
+                Identifier.parse(result.event());Identifier.parse(result.resource());
+                if(!Double.isFinite(result.duration())||result.duration()<=0||!Double.isFinite(result.offset()))return null;
+                return result;
+            }
+        }catch(IOException|RuntimeException error){MinecraftChunithm.LOGGER.warn("Cannot load song audio metadata for {}",songId,error);}
+        return null;
+    }
     public record Chart(int songId,String title,String artist,String texture,String coverModel,
                         String difficulty,String level,String constant,String resource){}
     public record Difficulty(String name,String level,String constant,boolean available){}

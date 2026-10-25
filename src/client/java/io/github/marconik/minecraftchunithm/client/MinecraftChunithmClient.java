@@ -6,6 +6,9 @@ import net.fabricmc.api.ClientModInitializer;
 public final class MinecraftChunithmClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        RailMusicPlayback.initialize();
+        NoteCuePlayback.initialize();
+        SongPanelTextRenderer.initialize();
         net.minecraft.client.gui.screens.MenuScreens.register(io.github.marconik.minecraftchunithm.HeadControlMenu.TYPE,HeadControlScreen::new);
         net.minecraft.client.gui.screens.MenuScreens.register(io.github.marconik.minecraftchunithm.SongPanelMenu.TYPE,SongPanelScreen::new);
         net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerGlobalReceiver(
@@ -20,6 +23,7 @@ public final class MinecraftChunithmClient implements ClientModInitializer {
                     menu.receiveMusic(payload.json());
             }));
         DevelopmentHeadUiCapture.initialize();
+        DevelopmentNoteCueCheck.initialize();
         DevelopmentMusicUiPreview.initialize();
         MinecraftChunithm.LOGGER.info("MinecraftChunithm client initialized: build={}",MinecraftChunithm.BUILD_LABEL);
     }

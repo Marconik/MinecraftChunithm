@@ -58,11 +58,11 @@ public final class TrackCommands {
                             return 1;
                         }))
                         .then(Commands.literal("test")
-                                .executes(context -> test(context.getSource(),24,120,10))
+                                .executes(context -> test(context.getSource(),24,120,MusicQueueData.DEFAULT_SPEED))
                                 .then(Commands.argument("length", IntegerArgumentType.integer(2,1024))
-                                        .executes(context -> test(context.getSource(),IntegerArgumentType.getInteger(context,"length"),120,10))
+                                        .executes(context -> test(context.getSource(),IntegerArgumentType.getInteger(context,"length"),120,MusicQueueData.DEFAULT_SPEED))
                                         .then(Commands.argument("bpm",DoubleArgumentType.doubleArg(30,300))
-                                                .then(Commands.argument("speed",DoubleArgumentType.doubleArg(0.25,20))
+                                                .then(Commands.argument("speed",DoubleArgumentType.doubleArg(MusicQueueData.MIN_SPEED,MusicQueueData.MAX_SPEED))
                                                         .executes(context -> test(context.getSource(),
                                                                 IntegerArgumentType.getInteger(context,"length"),
                                                                 DoubleArgumentType.getDouble(context,"bpm"),

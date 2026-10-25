@@ -1,20 +1,20 @@
-﻿{
-    "variants":  {
-                     "facing=south":  {
-                                          "model":  "minecraftchunithm:block/air_sensor_base_left_0_2",
-                                          "y":  0
-                                      },
-                     "facing=west":  {
-                                         "model":  "minecraftchunithm:block/air_sensor_base_left_0_2",
-                                         "y":  90
-                                     },
-                     "facing=north":  {
-                                          "model":  "minecraftchunithm:block/air_sensor_base_left_0_2",
-                                          "y":  180
-                                      },
-                     "facing=east":  {
-                                         "model":  "minecraftchunithm:block/air_sensor_base_left_0_2",
-                                         "y":  270
-                                     }
-                 }
+{
+  "variants": {
+    "facing=south": {
+      "y": 0,
+      "model": "minecraftchunithm:block/air_sensor_base_left_0_2"
+    },
+    "facing=west": {
+      "y": 90,
+      "model": "minecraftchunithm:block/air_sensor_base_left_0_2"
+    },
+    "facing=north": {
+      "y": 180,
+      "model": "minecraftchunithm:block/air_sensor_base_left_0_2"
+    },
+    "facing=east": {
+      "y": 270,
+      "model": "minecraftchunithm:block/air_sensor_base_left_0_2"
+    }
+  }
 }

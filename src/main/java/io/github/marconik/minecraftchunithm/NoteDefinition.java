@@ -7,6 +7,8 @@ public record NoteDefinition(String id, Kind kind, double timeMs, double lane, d
                              double durationMs, Direction direction, String parentId, List<Node> nodes) {
     public enum Kind { TAP, EX_TAP, HOLD, SLIDE, FLICK, AIR, AIR_ACTION, SPEED_CHANGE }
     public static final double AIR_ACTION_LINE_SIZE = 0.075;
+    public static final double AIR_ACTION_HEIGHT = 1.0;
+    public static final double AIR_ACTION_GLOW_SIZE = 0.30;
     public static final double AIR_ACTION_MIN_BAR_LANES = 2;
     public enum Direction { NONE, ANY, LEFT, RIGHT, UP, DOWN, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT }
     public enum Connection {
@@ -90,6 +92,7 @@ public record NoteDefinition(String id, Kind kind, double timeMs, double lane, d
         return new NoteDefinition("preview_"+kind.name().toLowerCase()+"_"+width,kind,0,0,width,duration,
                 kind==Kind.FLICK?Direction.ANY:kind==Kind.AIR?Direction.UP:Direction.NONE,
                 kind==Kind.AIR_ACTION?"preview_air_"+width:"",
-                sustained?List.of(new Node(0,0,width,0),new Node(duration,0,width,kind==Kind.AIR_ACTION?1:0)):List.of());
+                sustained?List.of(new Node(0,0,width,kind==Kind.AIR_ACTION?AIR_ACTION_HEIGHT:0),
+                        new Node(duration,0,width,kind==Kind.AIR_ACTION?AIR_ACTION_HEIGHT:0)):List.of());
     }
 }

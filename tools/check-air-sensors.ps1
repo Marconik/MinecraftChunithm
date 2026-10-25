@@ -1,9 +1,9 @@
-$ErrorActionPreference='Stop'
+﻿$ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.Drawing
 $root=Join-Path $PSScriptRoot '../src/main/resources/assets/minecraftchunithm'
 foreach($side in @('left','right')){
     $ports=@()
-    for($row=0;$row-lt 3;$row++){for($z=0;$z-lt 3;$z++){
+    for($row=0;$row-lt 4;$row++){for($z=0;$z-lt 3;$z++){
         $name="air_sensor_${side}_${row}_${z}"
         $model=Get-Content -Raw (Join-Path $root "models/block/$name.json") | ConvertFrom-Json
         $body=$model.elements[0]
@@ -18,7 +18,7 @@ foreach($side in @('left','right')){
         if($surface.Count-ne 1){throw "Missing polished panel surface: $name"}
         $surface=$surface[0]
         $border=16.0/6
-        $expected=@([Math]::Max(0,($border-$row*16)),[Math]::Min(16,(48-$border-$row*16)),[Math]::Max(0,($border-$z*16)),[Math]::Min(16,(48-$border-$z*16)))
+        $expected=@([Math]::Max(0,($border-$row*16)),[Math]::Min(16,(64-$border-$row*16)),[Math]::Max(0,($border-$z*16)),[Math]::Min(16,(48-$border-$z*16)))
         $actual=@($surface.from[1],$surface.to[1],$surface.from[2],$surface.to[2])
         for($i=0;$i-lt 4;$i++){if([Math]::Abs($expected[$i]-$actual[$i])-gt .000001){throw "Panel white rim is not exactly 1/6 block: $name"}}
         $otherSide=if($side-eq 'left'){'right'}else{'left'}
@@ -32,7 +32,7 @@ foreach($side in @('left','right')){
             }
             if($a.light_emission-eq 15){
                 if($z-ne 1){throw "IR aperture is not centred along depth: $name"}
-                $texture=if($side-eq 'left'){'#green'}else{'#red'}
+                $texture='#red'
                 if($a.faces.east.texture-ne $texture-or $a.faces.west.texture-ne $texture-or $a.shade-ne $false){throw "Incorrect IR emission: $name"}
                 $ports+=($row+($a.from[1]+$a.to[1])/32)
             }
@@ -45,11 +45,11 @@ foreach($side in @('left','right')){
     }}
     $ports=@($ports | Sort-Object)
     if($ports.Count-ne 5){throw "$side must have five IR apertures"}
-    for($i=0;$i-lt 5;$i++){if($ports[$i]-ne .5+$i*.5){throw "$side IR aperture has wrong height"}}
+    for($i=0;$i-lt 5;$i++){if($ports[$i]-ne 1+$i*.5){throw "$side IR aperture has wrong height"}}
 }
 $base=Get-Content -Raw (Join-Path $root 'models/block/air_sensor_base.json') | ConvertFrom-Json
 if($base.elements.Count-ne 1-or ($base.elements[0].to -join ',')-ne '16,16,16'){throw 'Base must use full-block white tiles'}
-foreach($entry in @(@('white','#edf0f3'),@('green','#34ff58'),@('red','#ff3933'))){
+foreach($entry in @(@('white','#edf0f3'),@('green','#34ff58'),@('red','#ffb35c'))){
     $texture=[Drawing.Bitmap]::FromFile((Join-Path $root "textures/block/air_sensors/$($entry[0]).png"))
     try{if($texture.GetPixel(8,8).ToArgb()-ne [Drawing.ColorTranslator]::FromHtml($entry[1]).ToArgb()){throw 'Wrong AIR material colour'}}finally{$texture.Dispose()}
 }
@@ -103,4 +103,4 @@ try {
     }
     if($components-ne 3){throw 'Base must show exactly three chevron arrows'}
 }finally{foreach($atlas in $atlases.Values){$atlas.Dispose()}}
-Write-Output 'AIR models passed: five heights 0.5..2.5, 1/6-block white rims without tile seams, mirrored inward panels, left green/right red, polished-stone grain, three mirrored outward arrows and four orientations.'
+Write-Output 'AIR models passed: four-block upright; five heights 1..3, 1/6-block white rims without tile seams, mirrored inward panels, redstone-style emissive red lenses on both sides, polished-stone grain, three mirrored outward arrows and four orientations.'

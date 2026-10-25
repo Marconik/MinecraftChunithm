@@ -70,5 +70,62 @@
         "stream": true
       }
     ]
+  },
+  "music.2967": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2967/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2712": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2712/music",
+        "stream": true
+      }
+    ]
+  },
+  "note.tap_critical": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:note/tap_critical",
+        "stream": true,
+        "attenuation_distance": 64
+      }
+    ]
+  },
+  "music.2838": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2838/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.0464": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/0464/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2279": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2279/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.1035": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/1035/music",
+        "stream": true
+      }
+    ]
   }
 }

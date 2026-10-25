@@ -10,6 +10,7 @@ public final class RhythmTiming {
     public static double position(double bornAt, double now, double speed) {
         return SPAWN_CENTER + Math.max(0, now - bornAt) * speed;
     }
+    /** Note-centre arrival time targets this stripe, half a block before the end. */
     public static double judgment(int length) { return length - 0.5; }
     public static double end(int length) { return length; }
     public static double displayPosition(double bornAt, double now, double speed, int length) {

@@ -97,7 +97,7 @@ module.exports=function({box,texture,textures,json,write,assets,ns,en,zh}) {
           [inner,down?'action_purple':'air_green',7.925,8.075]]) {
           const range=span(polygon,x);
           if(range && range[1]>range[0])elements.push(box(
-            [from,11+range[0]*13,front],[to,11+range[1]*13,back],color,15));
+            [from,11+range[0]*17.5,front],[to,11+range[1]*17.5,back],color,15));
         }
       }
     }
@@ -149,16 +149,7 @@ module.exports=function({box,texture,textures,json,write,assets,ns,en,zh}) {
     json(`${assets}/models/item/${name}.json`,source);
     json(`${assets}/items/${name}.json`,{model:{type:'minecraft:model',model:`${ns}:item/${name}`}});
   }
-  const effectColors={gry:[160,160,160],aqa:[70,230,240],red:[245,65,65],blk:[25,25,25],
-    def:[85,245,75],dgr:[25,115,55],blu:[55,100,255],orn:[255,155,40],yel:[255,235,60],ppl:[200,80,255]};
-  for(const [color,rgb] of Object.entries(effectColors)) {
-    const name=`chart_effect_${color}_body`,tex=`effect_${color}`;
-    texture(tex,rgb);
-    json(`${assets}/models/item/${name}.json`,{parent:'minecraft:block/block',ambientocclusion:false,
-      textures:{effect:`${ns}:block/${tex}`,particle:`${ns}:block/${tex}`},
-      elements:[box([0,0,0],[16,16,16],'effect',12)],display:{fixed:{scale:[1,1,1]}}});
-    json(`${assets}/items/${name}.json`,{model:{type:'minecraft:model',model:`${ns}:item/${name}`}});
-  }
+  // ALD meshes/colors are generated with Air's glow profile at the end below.
   write(`data/${ns}/function/note_showcase.mcfunction`,`execute align xyz run function ${ns}:note_showcase_aligned\n`);
   const commands=['# Replaces a 9 x 96 footprint; 6 types, each in 5 representative widths.','execute positioned ~4 ~ ~ rotated 0 0 run chunithm track 96'];
   let row=0;
@@ -180,4 +171,5 @@ module.exports=function({box,texture,textures,json,write,assets,ns,en,zh}) {
     `summon minecraft:item_display ~${i%2?6.5:2.5} ~-0.359375 ~${Math.floor(i/2)*4+2} {Tags:["minecraftchunithm.tap_preview"],item:{id:"${ns}:${id}",count:1},item_display:"fixed",brightness:{block:15,sky:15},width:4.0f,height:3.0f}`));
   write(`data/${ns}/function/air_showcase.mcfunction`,`execute align xyz run function ${ns}:air_showcase_aligned\n`);
   write(`data/${ns}/function/air_showcase_aligned.mcfunction`,airSamples.join('\n')+'\n');
+  require('./air-action-models.cjs')();
 };

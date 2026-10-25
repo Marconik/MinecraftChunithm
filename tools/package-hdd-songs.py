@@ -27,6 +27,7 @@ def write_json(path, value):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("song_ids", type=int, nargs="+")
+    parser.add_argument("--difficulties", nargs="+", choices=["MASTER", "ULTIMA"], default=["MASTER"])
     args = parser.parse_args()
     project = Path(__file__).resolve().parents[1]
     resources = project / "src/main/resources"
@@ -42,7 +43,9 @@ def main():
         xml = ET.parse(source / "Music.xml").getroot()
         if int(xml.findtext("name/id")) != song_id:
             raise ValueError("CSV/XML song ID mismatch")
-        analysis = read_json(project / f"build/chart-analysis/{folder}_03.analysis.json")
+        analyses = {difficulty: read_json(project / f"build/chart-analysis/{folder}_{dict(MASTER='03', ULTIMA='04')[difficulty]}.analysis.json")
+                    for difficulty in args.difficulties}
+        analysis = analyses.get("MASTER", next(iter(analyses.values())))
         conversion = read_json(project / f"build/audio-tests/music{folder}/conversion.json")
         audio = project / f"build/audio-tests/music{folder}/music{folder}.ogg"
         if conversion["Id"] != song_id or not conversion["FullDecodeValidated"]:
@@ -79,20 +82,22 @@ def main():
                 "notesDesigner": fumen.findtext("notesDesigner") or None,
                 "chartResource": None, "imported": False,
             }
-            if difficulty == "MASTER":
-                chart_path=f"songs/{folder}/master.json"
+            if difficulty in analyses:
+                chart_analysis=analyses[difficulty]
+                chart_path=f"songs/{folder}/{difficulty.lower()}.json"
                 if (data / chart_path).exists():
                     chart.update(chartResource=f"{NAMESPACE}:{chart_path}", imported=True)
-                identity = analysis["identity"]
-                if identity["musicId"] != song_id or identity["difficulty"] != "Master":
-                    raise ValueError("Master analysis identity mismatch")
+                identity = chart_analysis["identity"]
+                if identity["musicId"] != song_id or identity["difficulty"].upper() != difficulty:
+                    raise ValueError("Chart analysis identity mismatch")
                 chart.update(
-                    notesDesigner=analysis["header"]["CREATOR"][0],
-                    firstNoteMs=analysis["timing"]["firstTimeMs"],
-                    lastNoteMs=analysis["timing"]["lastTimeMs"],
-                    logicalNoteCount=int(analysis["sourceStatistics"]["T_NOTE_ALL"][0]),
-                    judgmentCount=int(analysis["sourceStatistics"]["T_JUDGE_ALL"][0]),
-                    speedChangeMarkerCount=len(analysis["speedChangeMarkers"]),
+                    notesDesigner=chart_analysis["header"]["CREATOR"][0],
+                    firstNoteMs=chart_analysis["timing"]["firstTimeMs"],
+                    lastNoteMs=chart_analysis["timing"]["lastTimeMs"],
+                    logicalNoteCount=int(chart_analysis["sourceStatistics"]["T_NOTE_ALL"][0]),
+                    judgmentCount=int(chart_analysis["sourceStatistics"]["T_JUDGE_ALL"][0]),
+                    speedChangeMarkerCount=len(chart_analysis["speedChangeMarkers"]),
+                    visualWarnings=chart_analysis.get("visualWarnings",[]),
                 )
             charts[difficulty] = chart
 

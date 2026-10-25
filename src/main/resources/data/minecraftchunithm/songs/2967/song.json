@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "id": 2967,
+  "title": "YOUNITHM",
+  "artist": "大国奏音",
+  "sortName": "YOUNITHM",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20260423",
+  "defaultBpm": 130.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2967/cover.png",
+    "itemModel": "minecraftchunithm:cover/2967",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2967",
+    "resource": "minecraftchunithm:sounds/songs/2967/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 178176.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 8,
+      "levelDecimal": 0,
+      "internalLevel": 8.0,
+      "sourceFile": "2967_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 12,
+      "levelDecimal": 60,
+      "internalLevel": 12.6,
+      "sourceFile": "2967_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 80,
+      "internalLevel": 14.8,
+      "sourceFile": "2967_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 50,
+      "internalLevel": 15.5,
+      "sourceFile": "2967_03.c2s",
+      "notesDesigner": "Trajectory of \"Linked VERSE\"",
+      "chartResource": "minecraftchunithm:songs/2967/master.json",
+      "imported": true,
+      "firstNoteMs": 1846.153846,
+      "lastNoteMs": 171692.307692,
+      "logicalNoteCount": 1752,
+      "judgmentCount": 3045,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    },
+    "ULTIMA": {
+      "difficultyId": 4,
+      "level": 15,
+      "levelDecimal": 80,
+      "internalLevel": 15.8,
+      "sourceFile": "2967_04.c2s",
+      "notesDesigner": "Reminiscence of \"UHUNITHM\"",
+      "chartResource": "minecraftchunithm:songs/2967/ultima.json",
+      "imported": true,
+      "firstNoteMs": 16615.384615,
+      "lastNoteMs": 171692.343305,
+      "logicalNoteCount": 2446,
+      "judgmentCount": 4321,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": [
+        "SLP/SLA visual controls are preserved but not rendered; visual playback is a preview, not arcade-fidelity."
+      ]
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2967",
+    "metadataFile": "Music.xml"
+  }
+}

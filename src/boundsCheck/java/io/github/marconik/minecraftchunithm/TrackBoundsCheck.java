@@ -3,6 +3,7 @@ package io.github.marconik.minecraftchunithm;
 /** Exhaustively checks 16 widths at every half-lane slot, including negative world coordinates. */
 public final class TrackBoundsCheck {
     public static void main(String[] args) {
+        NoteCueCheck.run();
         int checked = 0;
         for (double min : new double[] {-100.5, 0.5, 200.5}) {
             for (boolean alongZ : new boolean[] {false, true}) {
@@ -19,6 +20,27 @@ public final class TrackBoundsCheck {
             }
         }
         System.out.println("TAP boundary checks passed: " + checked);
+        if(PanelMarquee.offset(100,0)!=0||PanelMarquee.offset(1,100)!=0
+                ||PanelMarquee.offset(2,160)!=40||PanelMarquee.offset(4,160)!=160
+                ||PanelMarquee.offset(6,160)!=80)throw new AssertionError("Song marquee timing or endpoint pause mismatch");
+        for(int i=0;i<10000;i++)for(double overflow:new double[]{1,100,160,5000}){
+            double offset=PanelMarquee.offset(i*.031,overflow);
+            if(offset<0||offset>overflow)throw new AssertionError("Song marquee leaves its viewport range");
+        }
+        System.out.println("Song metadata marquee: fitting text, endpoint pauses, return motion and clipping range passed.");
+        for(var facing:net.minecraft.core.Direction.Plane.HORIZONTAL){
+            var track=new Placement(new net.minecraft.core.BlockPos(-17,63,43),facing);
+            for(double along:new double[]{-10,0,12,24,40}){
+                var listener=track.point(4.5,2,along);
+                var left=RailAudioGeometry.position(track,24,listener,true);
+                var right=RailAudioGeometry.position(track,24,listener,false);
+                double z=Math.clamp(along,0,24);
+                if(!left.equals(track.point(.25,.75,z))||!right.equals(track.point(8.75,.75,z)))throw new AssertionError("Rail emitter escaped its edge");
+                var playerRight=facing.getOpposite().getClockWise();var difference=right.subtract(left);
+                if(difference.x*playerRight.getStepX()+difference.z*playerRight.getStepZ()<=0)throw new AssertionError("Stereo is reversed from the player's viewpoint");
+            }
+        }
+        System.out.println("Rail stereo geometry: player-relative left/right, nearest points and endpoints passed in four facings.");
         double[] responses=new double[16];responses[0]=Double.NaN;responses[1]=2;responses[2]=-.5;
         var input=new HeadControlServices.Input(true,false,true,Double.POSITIVE_INFINITY,.6,responses);
         responses[1]=0;double[] copy=input.ground();copy[1]=0;
@@ -66,15 +88,15 @@ public final class TrackBoundsCheck {
                 throw new AssertionError("AIR bases must touch opposite Ground Slide sides");
             for(boolean left:new boolean[]{true,false}){
                 int blocks=0;
-                for(int y=0;y<4;y++)for(int x=0;x<5;x++)for(int z=0;z<3;z++){
+                for(int y=0;y<5;y++)for(int x=0;x<5;x++)for(int z=0;z<3;z++){
                     boolean expected=y==0||x==(left?0:4);
                     if(AirSensors.occupied(left,x,y)!=expected)throw new AssertionError("AIR panel must occupy only the outermost base row");
                     if(expected)blocks++;
                 }
-                if(blocks!=24)throw new AssertionError("AIR part must contain a 5x3x1 base and 3x3x1 panel");
+                if(blocks!=27)throw new AssertionError("AIR part must contain a 5x3x1 base and 3x4x1 panel");
             }
             for(int port=0;port<5;port++){
-                if(AirSensors.portHeight(port)!=1.5+port*.5)throw new AssertionError("AIR IR sensor height differs from the standing surface");
+                if(AirSensors.portHeight(port)!=2+port*.5)throw new AssertionError("AIR IR sensor height differs from the standing surface");
                 var midpoint=AirSensors.portPoint(groundConnected,true,port).add(AirSensors.portPoint(groundConnected,false,port)).scale(.5);
                 if(!midpoint.equals(groundConnected.point(6.5,AirSensors.portHeight(port),1.5)))
                     throw new AssertionError("AIR IR sensors must face one another at mirrored coordinates");
@@ -230,7 +252,7 @@ public final class TrackBoundsCheck {
         }
         var rng=new java.util.Random(120);
         // Simulate the actual discrete update/removal sequence, not only ideal arrival times.
-        for (double speed : new double[] {3,10,20}) for (int length : new int[] {2,24,128}) {
+        for (double speed : new double[] {3,10,20,30}) for (int length : new int[] {2,24,128}) {
             long arrived = -1;
             int endpointUpdates = 0;
             boolean removed = false;

@@ -6,11 +6,16 @@ public final class MusicQueueCheck {
     private MusicQueueCheck(){}
     public static void run(){
         var queue=MusicQueueData.empty();
+        if(queue.speed()!=20||MusicQueue.View.empty().speed()!=20||SongDisplayData.defaults().speed()!=20)
+            throw new AssertionError("New machine, client snapshot and song panel must default to speed 20");
         if(queue.slots().size()!=3||queue.slots().stream().anyMatch(slot->slot.songId()!=0))throw new AssertionError("A new machine must have three empty slots");
         for(int i=0;i<100;i++){
             double before=queue.speed();queue=queue.changeSpeed(1);
-            if(queue.speed()!=Math.min(20,before+.25))throw new AssertionError("Speed increment is not 0.25");
+            if(queue.speed()!=Math.min(30,before+.25))throw new AssertionError("Speed increment is not 0.25");
         }
+        if(queue.speed()!=30)throw new AssertionError("Speed ceiling is not 30");
+        if(MusicQueueData.decode(queue.encode()).speed()!=30)throw new AssertionError("Speed 30 did not survive persistence");
+        try{new MusicQueueData(30.25,false,queue.slots());throw new AssertionError("Speed above 30 accepted");}catch(IllegalArgumentException expected){}
         for(int i=0;i<200;i++)queue=queue.changeSpeed(-1);
         if(queue.speed()!=.25)throw new AssertionError("Speed minimum is not 0.25");
         var played=new MusicQueueData.Choice(1100,"MASTER",true);

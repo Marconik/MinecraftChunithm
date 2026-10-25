@@ -21,13 +21,16 @@ import net.minecraft.world.phys.AABB;
 import org.joml.Vector3f;
 
 public final class SongPanel {
+    public static final String TITLE_TEXT="minecraftchunithm.song_title_yahei",ARTIST_TEXT="minecraftchunithm.song_artist_yahei";
     private static final String TAG="minecraftchunithm.song_display";
-    private static Block tile;
+    private static Block tile,ultimaBackground;
     private static final java.util.Map<ServerLevel,java.util.Set<PartConnections.Part>> REFRESHED=new java.util.WeakHashMap<>();
     private SongPanel(){}
     public static void initialize(){
         var key=ResourceKey.create(Registries.BLOCK,id("song_panel"));
         tile=Registry.register(BuiltInRegistries.BLOCK,key,new PanelTile(BlockBehaviour.Properties.of().setId(key).strength(2).noOcclusion(),false));
+        var backgroundKey=ResourceKey.create(Registries.BLOCK,id("song_ultima_background"));
+        ultimaBackground=Registry.register(BuiltInRegistries.BLOCK,backgroundKey,new Block(BlockBehaviour.Properties.of().setId(backgroundKey).noOcclusion()));
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
             if(level.getGameTime()%20!=0)return;
             var refreshed=REFRESHED.computeIfAbsent(level,l->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));
@@ -87,6 +90,14 @@ public final class SongPanel {
         // Conservative default-font advance; narrow glyphs leave extra inset.
         return value.codePoints().map(c->(c>255?9:6)+(bold?1:0)).sum();
     }
+    /** Client renderer owns font measurement, clipping and smooth marquee motion. */
+    private static void metadataText(ServerLevel level,Placement p,String value,boolean title){
+        var e=EntityTypes.TEXT_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);if(e==null)throw new IllegalStateException();
+        e.setText(Component.literal(value).withStyle(style->style.withBold(title).withColor(title?0x15151b:0x30303a)
+                .withInsertion(title?TITLE_TEXT:ARTIST_TEXT)));
+        e.setBackgroundColor(0);e.setLineWidth(4096);e.setFlags((byte)0);
+        add(level,p,e,2.48+4.28/2,title?.77:.27,1.075,new Vector3f(1));
+    }
     public static void update(ServerLevel level,Placement p,SongDisplayData data){
         var panel=PartConnections.find(level,PartConnections.Kind.SONG,p);
         if(panel==null)throw new IllegalArgumentException("歌曲面板不存在");
@@ -106,6 +117,14 @@ public final class SongPanel {
         for(var e:level.getEntitiesOfClass(Display.class,new AABB(p.point(-.1,-.1,.9),p.point(7.1,3.1,1.3)),e->e.entityTags().contains(TAG)))e.discard();
         String theme=switch(data.difficulty()){case MASTER->"purple_concrete";case EXPERT->"red_concrete";case ULTIMA->"black_concrete";};
         rect(level,p,0,0,7,3,theme,1.001);
+        if(data.difficulty()==SongDisplayData.Difficulty.ULTIMA){
+            var background=EntityTypes.BLOCK_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);
+            if(background==null)throw new IllegalStateException();
+            background.setBlockState(ultimaBackground.defaultBlockState());
+            // The backing cube protrudes by .01 * DEPTH_SCALE. Place this
+            // almost-flat quad in front of it, below the other content layers.
+            add(level,p,background,0,0,1.013,new Vector3f(7,3,.01f));
+        }
         rect(level,p,.06,2.5,6.88,.44,"black_concrete",1.014);
         rect(level,p,.06,.06,6.88,1.0,"white_concrete",1.014);
         rect(level,p,3.49,2.58,.018,.28,"gray_concrete",1.028);
@@ -117,9 +136,9 @@ public final class SongPanel {
         textLeft(level,p,2.50,1.65,data.difficulty().name(),2.55f,3.05,0xffffff,true);
         text(level,p,6.265,2.25,"LEVEL",.70f,1.17,0x10242b,true);
         text(level,p,6.265,1.58,data.level(),2.25f,1.16,0xffffff,true);
-        textLeft(level,p,2.48,.77,data.title(),1.25f,4.28,0x15151b,false);
+        metadataText(level,p,data.title(),true);
         rect(level,p,2.47,.48,4.28,.018,"purple_concrete",1.030);
-        textLeft(level,p,2.48,.27,data.artist(),.72f,4.28,0x30303a,false);
+        metadataText(level,p,data.artist(),false);
         rect(level,p,.12,.12,2.28,2.28,"white_concrete",1.028);
         var cover=EntityTypes.ITEM_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);if(cover==null)throw new IllegalStateException();
         var stack=new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath("minecraft","paper")));

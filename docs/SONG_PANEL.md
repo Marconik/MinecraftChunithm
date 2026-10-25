@@ -11,7 +11,7 @@
 /chunithm song_data {"cover":"minecraftchunithm:cover/default","title":"The First Seeker of Souls","artist":"Creator A vs Creator B","track":3,"difficulty":"MASTER","level":"15+","speed":8.0,"mirror":false}
 ```
 
-`difficulty` 支持 MASTER（紫）、EXPERT（红）、ULTIMA（黑），不区分输入大小写。输入的`track`为1～3，对应待播队列位置；`level`是文本，可输入15+等格式；`speed`范围0.25～20，`mirror`为布尔值。速度与镜像是连接机台的统一设置，控制界面和面板输入均会更新世界中的面板显示及已加载谱面，保留播放/暂停时间，不影响无关机台。
+`difficulty` 支持 MASTER（紫）、EXPERT（红）、ULTIMA（黑紫标签/斜纹背景），不区分输入大小写。输入的`track`为1～3，对应待播队列位置；`level`是文本，可输入15+等格式；`speed`范围0.25～30，默认20，`mirror`为布尔值。速度与镜像是连接机台的统一设置，控制界面和面板输入均会更新世界中的面板显示及已加载谱面，保留播放/暂停时间，不影响无关机台。
 
 公共 Java 数据接口：
 

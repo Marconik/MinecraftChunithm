@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 1035,
+  "title": "赤壁、大炎上！！",
+  "artist": "Cranky feat.おもしろ三国志",
+  "sortName": "セキヘキタイエンシヨウ",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20210401",
+  "defaultBpm": 120.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/1035/cover.png",
+    "itemModel": "minecraftchunithm:cover/1035",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.1035",
+    "resource": "minecraftchunithm:sounds/songs/1035/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 171946.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "1035_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "1035_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 10,
+      "internalLevel": 13.1,
+      "sourceFile": "1035_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 10,
+      "internalLevel": 15.1,
+      "sourceFile": "1035_03.c2s",
+      "notesDesigner": "死ぬ気で食い止めろ！おもしロシェ",
+      "chartResource": "minecraftchunithm:songs/1035/master.json",
+      "imported": true,
+      "firstNoteMs": 2000.0,
+      "lastNoteMs": 163940.45954,
+      "logicalNoteCount": 2384,
+      "judgmentCount": 4208,
+      "speedChangeMarkerCount": 87,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music1035",
+    "metadataFile": "Music.xml"
+  }
+}

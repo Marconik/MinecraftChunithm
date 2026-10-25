@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "id": 2712,
+  "title": "Theatore Creatore",
+  "artist": "Toby Fox & かめりあ",
+  "sortName": "THEATORECREATORE",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20241212",
+  "defaultBpm": 185.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2712/cover.png",
+    "itemModel": "minecraftchunithm:cover/2712",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2712",
+    "resource": "minecraftchunithm:sounds/songs/2712/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 154389.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "2712_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "2712_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 12,
+      "levelDecimal": 80,
+      "internalLevel": 12.8,
+      "sourceFile": "2712_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 40,
+      "internalLevel": 14.4,
+      "sourceFile": "2712_03.c2s",
+      "notesDesigner": "ミストルティン & 透明絵具",
+      "chartResource": "minecraftchunithm:songs/2712/master.json",
+      "imported": true,
+      "firstNoteMs": 1297.297297,
+      "lastNoteMs": 151459.459459,
+      "logicalNoteCount": 1514,
+      "judgmentCount": 2097,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": [
+        "SLP/SLA visual controls are preserved but not rendered; visual playback is a preview, not arcade-fidelity."
+      ]
+    },
+    "ULTIMA": {
+      "difficultyId": 4,
+      "level": 15,
+      "levelDecimal": 30,
+      "internalLevel": 15.3,
+      "sourceFile": "2712_04.c2s",
+      "notesDesigner": "ミニミライト & みぞれヤナギ",
+      "chartResource": "minecraftchunithm:songs/2712/ultima.json",
+      "imported": true,
+      "firstNoteMs": 1297.297297,
+      "lastNoteMs": 151459.459459,
+      "logicalNoteCount": 2179,
+      "judgmentCount": 2889,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": [
+        "SLP/SLA visual controls are preserved but not rendered; visual playback is a preview, not arcade-fidelity."
+      ]
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2712",
+    "metadataFile": "Music.xml"
+  }
+}

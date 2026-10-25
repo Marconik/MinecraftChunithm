@@ -1,4 +1,4 @@
-$ErrorActionPreference='Stop'
+﻿$ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.Drawing
 $assetRoot=Join-Path $PSScriptRoot '../src/main/resources/assets/minecraftchunithm'
 $textureRoot=Join-Path $assetRoot 'textures/block/air_sensors'
@@ -10,6 +10,14 @@ foreach($surface in @(@('white','#edf0f3'),@('top','#fafbfc'),@('bottom','#c4cbd
     $g.Clear([Drawing.ColorTranslator]::FromHtml($surface[1]));$g.Dispose()
     $image.Save((Join-Path $textureRoot ($surface[0]+'.png')),[Drawing.Imaging.ImageFormat]::Png);$image.Dispose()
 }
+# Pixel-art redstone-style lens: dark red rim, red body and warm central core.
+$lens=[Drawing.Bitmap]::new(16,16)
+for($y=0;$y-lt 16;$y++){for($x=0;$x-lt 16;$x++){
+    $r=[Math]::Max([Math]::Abs($x-7.5),[Math]::Abs($y-7.5))
+    $color=if($r-ge 6){'#8c1016'}elseif($r-ge 4){'#d82025'}elseif($r-ge 2){'#ff4935'}else{'#ffb35c'}
+    $lens.SetPixel($x,$y,[Drawing.ColorTranslator]::FromHtml($color))
+}}
+$lens.Save((Join-Path $textureRoot 'red.png'),[Drawing.Imaging.ImageFormat]::Png);$lens.Dispose()
 function Box($x0,$y0,$z0,$x1,$y1,$z1,$texture,$emission=0){
     # Mirror each cuboid through the panel's midplane for the right housing.
     if($script:mirror){$oldX=$x0;$x0=16-$x1;$x1=16-$oldX}
@@ -74,7 +82,7 @@ $script:mirror=$false
 $base=Box 0 0 0 16 16 16 '#white'
 $base.faces.up.texture='#top';$base.faces.down.texture='#bottom'
 SaveModel 'air_sensor_base' @($base)
-$panelImage=PolishedSurface (3*$pixels) (3*$pixels)
+$panelImage=PolishedSurface (3*$pixels) (4*$pixels)
 $baseLeftImage=PolishedSurface (5*$pixels) (3*$pixels)
 $ag=[Drawing.Graphics]::FromImage($baseLeftImage)
 $arrowBrush=[Drawing.SolidBrush]::new([Drawing.ColorTranslator]::FromHtml('#d9dfe5'))
@@ -95,7 +103,7 @@ Preview $visibleBase (Join-Path $PSScriptRoot '../docs/air-sensor-base-left-prev
 Preview $panelImage (Join-Path $PSScriptRoot '../docs/air-sensor-surface-preview.png')
 foreach($side in @('left','right')){
     $script:mirror=$side-eq 'right'
-    $light=if($side-eq 'left'){'#green'}else{'#red'}
+    $light='#red'
     $baseImage=[Drawing.Bitmap]$baseLeftImage.Clone()
     if($script:mirror){$baseImage.RotateFlip([Drawing.RotateFlipType]::RotateNoneFlipX)}
     for($x=0;$x-lt 5;$x++){for($z=0;$z-lt 3;$z++){
@@ -114,21 +122,21 @@ foreach($side in @('left','right')){
         SaveModel $name (@($body)+$parts)
     }}
     $baseImage.Dispose()
-    for($row=0;$row-lt 3;$row++){for($z=0;$z-lt 3;$z++){
+    for($row=0;$row-lt 4;$row++){for($z=0;$z-lt 3;$z++){
         $body=Box 0 0 0 16 16 16 '#white'
         $body.faces.up.texture='#top';$body.faces.down.texture='#bottom'
         $inside=if($side-eq 'left'){'east'}else{'west'}
         $body.faces.Remove($inside)
         $u0=[Math]::Max(0,($border-$z*16));$u1=[Math]::Min(16,(48-$border-$z*16))
-        $v0=[Math]::Max(0,($border-$row*16));$v1=[Math]::Min(16,(48-$border-$row*16))
+        $v0=[Math]::Max(0,($border-$row*16));$v1=[Math]::Min(16,(64-$border-$row*16))
         $name="air_sensor_${side}_${row}_${z}"
-        $tile=$panelImage.Clone([Drawing.Rectangle]::new(($z*$pixels),((2-$row)*$pixels),$pixels,$pixels),[Drawing.Imaging.PixelFormat]::Format32bppArgb)
+        $tile=$panelImage.Clone([Drawing.Rectangle]::new(($z*$pixels),((3-$row)*$pixels),$pixels,$pixels),[Drawing.Imaging.PixelFormat]::Format32bppArgb)
         if(-not $script:mirror){$tile.RotateFlip([Drawing.RotateFlipType]::RotateNoneFlipX)}
         $tile.Save((Join-Path $textureRoot "$name.png"),[Drawing.Imaging.ImageFormat]::Png);$tile.Dispose()
         $script:surfaceTexture="minecraftchunithm:block/air_sensors/$name"
         $elements=@($body)+(FramedSurface $u0 $v0 $u1 $v1 $true)
         if($z-eq 1){for($port=0;$port-lt 5;$port++){
-            $height=.5+$port*.5
+            $height=1+$port*.5
             if([Math]::Floor($height)-ne $row){continue}
             $cy=($height-$row)*16
             # Three-model-pixel outer square, two-pixel opening and one-pixel
@@ -145,4 +153,4 @@ foreach($side in @('left','right')){
     }}
 }
 $panelImage.Dispose();$baseLeftImage.Dispose()
-Write-Output 'AIR sensor assets generated: five apertures at 0.5..2.5 above standing surface, exact 1/6-block white frames, continuous black polished-stone faces and mirrored outward chevrons.'
+Write-Output 'AIR sensor assets generated: four-block upright; five apertures at 1..3 above standing surface; redstone-torch red lenses, exact 1/6-block white frames, continuous black polished-stone faces and mirrored outward chevrons.'
