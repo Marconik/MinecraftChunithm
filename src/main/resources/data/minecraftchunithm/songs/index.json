@@ -18,12 +18,29 @@
       "metadata": "minecraftchunithm:songs/0180/song.json"
     },
     {
+      "id": 242,
+      "title": "Garakuta Doll Play (sasakure.UK clutter remix)",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0242/song.json"
+    },
+    {
       "id": 258,
       "title": "TiamaT:F minor",
       "difficulties": [
         "MASTER"
       ],
       "metadata": "minecraftchunithm:songs/0258/song.json"
+    },
+    {
+      "id": 428,
+      "title": "Aleph-0",
+      "difficulties": [
+        "MASTER",
+        "ULTIMA"
+      ],
+      "metadata": "minecraftchunithm:songs/0428/song.json"
     },
     {
       "id": 464,
@@ -40,6 +57,14 @@
         "MASTER"
       ],
       "metadata": "minecraftchunithm:songs/0465/song.json"
+    },
+    {
+      "id": 618,
+      "title": "業 -善なる神とこの世の悪について-",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/0618/song.json"
     },
     {
       "id": 697,
@@ -64,6 +89,22 @@
         "MASTER"
       ],
       "metadata": "minecraftchunithm:songs/1100/song.json"
+    },
+    {
+      "id": 2035,
+      "title": "XL TECHNO -More Dance Remix-",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2035/song.json"
+    },
+    {
+      "id": 2060,
+      "title": "蜘蛛の糸",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2060/song.json"
     },
     {
       "id": 2241,
@@ -98,6 +139,14 @@
       "metadata": "minecraftchunithm:songs/2475/song.json"
     },
     {
+      "id": 2579,
+      "title": "ラストピースに祝福と栄光を",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2579/song.json"
+    },
+    {
       "id": 2712,
       "title": "Theatore Creatore",
       "difficulties": [
@@ -122,6 +171,23 @@
         "ULTIMA"
       ],
       "metadata": "minecraftchunithm:songs/2967/song.json"
+    },
+    {
+      "id": 2969,
+      "title": "μ3",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2969/song.json"
+    },
+    {
+      "id": 2999,
+      "title": "Melodiniq",
+      "difficulties": [
+        "MASTER",
+        "ULTIMA"
+      ],
+      "metadata": "minecraftchunithm:songs/2999/song.json"
     }
   ]
 }

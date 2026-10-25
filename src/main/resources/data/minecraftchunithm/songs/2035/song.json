@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2035,
+  "title": "XL TECHNO -More Dance Remix-",
+  "artist": "from PACA PACA PASSION Special",
+  "sortName": "XLTECHNOMOREDANCEREMIX",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20211104",
+  "defaultBpm": 149.94,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2035/cover.png",
+    "itemModel": "minecraftchunithm:cover/2035",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2035",
+    "resource": "minecraftchunithm:sounds/songs/2035/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 135296.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 2,
+      "levelDecimal": 0,
+      "internalLevel": 2.0,
+      "sourceFile": "2035_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 6,
+      "levelDecimal": 0,
+      "internalLevel": 6.0,
+      "sourceFile": "2035_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 90,
+      "internalLevel": 13.9,
+      "sourceFile": "2035_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 50,
+      "internalLevel": 14.5,
+      "sourceFile": "2035_03.c2s",
+      "notesDesigner": "ロシェ＠ペンギン(超上級)",
+      "chartResource": "minecraftchunithm:songs/2035/master.json",
+      "imported": true,
+      "firstNoteMs": 8003.201281,
+      "lastNoteMs": 131152.460984,
+      "logicalNoteCount": 1208,
+      "judgmentCount": 1230,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2035",
+    "metadataFile": "Music.xml"
+  }
+}

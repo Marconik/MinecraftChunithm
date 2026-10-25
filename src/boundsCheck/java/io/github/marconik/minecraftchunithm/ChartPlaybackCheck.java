@@ -15,6 +15,10 @@ public final class ChartPlaybackCheck {
         expectedRecords.put("2967",2975);expectedRecords.put("2967/ultima",6460);
         expectedRecords.put("2712",2548);expectedRecords.put("2712/ultima",3754);
         expectedRecords.putAll(Map.of("2838",4047,"0464",3328,"2279",1872,"1035",3649));
+        expectedRecords.put("2579",3321);
+        expectedRecords.put("2969",2874);
+        expectedRecords.putAll(Map.of("0428",2790,"0428/ultima",1236,"0618",4353,"2035",1231,"2060",4260,"0242",2550));
+        expectedRecords.put("2999",3333);expectedRecords.put("2999/ultima",6166);
         for(String id:expectedRecords.keySet()){
             ChartDefinition chart;
             try(var stream=ChartPlaybackCheck.class.getResourceAsStream("/data/minecraftchunithm/songs/"+id+(id.contains("/")?"":"/master")+".json")){
@@ -22,7 +26,7 @@ public final class ChartPlaybackCheck {
                 chart=ChartDefinition.fromJson(JsonParser.parseReader(new InputStreamReader(stream,StandardCharsets.UTF_8)).getAsJsonObject());
             }catch(IOException error){throw new AssertionError(error);}
             if(chart.notes().size()!=expectedRecords.get(id))throw new AssertionError("Source records were dropped: "+id);
-            if(id.startsWith("2967")||id.startsWith("2712")||Set.of("2838","0464","2279","1035").contains(id))for(double time=0;time<=chart.lastTimeMs();time+=250)
+            if(id.startsWith("2967")||id.startsWith("2712")||id.startsWith("2999")||id.startsWith("0428")||Set.of("0618","2035","2060","0242").contains(id)||Set.of("2838","0464","2279","1035","2579","2969").contains(id))for(double time=0;time<=chart.lastTimeMs();time+=250)
                 for(boolean mirror:new boolean[]{false,true})for(double speed:new double[]{3,10,20,30}){
                     peak=Math.max(peak,ChartPlayback.checkGeometry(chart,speed,mirror,time));frames++;
                 }
@@ -34,7 +38,7 @@ public final class ChartPlaybackCheck {
             // Every note endpoint reaches the same stripe that TrackMotion.addJudgment draws.
             for(var note:chart.notes())for(double t:new double[]{note.time(),note.end()})
                 for(int length:new int[]{2,24,128})for(double speed:new double[]{.25,20,30}){
-                    double at=chart.position(t,t,speed,length,false);
+                    double at=chart.position(t,t,speed,length,false,note.scrollProfile());
                     if(at!=RhythmTiming.judgment(length)||at==RhythmTiming.end(length))
                         throw new AssertionError("Arrival must target the judgment stripe, not the track end");
                 }
@@ -64,6 +68,8 @@ public final class ChartPlaybackCheck {
                 throw new AssertionError("Chart records were dropped");
             if(id.equals("0103")&&(chart.notes().size()!=2196||!chart.markers().isEmpty()))
                 throw new AssertionError("Unexpected ID103 conversion");
+            if(id.equals("2579"))checkLastPieceReverse(chart);
+            if(id.equals("2969"))DifferentialScrollCheck.run(chart);
         }
         var reverseNote=new ChartDefinition.Note("reverse_path","HLD",0,10000,7,2,7,2,"",true,true,5,5,"DEF");
         var reverseChart=new ChartDefinition("Reverse regression",List.of(reverseNote),
@@ -74,6 +80,31 @@ public final class ChartPlaybackCheck {
         if(!leftArrow.airVariant(false).equals("up_left")||!leftArrow.airVariant(true).equals("up_right"))
             throw new AssertionError("Mirrored Air arrow direction was not reversed");
         System.out.println("Chart playback geometry: "+frames+" frames, both mirrors, 3/10/20/30 blocks/sec, peak "+peak+" displays; judgment-line arrival, clipping and speed stops passed.");
+    }
+    private static void checkLastPieceReverse(ChartDefinition chart){
+        if(chart.speeds().size()!=31||chart.speeds().stream().filter(s->s.multiplier()<0).count()!=29||chart.markers().size()!=33)
+            throw new AssertionError("Last Piece reverse intervals or boundaries were lost");
+        int visibleReverse=0;
+        for(var s:chart.speeds())if(s.multiplier()<0){
+            double a=s.start()+(s.end()-s.start())*.25,b=s.start()+(s.end()-s.start())*.75;
+            double delta=chart.position(60000,b,20,24,false)-chart.position(60000,a,20,24,false);
+            if(delta>=0||Math.abs(delta-20*(b-a)*s.multiplier()/1000)>1e-7)
+                throw new AssertionError("Negative SFL must move notes towards the start of the track");
+            for(boolean mirror:new boolean[]{false,true}){
+                var before=ChartPlayback.checkFrame(chart,20,mirror,a);var after=ChartPlayback.checkFrame(chart,20,mirror,b);
+                for(var entry:before.entrySet()){
+                    var old=entry.getValue();var next=after.get(entry.getKey());
+                    if(next==null||old.item().endsWith("_body")||old.item().equals("beat_line")||old.item().equals("speed_change_line"))continue;
+                    if(old.z()>.25&&old.z()<23.75&&next.z()>.25&&next.z()<23.75){
+                        if(next.z()>=old.z())throw new AssertionError("Visible note did not reverse");
+                        visibleReverse++;
+                    }
+                }
+            }
+        }
+        if(visibleReverse==0)throw new AssertionError("Reverse test did not exercise visible notes");
+        for(double t=53100;t<=55800;t+=5)for(boolean mirror:new boolean[]{false,true})ChartPlayback.checkGeometry(chart,20,mirror,t);
+        System.out.println("Last Piece reverse: all 29 negative intervals, "+visibleReverse+" visible backwards-moving note pairs, both mirrors, 5 ms boundary sampling passed.");
     }
     private static void checkSustainWidths(){
         for(int width=1;width<=16;width++)for(boolean mirror:new boolean[]{false,true}){

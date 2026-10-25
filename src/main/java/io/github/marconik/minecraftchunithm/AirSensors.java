@@ -73,8 +73,8 @@ public final class AirSensors {
     }
     private static Block register(String name,int light){
         var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));
-        return Registry.register(BuiltInRegistries.BLOCK,key,new HeadTile(BlockBehaviour.Properties.of().setId(key)
-                .strength(2.5f).sound(SoundType.METAL).noOcclusion().lightLevel(state->light)));
+        return Registry.register(BuiltInRegistries.BLOCK,key,new HeadTile(CabinetBlocks.properties(key)
+                .sound(SoundType.METAL).noOcclusion().lightLevel(state->light)));
     }
     static String tileName(boolean left,int row,int z){return "air_sensor_"+(left?"left":"right")+"_"+row+"_"+z;}
     static String baseName(boolean left,int x,int z){return "air_sensor_base_"+(left?"left":"right")+"_"+x+"_"+z;}

@@ -69,7 +69,7 @@ public final class ChartPlayback {
                     var s=SESSIONS.get(c.getSource().getLevel());if(s==null)return missing(c.getSource());
                     s.time=Math.min(s.chart.lastTimeMs()+1000,DoubleArgumentType.getDouble(c,"seconds")*1000);
                     if(s.state!=HeadControlServices.Playback.PLAYING)s.state=HeadControlServices.Playback.PAUSED;
-                    s.audioRevision++;s.clear();s.render(c.getSource().getLevel());s.syncAudio(c.getSource().getLevel());return 1;
+                    s.audioRevision++;s.clear();s.render(c.getSource().getLevel());s.publishScore(c.getSource().getLevel());s.syncAudio(c.getSource().getLevel());return 1;
                 })))
                 .then(Commands.literal("status").executes(c->{var s=SESSIONS.get(c.getSource().getLevel());if(s==null)return missing(c.getSource());
                     c.getSource().sendSuccess(()->Component.literal(s.chart.title()+" · "+s.state+" · "+String.format(Locale.ROOT,"%.3fs",s.time/1000)
@@ -109,7 +109,7 @@ public final class ChartPlayback {
                 ||PartConnections.integrity(level,track)!=PartConnections.Status.CONNECTED)
             throw new IllegalArgumentException("Invalid track or speed");
         var candidate=new Session(chart,track,speed,mirror);candidate.frame();
-        unload(level);TrackMotion.stop(level);SESSIONS.put(level,candidate);
+        unload(level);TrackMotion.stop(level);SESSIONS.put(level,candidate);candidate.publishScore(level);
     }
     /** Pure geometry check used by offline regression checks, without spawning entities. */
     static int checkGeometry(ChartDefinition chart,double speed,boolean mirror,double time){
@@ -160,9 +160,21 @@ public final class ChartPlayback {
                 +"。预滚后按音乐时间播放，两侧边框分别发出玩家视角的左右声道；暂不计分。"),false);return 1;
         }catch(Exception error){source.sendFailure(Component.literal("谱面加载失败："+error.getMessage()));return 0;}
     }
-    record Spec(String item,double x,double y,double z,double sx,double sy,double sz,double shear,double lift,boolean bright){}
+    public static AutoScoreTimeline.Snapshot score(ServerLevel level){var s=SESSIONS.get(level);if(s==null)return null;if(s.scoring==null)s.scoring=AutoScoreTimeline.of(s.chart);return s.scoring.at(s.time);}
+    record Spec(String item,double x,double y,double z,double sx,double sy,double sz,double shear,double lift,boolean bright,int profile){}
+    record NativeFrame(double time,Placement track,Map<String,Spec> specs,Map<String,net.minecraft.world.phys.Vec3> positions){}
+    static NativeFrame nativeFrame(ServerLevel level){
+        var s=SESSIONS.get(level);if(s==null)return null;
+        Map<String,Spec> specs=new HashMap<>();Map<String,net.minecraft.world.phys.Vec3> positions=new HashMap<>();
+        for(var e:s.entities.entrySet())if(!s.retiring.containsKey(e.getKey())&&!e.getValue().isRemoved()){
+            specs.put(e.getKey(),s.lastSpecs.get(e.getKey()));positions.put(e.getKey(),e.getValue().position());
+        }
+        return new NativeFrame(s.time,s.track.placement,Map.copyOf(specs),Map.copyOf(positions));
+    }
     private static final class Session {
         final ChartDefinition chart;final PartConnections.Part track;double speed;boolean mirror;
+        AutoScoreTimeline scoring;HeadDisplayData publishedScore;
+        int activeProfile;
         int songId;String difficulty="MASTER";
         SongLibrary.Audio audio;
         NoteCueAudio.Transport noteCues;
@@ -175,12 +187,20 @@ public final class ChartPlayback {
             this.chart=chart;this.track=track;this.speed=speed;this.mirror=mirror;time=initialTime();
         }
         double initialTime(){return -Math.max(1000,(RhythmTiming.judgment(track.length)-.25)/speed*1000);}
+        void publishScore(ServerLevel level){
+            if(scoring==null)scoring=AutoScoreTimeline.of(chart);
+            var data=scoring.at(time).display();if(data.equals(publishedScore))return;
+            var headPlacement=new Placement(track.placement.block(-1,0,-1),track.placement.forward());
+            var head=PartConnections.find(level,PartConnections.Kind.HEAD,headPlacement);
+            if(head==null||PartConnections.integrity(level,head)!=PartConnections.Status.CONNECTED)return;
+            TrackHeadDisplay.updateScore(level,headPlacement,data);publishedScore=data;
+        }
         void clear(){for(var entity:entities.values()){LIVE.remove(entity.getUUID());entity.discard();}entities.clear();lastSpecs.clear();retiring.clear();}
         void action(ServerLevel level,HeadControlServices.Action action){switch(action){
             case STOP->{clear();state=HeadControlServices.Playback.STOPPED;time=initialTime();}
             case PAUSE->{if(state==HeadControlServices.Playback.PLAYING)state=HeadControlServices.Playback.PAUSED;}
             case START_OR_RESUME->{if(state==HeadControlServices.Playback.FINISHED)time=initialTime();state=HeadControlServices.Playback.PLAYING;render(level);}
-        }audioRevision++;syncAudio(level);}
+        }publishScore(level);audioRevision++;syncAudio(level);}
         void syncAudio(ServerLevel level){
             if(noteCues==null)noteCues=new NoteCueAudio.Transport(chart);
             noteCues.sync(level,track,audioSession,audioRevision,time,state==HeadControlServices.Playback.PLAYING);
@@ -189,18 +209,18 @@ public final class ChartPlayback {
             RailAudio.send(level,new RailAudio.Snapshot(RailAudio.dimension(level),audioSession,audioRevision,audio.event(),audio.resource(),
                     o.getX(),o.getY(),o.getZ(),p.forward().get2DDataValue(),track.length,time,audio.offset(),audio.duration(),state==HeadControlServices.Playback.PLAYING));
         }
-        void tick(ServerLevel level){if(state!=HeadControlServices.Playback.PLAYING)return;time+=50;render(level);
+        void tick(ServerLevel level){if(state!=HeadControlServices.Playback.PLAYING)return;time+=50;render(level);publishScore(level);
             if(time>Math.max(chart.lastTimeMs()+Math.max(1000,track.length/speed*1000),audio==null?0:audio.duration()+audio.offset())){clear();state=HeadControlServices.Playback.FINISHED;
                 audioRevision++;syncAudio(level);
                 if(songId>0)MusicQueue.finished(level,track,songId,difficulty);}}
-        double z(double t,boolean marker){return chart.position(t,time,speed,track.length,marker);}
+        double z(double t,boolean marker){return chart.position(t,time,speed,track.length,marker,activeProfile);}
         void cap(Map<String,Spec> frame,String key,String item,double t,double lane,double width,double height,boolean marker){
             cap(frame,key,item,t,lane,width,height,marker,1);
         }
         void cap(Map<String,Spec> frame,String key,String item,double t,double lane,double width,double height,boolean marker,double widthScale){
             double z=z(t,marker),depth=marker||item.equals("beat_line")?.03125:.5,lo=Math.max(0,z-depth/2),hi=Math.min(track.length,z+depth/2);
             if(hi<=lo)return;double left=mirror?16-lane-width:lane;
-            frame.put(key,new Spec(item,.5+(left+width/2)*.5,height,(lo+hi)/2,widthScale,1,(hi-lo)/depth,0,0,!marker));
+            frame.put(key,new Spec(item,.5+(left+width/2)*.5,height,(lo+hi)/2,widthScale,1,(hi-lo)/depth,0,0,!marker,activeProfile));
         }
         void actionBar(Map<String,Spec> frame,String key,double t,double lane,double width){
             double barWidth=Math.max(2,width),left=Math.clamp(lane+(width-barWidth)/2,0,16-barWidth);
@@ -215,7 +235,7 @@ public final class ChartPlayback {
             // bring the middle of a path on screen while both ends are outside.
             TreeSet<Double> samples=new TreeSet<>();
             samples.add(n.time());samples.add(n.end());
-            for(var effect:chart.speeds()){if(effect.start()>n.time()&&effect.start()<n.end())samples.add(effect.start());if(effect.end()>n.time()&&effect.end()<n.end())samples.add(effect.end());}
+            for(var effect:chart.speeds(n.scrollProfile())){if(effect.start()>n.time()&&effect.start()<n.end())samples.add(effect.start());if(effect.end()>n.time()&&effect.end()<n.end())samples.add(effect.end());}
             Double previous=null;int index=0;
             boolean spatial=Set.of("ASC","ASD","ALD").contains(n.type());
             boolean thinLine=air||n.type().equals("ALD");
@@ -245,16 +265,19 @@ public final class ChartPlayback {
                     // Narrow only ground sustain bodies, keeping their source centreline and path shear.
                     if(item.equals("chart_hold_body")||item.equals("chart_slide_body"))width*=SUSTAIN_WIDTH_SCALE;
                     frame.put(n.id()+"_body_"+index++,new Spec(item,(ca+cb)/2,(ya+yb)/2,lo+(hi-lo)*(u+v)/2,width,
-                        thinLine?NoteDefinition.AIR_ACTION_GLOW_SIZE:.018,(hi-lo)/steps,cb-ca,yb-ya,true));
+                        thinLine?NoteDefinition.AIR_ACTION_GLOW_SIZE:.018,(hi-lo)/steps,cb-ca,yb-ya,true,activeProfile));
                 }
             }
         }
         Map<String,Spec> frame(){
+            activeProfile=0;
             Map<String,Spec> frame=new LinkedHashMap<>();
             for(int i=0;i<chart.beats().size();i++)cap(frame,"beat_"+i,"beat_line",chart.beats().get(i),0,16,.006,false);
             for(var n:chart.notes()){
+                activeProfile=n.scrollProfile();
                 int width=(int)n.width();String prefix=n.id();
                 switch(n.type()){
+                    case "MNE"->cap(frame,prefix,"mine_"+width,n.time(),n.lane(),n.width(),.025,false);
                     case "TAP","CHR","FLK"->cap(frame,prefix,(n.type().equals("TAP")?"tap_":n.type().equals("CHR")?"ex_tap_":"flick_")+width,n.time(),n.lane(),n.width(),.025,false);
                     case "AIR","AUL","AUR","ADW","ADL","ADR"->cap(frame,prefix,arrow(n),n.time(),n.lane(),n.width(),.025,false);
                     case "HLD","HXD"->{ribbon(frame,n,"chart_hold_body",.04,false);cap(frame,prefix+"_head","ex_tap_"+width,n.time(),n.lane(),n.width(),.025,false);
@@ -262,8 +285,8 @@ public final class ChartPlayback {
                     case "SLD","SLC","SXD","SXC"->{ribbon(frame,n,"chart_slide_body",.045,false);
                         if(n.root()||n.type().endsWith("D"))cap(frame,prefix+"_node",(n.root()&&n.type().startsWith("SX")?"ex_tap_":"chart_slide_node_")+width,n.time(),n.lane(),n.width(),.03,false,n.root()?1:SUSTAIN_WIDTH_SCALE);
                         if(n.terminal())cap(frame,prefix+"_tail","chart_slide_node_"+(int)n.endWidth(),n.end(),n.endLane(),n.endWidth(),.03,false);}
-                    case "AHD"->{ribbon(frame,n,"chart_air_body",1.0,true);
-                        if(!n.target().equals("AHD"))cap(frame,prefix+"_arrow","chart_air_arrow_"+width,n.time(),n.lane(),n.width(),.025,false);
+                    case "AHD","AHX"->{ribbon(frame,n,"chart_air_body",1.0,true);
+                        if(n.type().equals("AHD")&&!n.target().equals("AHD")&&!n.target().equals("AHX"))cap(frame,prefix+"_arrow","chart_air_arrow_"+width,n.time(),n.lane(),n.width(),.025,false);
                         actionBar(frame,prefix+"_action_start",n.time(),n.lane(),n.width());
                         actionBar(frame,prefix+"_action_end",n.end(),n.endLane(),n.endWidth());}
                     case "ASC","ASD"->{ribbon(frame,n,"chart_air_body",1,true);

@@ -20,7 +20,7 @@ final class PartPorts {
     private static final java.util.Map<ServerLevel,java.util.Set<PartConnections.Part>> UPDATED=new java.util.WeakHashMap<>();
     static void initialize(){
         var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"head_control_logo"));
-        headLogo=Registry.register(BuiltInRegistries.BLOCK,key,new Block(BlockBehaviour.Properties.of().setId(key)));
+        headLogo=Registry.register(BuiltInRegistries.BLOCK,key,new Block(CabinetBlocks.properties(key)));
         playerLogo=registerLogo("player_control_logo");songLogo=registerLogo("song_control_logo");
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
             if(level.getGameTime()%20!=0)return;
@@ -32,7 +32,7 @@ final class PartPorts {
     }
     private static Block registerLogo(String name){
         var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));
-        return Registry.register(BuiltInRegistries.BLOCK,key,new Block(BlockBehaviour.Properties.of().setId(key)));
+        return Registry.register(BuiltInRegistries.BLOCK,key,new Block(CabinetBlocks.properties(key)));
     }
     static boolean ready(){return headLogo!=null;}
     static boolean checkReady(net.minecraft.commands.CommandSourceStack source){

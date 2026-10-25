@@ -25,15 +25,15 @@ public final class ModModels {
             ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, id);
             ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, id);
             Block block = Registry.register(BuiltInRegistries.BLOCK, blockKey,
-                    new TrackBlock(BlockBehaviour.Properties.of().setId(blockKey)
-                            .strength(1.5F).sound(SoundType.METAL).noOcclusion(), switch (name) {
+                    new TrackBlock(CabinetBlocks.properties(blockKey)
+                            .sound(SoundType.METAL).noOcclusion(), switch (name) {
                                 case "track_left" -> TrackBlock.Part.LEFT;
                                 case "track_right" -> TrackBlock.Part.RIGHT;
                                 case "track_judgment" -> TrackBlock.Part.JUDGMENT;
                                 default -> TrackBlock.Part.DECK;
                             }));
             items.add(Registry.register(BuiltInRegistries.ITEM, itemKey,
-                    new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix())));
+                    new BlockItem(block, new Item.Properties().setId(itemKey).fireResistant().useBlockDescriptionPrefix())));
         }
         for (int lanes = 1; lanes <= 16; lanes++) {
             ResourceKey<Item> key = ResourceKey.create(Registries.ITEM,
@@ -51,7 +51,7 @@ public final class ModModels {
             chartModels.add("chart_"+kind+"_"+width);
         for(int width=1;width<=16;width++)for(String variant:List.of("up_left","up_right","down","down_left","down_right"))
             chartModels.add("chart_air_arrow_"+variant+"_"+width);
-        for(String color:List.of("gry","aqa","red","blk","def","dgr","grn","pnk","cyn","blu","orn","yel","ppl"))
+        for(String color:List.of("gry","aqa","red","blk","def","dgr","grn","pnk","cyn","blu","orn","yel","ppl","vlt"))
             chartModels.add("chart_effect_"+color+"_body");
         for(String name:chartModels){
             var key=ResourceKey.create(Registries.ITEM,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,name));

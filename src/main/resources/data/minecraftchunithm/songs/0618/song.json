@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 618,
+  "title": "業 -善なる神とこの世の悪について-",
+  "artist": "光吉猛修 VS 穴山大輔",
+  "sortName": "コウセンナルカミトコノヨノアクニツイテ",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20180906",
+  "defaultBpm": 190.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0618/cover.png",
+    "itemModel": "minecraftchunithm:cover/0618",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0618",
+    "resource": "minecraftchunithm:sounds/songs/0618/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 162752.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "0618_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "0618_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 20,
+      "internalLevel": 14.2,
+      "sourceFile": "0618_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 60,
+      "internalLevel": 15.6,
+      "sourceFile": "0618_03.c2s",
+      "notesDesigner": "譜面ボーイズからの挑戦状 -新約譜面創世記-",
+      "chartResource": "minecraftchunithm:songs/0618/master.json",
+      "imported": true,
+      "firstNoteMs": 2368.421053,
+      "lastNoteMs": 155158.016081,
+      "logicalNoteCount": 2401,
+      "judgmentCount": 3500,
+      "speedChangeMarkerCount": 112,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0618",
+    "metadataFile": "Music.xml"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "id": 2999,
+  "title": "Melodiniq",
+  "artist": "onoken a.k.a. owl＊tree",
+  "sortName": "MELODINIQ",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20260423",
+  "defaultBpm": 193.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2999/cover.png",
+    "itemModel": "minecraftchunithm:cover/2999",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2999",
+    "resource": "minecraftchunithm:sounds/songs/2999/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 181013.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 8,
+      "levelDecimal": 50,
+      "internalLevel": 8.5,
+      "sourceFile": "2999_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 13,
+      "levelDecimal": 0,
+      "internalLevel": 13.0,
+      "sourceFile": "2999_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 90,
+      "internalLevel": 14.9,
+      "sourceFile": "2999_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 60,
+      "internalLevel": 15.6,
+      "sourceFile": "2999_03.c2s",
+      "notesDesigner": "Memoir of \"AdministratoR\"",
+      "chartResource": "minecraftchunithm:songs/2999/master.json",
+      "imported": true,
+      "firstNoteMs": 1243.523316,
+      "lastNoteMs": 175253.808291,
+      "logicalNoteCount": 1975,
+      "judgmentCount": 4040,
+      "speedChangeMarkerCount": 94,
+      "visualWarnings": []
+    },
+    "ULTIMA": {
+      "difficultyId": 4,
+      "level": 16,
+      "levelDecimal": 0,
+      "internalLevel": 16.0,
+      "sourceFile": "2999_04.c2s",
+      "notesDesigner": "Memoir of \"AdministratoR\"",
+      "chartResource": "minecraftchunithm:songs/2999/ultima.json",
+      "imported": true,
+      "firstNoteMs": 1243.523316,
+      "lastNoteMs": 175253.808291,
+      "logicalNoteCount": 3668,
+      "judgmentCount": 5716,
+      "speedChangeMarkerCount": 51,
+      "visualWarnings": [
+        "2559 out-of-bounds source records retained; off-track flight is deferred and playback coordinates are clamped."
+      ]
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2999",
+    "metadataFile": "Music.xml"
+  }
+}

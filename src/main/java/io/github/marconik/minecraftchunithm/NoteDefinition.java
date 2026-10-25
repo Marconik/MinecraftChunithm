@@ -5,7 +5,7 @@ import java.util.List;
 /** Chart attributes in milliseconds and half-block lanes; independent of model geometry. */
 public record NoteDefinition(String id, Kind kind, double timeMs, double lane, double width,
                              double durationMs, Direction direction, String parentId, List<Node> nodes) {
-    public enum Kind { TAP, EX_TAP, HOLD, SLIDE, FLICK, AIR, AIR_ACTION, SPEED_CHANGE }
+    public enum Kind { TAP, EX_TAP, MINE, HOLD, SLIDE, FLICK, AIR, AIR_ACTION, SPEED_CHANGE }
     public static final double AIR_ACTION_LINE_SIZE = 0.075;
     public static final double AIR_ACTION_HEIGHT = 1.0;
     public static final double AIR_ACTION_GLOW_SIZE = 0.30;

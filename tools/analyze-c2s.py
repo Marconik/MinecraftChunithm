@@ -1,4 +1,4 @@
-"""Inspect the verified C2S 1.08/1.11/1.12 subset without discarding source records.
+"""Inspect the verified C2S 1.08/1.11/1.12/1.13/1.14 subset without discarding source records.
 
 This is a structural analysis export, not a playable MOD chart converter.
 Time conversion uses the fixed C2S coordinate grid. MET changes measure-line
@@ -12,16 +12,17 @@ import json
 from pathlib import Path
 import xml.etree.ElementTree as ET
 from speed_change_markers import build_speed_change_markers
+from scroll_profiles import compile_profiles
 
 
-NOTE_FIELDS = {"TAP": (4,), "CHR": (5,), "FLK": (5,), "HLD": (5,), "HXD": (6,),
+NOTE_FIELDS = {"TAP": (4,), "MNE": (4,), "CHR": (5,), "FLK": (5,), "HLD": (5,), "HXD": (6,),
                "SLD": (7, 8), "SLC": (7, 8), "SXD": (9,), "SXC": (9,),
                **{kind: (5, 6) for kind in ("AIR", "AUL", "AUR", "ADW", "ADL", "ADR")},
-               "AHD": (6, 7), "ASC": (11,), "ASD": (11,), "ALD": (11,)}
+               "AHD": (6, 7), "AHX": (6, 7), "ASC": (11,), "ASD": (11,), "ALD": (10, 11, 12)}
 AIR_TYPES = {"AIR", "AUL", "AUR", "ADW", "ADL", "ADR"}
 SLIDE_TYPES = {"SLD", "SLC", "SXD", "SXC"}
 AIR_PATH_TYPES = {"ASC", "ASD"}
-AIR_SUSTAIN_TYPES = {"AHD", *AIR_PATH_TYPES}
+AIR_SUSTAIN_TYPES = {"AHD", "AHX", *AIR_PATH_TYPES}
 FAMILY = {"HXD": "HLD", "SXD": "SLD", "SXC": "SLC"}
 HEADER_COMMANDS = {"VERSION", "MUSIC", "SEQUENCEID", "DIFFICULT", "LEVEL", "CREATOR",
                    "BPM_DEF", "MET_DEF", "RESOLUTION", "CLK_DEF", "PROGJUDGE_BPM",
@@ -113,8 +114,7 @@ def main():
                        durationMs=round(time_ms(end) - time_ms(tick), 6),
                        multiplier=float(multiplier))
 
-    # Preserve 1.13 controls separately. Their rendering semantics have not yet
-    # been verified; never silently treat them as supported SFL events.
+    # Preserve source controls, then resolve profile curves and note assignments.
     for row in visual_controls:
         fields = row['fields']
         measure, offset = map(int, fields[:2])
@@ -136,25 +136,27 @@ def main():
     for row in records:
         kind, fields = row["command"], row["fields"]
         measure, offset, lane, width = map(int, fields[:4])
-        if not (0 <= lane < 16 and 0 < width <= 16 - lane and measure >= 0 and 0 <= offset < resolution):
+        # Source coordinates can lie outside the playfield (Melodiniq ULTIMA).
+        # Keep them intact here; the playable exporter applies its bounded preview policy.
+        if not (0 < width <= 16 and measure >= 0 and 0 <= offset < resolution):
             raise ValueError(f"Invalid time or lane bounds at line {row['line']}")
         tick = measure * resolution + offset
         row.update(id=f"c2s_line_{row['line']}", tick=tick, timeMs=time_ms(tick), lane=lane, width=width)
         end_tick, end_lane, end_width = tick, lane, width
         if kind in {"HLD", "HXD", *SLIDE_TYPES, *AIR_SUSTAIN_TYPES, "ALD"}:
-            duration = int(fields[6] if kind in AIR_PATH_TYPES or kind == "ALD" else fields[5] if kind == "AHD" else fields[4])
+            duration = int(fields[6] if kind in AIR_PATH_TYPES or kind == "ALD" else fields[5] if kind in {"AHD", "AHX"} else fields[4])
             if duration <= 0:
                 raise ValueError("Non-positive sustain duration")
             end_tick = tick + duration
             if kind in SLIDE_TYPES or kind in AIR_PATH_TYPES or kind == "ALD":
                 end_lane, end_width = map(int, fields[7:9] if kind in AIR_PATH_TYPES or kind == "ALD" else fields[5:7])
-                if not (0 <= end_lane < 16 and 0 < end_width <= 16 - end_lane):
+                if not (0 < end_width <= 16):
                     raise ValueError("Invalid segment endpoint")
             row.update(endTick=end_tick, endTimeMs=time_ms(end_tick),
                        durationTicks=duration, durationMs=round(time_ms(end_tick) - time_ms(tick), 6),
                        endLane=end_lane, endWidth=end_width)
         if kind in AIR_PATH_TYPES or kind == "ALD":
-            row.update(height=float(fields[5]), endHeight=float(fields[9]), color=fields[10])
+            row.update(height=float(fields[5]), endHeight=float(fields[9]), color=fields[10] if len(fields)>10 else "DEF")
             if row["height"] < 0 or row["endHeight"] < 0:
                 raise ValueError("Negative air path height")
             if kind == "ALD":
@@ -178,11 +180,19 @@ def main():
     for row in slide_segments:
         slide_starts[(row["tick"], row["lane"], row["width"])].append(row["id"])
         slide_ends[(row["endTick"], row["endLane"], row["endWidth"])].append(row["id"])
+    # Coincident paths may contain more starts than incoming segments. Preserve
+    # the extra new head instead of merging it into an already-running slide.
+    # Source-order pairing resolves the excess; source T_NOTE_SLD verifies it.
+    extra_heads = set()
+    for key, outgoing in slide_starts.items():
+        incoming = slide_ends.get(key, [])
+        if incoming and len(outgoing) > len(incoming):
+            extra_heads.update(outgoing[len(incoming):])
     roots = []
     ambiguous = []
     for row in slide_segments:
-        row["predecessors"] = slide_ends.get((row["tick"], row["lane"], row["width"]), [])
-        row["successors"] = slide_starts.get((row["endTick"], row["endLane"], row["endWidth"]), [])
+        row["predecessors"] = [] if row["id"] in extra_heads else slide_ends.get((row["tick"], row["lane"], row["width"]), [])
+        row["successors"] = [key for key in slide_starts.get((row["endTick"], row["endLane"], row["endWidth"]), []) if key not in extra_heads]
         if not row["predecessors"]:
             roots.append(row["id"])
         if len(row["predecessors"]) > 1 or len(row["successors"]) > 1:
@@ -204,16 +214,20 @@ def main():
             and other["lane"] == row["endLane"] and other["width"] == row["endWidth"]
             and other["fields"][4] == row["command"] for other in air_holds
         )
-    # Source first/final statistics include NON action bars, but exclude coloured ALD trails.
-    # In 2838 MASTER the final two NON bars end five ticks after the last ground/Air note.
-    playable = [row for row in records if row["command"] != "ALD" or row.get("color") == "NON"]
+    # ALD records with a positive action interval contribute to source first/final
+    # statistics regardless of colour (2579 ends with DEF; 2838 ends with NON).
+    # Interval-zero trails remain visual-only and may extend beyond T_FINAL_RES.
+    playable = [row for row in records if row["command"] != "ALD" or row.get("crushTick", 0) > 0]
     first_tick = min(row["tick"] for row in playable)
-    last_tick = max(row.get("endTick", row["tick"]) for row in playable)
+    # ALD may visually continue beyond its last sampled action. A one-tick
+    # tail shorter than crushTick contributes only its start (Spider's Thread).
+    last_tick = max(row["tick"] + row["durationTicks"] // row["crushTick"] * row["crushTick"]
+                    if row["command"] == "ALD" else row.get("endTick", row["tick"]) for row in playable)
     ahd_starts = sum(row["fields"][4] not in AIR_SUSTAIN_TYPES for row in air_holds)
-    logical_starts = sum(counts[kind] for kind in {"TAP", "CHR", "FLK", "HLD", "HXD", *AIR_TYPES}) + len(roots) + ahd_starts
+    logical_starts = sum(counts[kind] for kind in {"TAP", "CHR", "MNE", "FLK", "HLD", "HXD", *AIR_TYPES}) + len(roots) + ahd_starts
     # Newer formats include *C path controls in T_REC_SLD; legacy versions do not.
     modern = tuple(map(int, header["VERSION"][0].split("."))) >= (1, 11, 0)
-    record_families = {"TAP": counts["TAP"], "CHR": counts["CHR"], "FLK": counts["FLK"],
+    record_families = {"TAP": counts["TAP"], "CHR": counts["CHR"], "FLK": counts["FLK"], "MNE": counts["MNE"],
                        "HLD": counts["HLD"] + counts["HXD"],
                        "SLD": sum(counts[kind] for kind in SLIDE_TYPES if modern or kind.endswith("D")),
                        "AIR": sum(counts[kind] for kind in AIR_TYPES), "AHD": counts["AHD"] + counts["ASD"]}
@@ -231,6 +245,8 @@ def main():
     }
     if not all(checks.values()):
         raise ValueError(f"Source statistic checks failed: {checks}")
+    profiles = compile_profiles(visual_controls, records,
+                                [row for row in events if row['command'] == 'SFL'], time_ms)
     identity = None
     music_xml = args.source.parent / "Music.xml"
     if music_xml.exists():
@@ -258,7 +274,8 @@ def main():
             [row for row in events if row["command"] == "SFL"], time_ms),
         "unclassifiedRecords": unclassified, "sourceStatistics": statistics,
         "sourceVisualControls": visual_controls,
-        "visualWarnings": (["SLP/SLA visual controls are preserved but not rendered; visual playback is a preview, not arcade-fidelity."] if visual_controls else []),
+        "visualWarnings": [],
+        **profiles,
         "recordCounts": dict(sorted(counts.items())), "noteRecordCountIncludingControls": len(records),
         "slide": {"segments": len(slide_segments), "rootSegments": len(roots),
                   "ambiguousSegmentIds": ambiguous, "rootIds": roots},

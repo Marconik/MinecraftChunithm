@@ -4,6 +4,8 @@ package io.github.marconik.minecraftchunithm;
 public final class TrackBoundsCheck {
     public static void main(String[] args) {
         NoteCueCheck.run();
+        AutoScoreCheck.run();
+        AirHoldActionCheck.run();
         int checked = 0;
         for (double min : new double[] {-100.5, 0.5, 200.5}) {
             for (boolean alongZ : new boolean[] {false, true}) {
@@ -197,7 +199,7 @@ public final class TrackBoundsCheck {
             var data=new HeadDisplayData(1,2,3,4,5,score);
             long capped=Math.min(score,1010000);
             if(data.filledCells()!=capped/101000)throw new AssertionError("Wrong score completion cells");
-            if(Math.abs((data.filledCells()+data.barFraction())*101000-capped)>1e-6)throw new AssertionError("Wrong score remainder");
+            if(Math.abs((Math.min(data.filledCells(),9)+data.barFraction())*101000-capped)>1e-6)throw new AssertionError("Wrong score remainder");
             if(data.goldBar()!=(score>=303000))throw new AssertionError("Wrong colour threshold");
             if(Math.abs(data.percent()-capped/10100.0)>1e-9)throw new AssertionError("Wrong percent");
         }
@@ -222,6 +224,7 @@ public final class TrackBoundsCheck {
             var definition=NoteDefinition.preview(kind,width);
             if (definition.width()!=width || definition.kind()!=kind) throw new AssertionError("Invalid note attributes");
         }
+        if(!NoteDefinition.preview(NoteDefinition.Kind.MINE,2).judged())throw new AssertionError("Mines must participate in scoring");
         var speedMarker=NoteDefinition.preview(NoteDefinition.Kind.SPEED_CHANGE,16);
         if(speedMarker.judged() || speedMarker.lane()!=0 || speedMarker.durationMs()!=0
                 || !speedMarker.nodes().isEmpty())throw new AssertionError("Speed marker must be visual only");

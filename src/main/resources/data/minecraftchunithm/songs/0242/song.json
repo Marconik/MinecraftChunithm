@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 242,
+  "title": "Garakuta Doll Play (sasakure.UK clutter remix)",
+  "artist": "sasakure.UK",
+  "sortName": "GARAKUTADOLLPLAYSASAKUREUKCLUTTERREMIX",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20260702",
+  "defaultBpm": 256.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0242/cover.png",
+    "itemModel": "minecraftchunithm:cover/0242",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0242",
+    "resource": "minecraftchunithm:sounds/songs/0242/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 150720.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "0242_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 11,
+      "levelDecimal": 0,
+      "internalLevel": 11.0,
+      "sourceFile": "0242_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 80,
+      "internalLevel": 13.8,
+      "sourceFile": "0242_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 60,
+      "internalLevel": 15.6,
+      "sourceFile": "0242_03.c2s",
+      "notesDesigner": "Clutter up the WORLD'S END",
+      "chartResource": "minecraftchunithm:songs/0242/master.json",
+      "imported": true,
+      "firstNoteMs": 1875.0,
+      "lastNoteMs": 149296.875,
+      "logicalNoteCount": 2077,
+      "judgmentCount": 2651,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A001",
+    "musicDirectory": "music0242",
+    "metadataFile": "Music.xml"
+  }
+}

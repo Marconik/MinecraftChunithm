@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": 428,
+  "title": "Aleph-0",
+  "artist": "LeaF",
+  "sortName": "ALEPH0",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20221013",
+  "defaultBpm": 125.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0428/cover.png",
+    "itemModel": "minecraftchunithm:cover/0428",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0428",
+    "resource": "minecraftchunithm:sounds/songs/0428/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 141589.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 6,
+      "levelDecimal": 0,
+      "internalLevel": 6.0,
+      "sourceFile": "0428_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "0428_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 70,
+      "internalLevel": 13.7,
+      "sourceFile": "0428_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 90,
+      "internalLevel": 14.9,
+      "sourceFile": "0428_03.c2s",
+      "notesDesigner": "Phoenix",
+      "chartResource": "minecraftchunithm:songs/0428/master.json",
+      "imported": true,
+      "firstNoteMs": 10080.0,
+      "lastNoteMs": 132940.608346,
+      "logicalNoteCount": 1021,
+      "judgmentCount": 1659,
+      "speedChangeMarkerCount": 23,
+      "visualWarnings": []
+    },
+    "ULTIMA": {
+      "difficultyId": 4,
+      "level": 15,
+      "levelDecimal": 40,
+      "internalLevel": 15.4,
+      "sourceFile": "0428_04.c2s",
+      "notesDesigner": "Welcome to mathworld.",
+      "chartResource": "minecraftchunithm:songs/0428/ultima.json",
+      "imported": true,
+      "firstNoteMs": 10080.0,
+      "lastNoteMs": 132940.608346,
+      "logicalNoteCount": 1149,
+      "judgmentCount": 1519,
+      "speedChangeMarkerCount": 186,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0428",
+    "metadataFile": "Music.xml"
+  }
+}

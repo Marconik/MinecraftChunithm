@@ -8,7 +8,7 @@ import net.minecraft.client.Screenshot;
 /** Native framebuffer captures for the explicit local connection smoke test only. */
 final class DevelopmentHeadUiCapture {
     static void initialize(){
-        if(Boolean.getBoolean("minecraftchunithm.noteCueQuickPlay"))return;
+        if(Boolean.getBoolean("minecraftchunithm.noteCueQuickPlay")||Boolean.getBoolean("minecraftchunithm.reverseQuickPlay")||Boolean.getBoolean("minecraftchunithm.differentialQuickPlay")||Boolean.getBoolean("minecraftchunithm.mineQuickPlay")||Boolean.getBoolean("minecraftchunithm.scoreQuickPlay"))return;
         boolean inputs=Boolean.getBoolean("minecraftchunithm.inputQuickPlay");
         if(!FabricLoader.getInstance().isDevelopmentEnvironment()||(!inputs&&!Boolean.getBoolean("minecraftchunithm.connectionQuickPlay")))return;
         boolean ultimaOnly=Boolean.getBoolean("minecraftchunithm.ultimaQuickPlay");

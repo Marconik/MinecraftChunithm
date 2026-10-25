@@ -39,7 +39,11 @@
     "slide_band_13": "minecraftchunithm:block/slide_band_13",
     "slide_band_14": "minecraftchunithm:block/slide_band_14",
     "slide_band_15": "minecraftchunithm:block/slide_band_15",
-    "particle": "minecraftchunithm:block/air_green"
+    "particle": "minecraftchunithm:block/air_green",
+    "air_arrow_glow": {
+      "sprite": "minecraftchunithm:block/air_arrow_glow_up_right",
+      "force_translucent": true
+    }
   },
   "elements": [
     {
@@ -14668,6 +14672,56 @@
             16
           ],
           "texture": "#white"
+        }
+      }
+    },
+    {
+      "from": [
+        -8,
+        10,
+        7.8
+      ],
+      "to": [
+        24,
+        30,
+        7.8
+      ],
+      "shade": false,
+      "light_emission": 15,
+      "faces": {
+        "north": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#air_arrow_glow"
+        }
+      }
+    },
+    {
+      "from": [
+        -8,
+        10,
+        8.2
+      ],
+      "to": [
+        24,
+        30,
+        8.2
+      ],
+      "shade": false,
+      "light_emission": 15,
+      "faces": {
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#air_arrow_glow"
         }
       }
     }

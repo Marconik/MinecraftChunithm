@@ -32,7 +32,7 @@ public final class GroundSlide {
             var id=Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"ground_slide_"+x+"_"+z);
             var key=ResourceKey.create(Registries.BLOCK,id);
             TILES[z][x]=Registry.register(BuiltInRegistries.BLOCK,key,new GroundSlideBlock(
-                    BlockBehaviour.Properties.of().setId(key).strength(2.5f).sound(SoundType.METAL)
+                    CabinetBlocks.properties(key).sound(SoundType.METAL)
                             .lightLevel(state->12).noOcclusion(),x,z));
         }
         GroundSlidePressure.initialize();

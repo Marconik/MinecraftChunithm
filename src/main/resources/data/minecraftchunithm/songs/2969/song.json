@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2969,
+  "title": "μ3",
+  "artist": "水野健治 VS 穴山大輔",
+  "sortName": "ミユウ3",
+  "genres": [
+    "ゲキマイ"
+  ],
+  "releaseDate": "20260423",
+  "defaultBpm": 192.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2969/cover.png",
+    "itemModel": "minecraftchunithm:cover/2969",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2969",
+    "resource": "minecraftchunithm:sounds/songs/2969/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 172522.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "2969_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 11,
+      "levelDecimal": 70,
+      "internalLevel": 11.7,
+      "sourceFile": "2969_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 40,
+      "internalLevel": 14.4,
+      "sourceFile": "2969_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 50,
+      "internalLevel": 15.5,
+      "sourceFile": "2969_03.c2s",
+      "notesDesigner": "Redarrow O.N.G.E.K.I. Origin",
+      "chartResource": "minecraftchunithm:songs/2969/master.json",
+      "imported": true,
+      "firstNoteMs": 2500.0,
+      "lastNoteMs": 170156.25,
+      "logicalNoteCount": 1857,
+      "judgmentCount": 3268,
+      "speedChangeMarkerCount": 8,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2969",
+    "metadataFile": "Music.xml"
+  }
+}

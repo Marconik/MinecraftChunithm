@@ -20,6 +20,11 @@ loom {
                 if (project.hasProperty('decorationQuickPlay')) vmArg '-Dminecraftchunithm.decorationQuickPlay=true'
                 if (project.hasProperty('theatoreQuickPlay')) vmArg '-Dminecraftchunithm.theatoreQuickPlay=true'
                 if (project.hasProperty('noteCueQuickPlay')) vmArg '-Dminecraftchunithm.noteCueQuickPlay=true'
+                if (project.hasProperty('reverseQuickPlay')) vmArg '-Dminecraftchunithm.reverseQuickPlay=true'
+                if (project.hasProperty('durabilityQuickPlay')) vmArg '-Dminecraftchunithm.durabilityQuickPlay=true'
+                if (project.hasProperty('scoreQuickPlay')) vmArg '-Dminecraftchunithm.scoreQuickPlay=true'
+                if (project.hasProperty('mineQuickPlay')) vmArg '-Dminecraftchunithm.mineQuickPlay=true'
+                if (project.hasProperty('differentialQuickPlay')) vmArg '-Dminecraftchunithm.differentialQuickPlay=true'
                 programArg '--quickPlaySingleplayer'
                 programArg 'New World'
             }
@@ -80,3 +85,9 @@ tasks.register('checkTrackBounds', JavaExec) {
 }
 
 check.dependsOn checkTrackBounds
+
+tasks.register('checkAutoScore', JavaExec) {
+    dependsOn boundsCheckClasses
+    classpath = sourceSets.boundsCheck.runtimeClasspath
+    mainClass = 'io.github.marconik.minecraftchunithm.AutoScoreCheck'
+}

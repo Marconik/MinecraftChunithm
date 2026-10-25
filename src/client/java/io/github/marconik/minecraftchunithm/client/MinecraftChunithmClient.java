@@ -24,6 +24,10 @@ public final class MinecraftChunithmClient implements ClientModInitializer {
             }));
         DevelopmentHeadUiCapture.initialize();
         DevelopmentNoteCueCheck.initialize();
+        DevelopmentReverseCapture.initialize();
+        DevelopmentDifferentialCapture.initialize();
+        DevelopmentMineCapture.initialize();
+        DevelopmentScoreCapture.initialize();
         DevelopmentMusicUiPreview.initialize();
         MinecraftChunithm.LOGGER.info("MinecraftChunithm client initialized: build={}",MinecraftChunithm.BUILD_LABEL);
     }

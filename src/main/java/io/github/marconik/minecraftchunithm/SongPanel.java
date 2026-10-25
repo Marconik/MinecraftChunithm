@@ -28,9 +28,9 @@ public final class SongPanel {
     private SongPanel(){}
     public static void initialize(){
         var key=ResourceKey.create(Registries.BLOCK,id("song_panel"));
-        tile=Registry.register(BuiltInRegistries.BLOCK,key,new PanelTile(BlockBehaviour.Properties.of().setId(key).strength(2).noOcclusion(),false));
+        tile=Registry.register(BuiltInRegistries.BLOCK,key,new PanelTile(CabinetBlocks.properties(key).noOcclusion(),false));
         var backgroundKey=ResourceKey.create(Registries.BLOCK,id("song_ultima_background"));
-        ultimaBackground=Registry.register(BuiltInRegistries.BLOCK,backgroundKey,new Block(BlockBehaviour.Properties.of().setId(backgroundKey).noOcclusion()));
+        ultimaBackground=Registry.register(BuiltInRegistries.BLOCK,backgroundKey,new Block(CabinetBlocks.properties(backgroundKey).noOcclusion()));
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
             if(level.getGameTime()%20!=0)return;
             var refreshed=REFRESHED.computeIfAbsent(level,l->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));

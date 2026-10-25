@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const colors={gry:[160,160,160],aqa:[70,230,240],red:[245,65,65],blk:[25,25,25],
   def:[85,245,75],dgr:[25,115,55],grn:[65,230,75],pnk:[255,100,170],cyn:[45,195,235],
-  blu:[55,100,255],orn:[255,155,40],yel:[255,235,60],ppl:[200,80,255]};
+  blu:[55,100,255],orn:[255,155,40],yel:[255,235,60],ppl:[200,80,255],vlt:[110,75,255]};
 function readRGBA(file){
   const png=fs.readFileSync(file),width=png.readUInt32BE(16),height=png.readUInt32BE(20),parts=[];
   if(png[24]!==8||png[25]!==6||png[28]!==0)throw new Error('Expected non-interlaced RGBA8 glow texture');
@@ -47,7 +47,7 @@ function generate(){
     write(`items/${name}.json`,{model:{type:'minecraft:model',model:`minecraftchunithm:item/${name}`}});
     fs.writeFileSync(path.join(root,`textures/block/effect_${color}.png`),tintedPng(image,rgb));
   }
-  console.log('ALD: 13 solid-color translucent glow lines generated from the Air opacity profile.');
+  console.log('ALD: 14 solid-color translucent glow lines generated from the Air opacity profile.');
 }
 module.exports=generate;
 if(require.main===module)generate();

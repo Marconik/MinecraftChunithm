@@ -41,6 +41,7 @@ function generate(){
     }
     model.textures.air_glow=glow;model.elements=[...line,...bars];write(name,model);
   }
+  require('./air-arrow-glow-models.cjs')();
   require('./decorative-line-models.cjs')();
   console.log('Air Action: alpha-blended glow sheets, +1 block examples and elongated Air markers generated.');
 }

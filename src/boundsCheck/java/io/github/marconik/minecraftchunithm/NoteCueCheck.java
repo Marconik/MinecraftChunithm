@@ -17,10 +17,11 @@ final class NoteCueCheck {
         notes.add(note("SXD",900,950,true,false));notes.add(note("SXC",950,1000,false,true));
         notes.add(note("AHD",1100,1200,true,true));
         notes.add(note("ASC",1300,1400,true,false));notes.add(note("ASC",1400,1500,false,false));notes.add(note("ASD",1500,1600,false,true));
+        notes.add(note("MNE",1650,1650,false,false));notes.add(note("MNE",0,0,false,false));
         notes.add(note("ALD",1700,1800,true,true));
         notes.add(new ChartDefinition.Note("non","ALD",1900,2000,0,2,0,2,"",true,true,5,5,"NON"));
         var chart=new ChartDefinition("Cue boundaries",notes,List.of(new ChartDefinition.Speed(30,40,0)),List.of(20.0),List.of(10.0),2000);
-        var expected=List.of(0.0,50.0,100.0,101.0,102.0,103.0,104.0,105.0,200.0,250.0,400.0,450.0,500.0,800.0,900.0,1000.0,1100.0,1200.0,1300.0,1500.0,1600.0);
+        var expected=List.of(0.0,50.0,100.0,101.0,102.0,103.0,104.0,105.0,200.0,250.0,400.0,450.0,500.0,800.0,900.0,1000.0,1100.0,1200.0,1300.0,1500.0,1600.0,1650.0);
         var times=NoteCueTimeline.of(chart);
         if(!times.equals(expected))throw new AssertionError("Cue events must include only real note heads/tails and merge simultaneous hits: "+times);
         var cursor=new NoteCueTimeline.Cursor(times);cursor.reset(-100);

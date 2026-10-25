@@ -8,11 +8,11 @@ public final class NoteCueTimeline {
     public static List<Double> of(ChartDefinition chart){
         var times=new TreeSet<Double>();
         for(var note:chart.notes())switch(note.type()){
-            case "TAP","CHR","FLK","AIR","AUL","AUR","ADW","ADL","ADR"->times.add(note.time());
+            case "TAP","CHR","MNE","FLK","AIR","AUL","AUR","ADW","ADL","ADR"->times.add(note.time());
             case "HLD","HXD"->{times.add(note.time());times.add(note.end());}
             case "SLD","SLC","SXD","SXC"->{if(note.root())times.add(note.time());if(note.terminal())times.add(note.end());}
             // Actual AIR arrows/action bars, excluding invisible path control nodes.
-            case "AHD"->{times.add(note.time());times.add(note.end());}
+            case "AHD","AHX"->{times.add(note.time());times.add(note.end());}
             case "ASC","ASD"->{if(note.root()||note.type().equals("ASD"))times.add(note.time());if(note.terminal())times.add(note.end());}
             case "ALD"->{} // Decoration, including NON, is never an audible judgment.
             default->throw new IllegalArgumentException("Unsupported note cue: "+note.type());

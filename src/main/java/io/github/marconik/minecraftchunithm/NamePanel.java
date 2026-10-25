@@ -27,7 +27,7 @@ public final class NamePanel {
     private NamePanel(){}
     public static void initialize(){
         var key=ResourceKey.create(Registries.BLOCK,Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,"name_panel"));
-        tile=Registry.register(BuiltInRegistries.BLOCK,key,new PanelTile(BlockBehaviour.Properties.of().setId(key).strength(2).noOcclusion(),true));
+        tile=Registry.register(BuiltInRegistries.BLOCK,key,new PanelTile(CabinetBlocks.properties(key).noOcclusion(),true));
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_LEVEL_TICK.register(level->{
             if(level.getGameTime()%20!=0)return;
             var refreshed=UPDATED.computeIfAbsent(level,l->java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()));

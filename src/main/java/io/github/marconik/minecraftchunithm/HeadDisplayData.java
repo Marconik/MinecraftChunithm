@@ -8,6 +8,6 @@ public record HeadDisplayData(long critical,long justice,long attack,long miss,l
     }
     public double percent(){ return Math.min(score,MAX_SCORE)*100.0/MAX_SCORE; }
     public int filledCells(){ return (int)(Math.min(score,MAX_SCORE)/101_000); }
-    public double barFraction(){ return Math.min(score,MAX_SCORE)%101_000/101_000.0; }
+    public double barFraction(){ return score>=MAX_SCORE?1:score%101_000/101_000.0; }
     public boolean goldBar(){ return filledCells()>=3; }
 }

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2060,
+  "title": "蜘蛛の糸",
+  "artist": "きくお×cosMo＠暴走P feat.影縫英",
+  "sortName": "クモノイト",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20211104",
+  "defaultBpm": 180.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2060/cover.png",
+    "itemModel": "minecraftchunithm:cover/2060",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2060",
+    "resource": "minecraftchunithm:sounds/songs/2060/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 143936.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2060_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 50,
+      "internalLevel": 8.5,
+      "sourceFile": "2060_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 70,
+      "internalLevel": 13.7,
+      "sourceFile": "2060_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 20,
+      "internalLevel": 15.2,
+      "sourceFile": "2060_03.c2s",
+      "notesDesigner": "Techno Kitchen <―> Redarrow <―>",
+      "chartResource": "minecraftchunithm:songs/2060/master.json",
+      "imported": true,
+      "firstNoteMs": 2000.0,
+      "lastNoteMs": 138666.666667,
+      "logicalNoteCount": 1395,
+      "judgmentCount": 2381,
+      "speedChangeMarkerCount": 2,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2060",
+    "metadataFile": "Music.xml"
+  }
+}

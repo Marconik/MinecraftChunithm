@@ -11,6 +11,7 @@ public final class MinecraftChunithm implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        CabinetBlocks.initialize();
         ModModels.initialize();
         GroundSlide.initialize();
         AirSensors.initialize();
@@ -29,6 +30,9 @@ public final class MinecraftChunithm implements ModInitializer {
         NoteCueAudio.initialize();
         ChartPlayback.initialize();
         DevelopmentMotionTest.initialize();
+        DevelopmentDifferentialCheck.initialize();
+        DevelopmentMineCheck.initialize();
+        DevelopmentScoreCheck.initialize();
         LOGGER.info("MinecraftChunithm initialized: build={}, control logo registered={}",BUILD_LABEL,PartPorts.ready());
     }
 }

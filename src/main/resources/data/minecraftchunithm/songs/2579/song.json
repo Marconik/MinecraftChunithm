@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2579,
+  "title": "ラストピースに祝福と栄光を",
+  "artist": "cosMo＠暴走P",
+  "sortName": "ラストヒウスニシユクフクトエイコウヲ",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20240229",
+  "defaultBpm": 280.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2579/cover.png",
+    "itemModel": "minecraftchunithm:cover/2579",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2579",
+    "resource": "minecraftchunithm:sounds/songs/2579/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 168021.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "2579_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 10,
+      "levelDecimal": 0,
+      "internalLevel": 10.0,
+      "sourceFile": "2579_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 30,
+      "internalLevel": 14.3,
+      "sourceFile": "2579_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 50,
+      "internalLevel": 15.5,
+      "sourceFile": "2579_03.c2s",
+      "notesDesigner": "Mistilteinn vs Mizore respect for Finalists and \"Endmark\"",
+      "chartResource": "minecraftchunithm:songs/2579/master.json",
+      "imported": true,
+      "firstNoteMs": 2571.428571,
+      "lastNoteMs": 163736.607143,
+      "logicalNoteCount": 2491,
+      "judgmentCount": 2939,
+      "speedChangeMarkerCount": 33,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2579",
+    "metadataFile": "Music.xml"
+  }
+}
