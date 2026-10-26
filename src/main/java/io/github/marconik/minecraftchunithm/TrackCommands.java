@@ -19,7 +19,8 @@ public final class TrackCommands {
     public static void initialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) ->
                 dispatcher.register(Commands.literal("chunithm")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(source->Commands.hasPermission(Commands.LEVEL_GAMEMASTERS).test(source)&&!WorldUninstall.running(source.getServer()))
+                        .then(Commands.literal("uninstall").executes(context->WorldUninstall.start(context.getSource())))
                         .then(Commands.literal("assemble").executes(c->PartAssembly.generate(c.getSource(),24))
                                 .then(Commands.argument("length",IntegerArgumentType.integer(2,1024))
                                         .executes(c->PartAssembly.generate(c.getSource(),IntegerArgumentType.getInteger(c,"length")))))

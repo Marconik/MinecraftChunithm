@@ -3,6 +3,7 @@ plugins {
 }
 
 loom {
+    accessWidenerPath = file('src/main/resources/minecraftchunithm.accesswidener')
     splitEnvironmentSourceSets()
     mods {
         minecraftchunithm {
@@ -12,6 +13,12 @@ loom {
     }
     runs {
         client {
+            if (project.hasProperty('uninstallQuickPlay')) {
+                runDir 'build/air-input-test'
+                vmArg '-Dminecraftchunithm.uninstallQuickPlay=true'
+                programArg '--quickPlaySingleplayer'
+                programArg 'New World'
+            }
             if (project.hasProperty('inputQuickPlay')) {
                 // Loom's runDir controls --gameDir as well as the process directory.
                 runDir 'build/air-input-test'

@@ -12,10 +12,28 @@ public final class DevelopmentScoreCheck {
     private static volatile int phase;
     private static volatile boolean acknowledged,finished;
     private static int checks;
+    private static int groundChecks;
+    private static net.minecraft.world.entity.item.ItemEntity pressureEntity;
     public static int phase(){return phase;}
     public static boolean finished(){return finished;}
     public static void acknowledge(){acknowledged=true;}
-    public static String result(){return "{\"passed\":true,\"displayChecks\":"+checks+",\"maximumScore\":1010000,\"notes\":13,\"inPlaceUpdates\":true}";}
+    public static String result(){return "{\"passed\":true,\"displayChecks\":"+checks+",\"groundChecks\":"+groundChecks+",\"maximumScore\":1010000,\"notes\":13,\"inPlaceUpdates\":true}";}
+    private static void verifyGround(ServerLevel level,Placement head,double time){
+        var ground=PartConnections.inputRoute(level,head).ground().part().placement;
+        int expected=pressureEntity==null?0:1;
+        boolean mirrored=phase>=3;
+        if(HeadControlServices.transport(level,head).state()==HeadControlServices.Playback.PLAYING){
+            for(int i=1;i<=12;i++)if(time>=i*500&&time<i*500+100)expected|=mirrored?0xc00:0x30;
+        }
+        var input=HeadControlServices.physicalInput(level,head).ground();
+        for(int lane=0;lane<16;lane++)if(input[lane]!=((expected>>lane)&1))
+            throw new AssertionError("Native Ground Slide/head lane mismatch at "+time+", phase="+phase+", lane="+lane);
+        for(int z=0;z<GroundSlide.DEPTH;z++)for(int x=0;x<GroundSlide.WIDTH;x++){
+            int actual=level.getBlockState(ground.block(x,0,z)).getValue(GroundSlideBlock.PRESSED);
+            if(actual!=GroundSlidePressure.tileMask(x,expected))throw new AssertionError("Native Ground Slide tile differs at "+x+","+z);
+        }
+        groundChecks++;
+    }
     private static void command(ServerLevel level,String text){
         var server=level.getServer();server.getCommands().performPrefixedCommand(server.getPlayerList().getPlayers().getFirst().createCommandSourceStack(),text);
     }
@@ -76,13 +94,19 @@ public final class DevelopmentScoreCheck {
                 ChartPlayback.load(level,track,new ChartDefinition("All Critical score test",notes,List.of(new ChartDefinition.Speed(1000,2000,-1)),List.of(750.0),List.of(250.0),6000),20,false);
                 var camera=head.point(5.5,2,10);command(level,"tp @s "+camera.x+" "+camera.y+" "+camera.z+" "+head.forward().getOpposite().toYRot()+" 0");
                 verify(level,head,new HeadDisplayData(0,0,0,0,0,0),baseline);
-                command(level,"chunithm chart play");phase=1;
+                var ground=PartConnections.inputRoute(level,head).ground().part().placement;
+                var contact=ground.point(2.75,GroundSlide.SURFACE_HEIGHT,1.5);
+                pressureEntity=new net.minecraft.world.entity.item.ItemEntity(level,contact.x,contact.y,contact.z,
+                        new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STONE));
+                pressureEntity.setNoGravity(true);pressureEntity.setDeltaMovement(0,0,0);pressureEntity.setNeverPickUp();level.addFreshEntity(pressureEntity);
+                command(level,"chunithm chart play");phase=1;return;
             }
             var frame=ChartPlayback.nativeFrame(level);if(frame==null)throw new AssertionError("Score session disappeared");
             long passed=Math.max(0,Math.min(12,(long)Math.floor(frame.time()/500)))+(frame.time()>=2000?1:0);
             var score=ChartPlayback.score(level);
             if(score.passed()!=passed||score.total()!=13||score.score()!=passed*1010000/13)throw new AssertionError("Score is not tied to original judgment time");
             verify(level,head,score.display(),baseline);
+            verifyGround(level,head,frame.time());
             switch(phase){
                 case 1->{if(frame.time()>=3750){command(level,"chunithm chart pause");phase=2;wait[0]=ticks[0]+10;}}
                 case 2->{if(ticks[0]>=wait[0]&&acknowledged){
@@ -103,7 +127,8 @@ public final class DevelopmentScoreCheck {
                 case 6->{if(ticks[0]>=wait[0]&&acknowledged){command(level,"chunithm chart resume");phase=7;}}
                 case 7->{if(HeadControlServices.transport(level,head).state()==HeadControlServices.Playback.FINISHED){
                     if(HeadControlServices.transport(level,head).state()!=HeadControlServices.Playback.FINISHED)throw new AssertionError("Chart did not finish");
-                    finished=true;MinecraftChunithm.LOGGER.info("AUTO SCORE SMOKE TEST PASSED: {} actual display checks, in-place text updates, progress cells and bar width/color, pause, seek, speed/mirror, stop/restart and final maximum.",checks);
+                    pressureEntity.discard();pressureEntity=null;
+                    finished=true;MinecraftChunithm.LOGGER.info("AUTO SCORE SMOKE TEST PASSED: {} display checks and {} Ground Slide checks including combined physical pressure, mirrored arrivals, pause/restart and head input routing.",checks,groundChecks);
                 }}
             }
         });

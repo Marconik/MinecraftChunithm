@@ -72,6 +72,14 @@ public final class PartConnections {
             Files.writeString(temporary,array.toString());Files.move(temporary,path,StandardCopyOption.REPLACE_EXISTING);
         }catch(java.io.IOException e){throw new IllegalStateException("Cannot save part registry",e);}
     }
+    static void clearForUninstall(net.minecraft.server.MinecraftServer server)throws java.io.IOException{
+        // Only this MOD's own registry files, never arbitrary world data or region files.
+        Path directory=server.getWorldPath(LevelResource.ROOT).resolve("data/minecraftchunithm");
+        if(Files.isDirectory(directory))try(var files=Files.newDirectoryStream(directory,"parts_*.json*")){
+            for(Path path:files)if(path.getFileName().toString().matches("parts_.+\\.json(?:\\.tmp)?"))Files.delete(path);
+        }
+        for(var level:server.getAllLevels())CACHE.put(level,new ArrayList<>());
+    }
     public static Part register(ServerLevel level,Kind kind,Placement p,int length){
         var list=parts(level);list.removeIf(part->{if(!overlaps(part,new Part(kind,p,length)))return false;PartPorts.remove(level,part);return true;});
         var part=new Part(kind,p,length);list.add(part);save(level);PartPorts.draw(level,part);return part;
@@ -83,7 +91,7 @@ public final class PartConnections {
         return aa.intersects(bb);
     }
     public static Part find(ServerLevel level,Kind kind,Placement p){return parts(level).stream().filter(a->a.kind==kind&&a.placement.equals(p)).findFirst().orElse(null);}
-    static List<Part> ofKind(ServerLevel level,Kind kind){return parts(level).stream().filter(part->part.kind==kind).toList();}
+    static List<Part> ofKind(ServerLevel level,Kind kind){return WorldUninstall.running(level.getServer())?List.of():parts(level).stream().filter(part->part.kind==kind).toList();}
     public static Part at(ServerLevel level,BlockPos pos){
         for(var part:parts(level))if(part.kind!=Kind.TRACK)for(int y=0;y<part.height();y++)for(int z=0;z<part.depth();z++)for(int x=0;x<part.width();x++)
             if(part.occupied(x,y)&&part.placement.block(x,y,z).equals(pos))return part;

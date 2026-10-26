@@ -30,10 +30,12 @@ public final class MinecraftChunithm implements ModInitializer {
         RailAudio.initialize();
         NoteCueAudio.initialize();
         ChartPlayback.initialize();
+        WorldUninstall.initialize();
         DevelopmentMotionTest.initialize();
         DevelopmentDifferentialCheck.initialize();
         DevelopmentMineCheck.initialize();
         DevelopmentScoreCheck.initialize();
+        DevelopmentUninstallCheck.initialize();
         LOGGER.info("MinecraftChunithm initialized: build={}, control logo registered={}",BUILD_LABEL,PartPorts.ready());
     }
 }

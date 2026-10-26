@@ -15,6 +15,7 @@ final class PartWindows {
         UseBlockCallback.EVENT.register((player,world,hand,hit)->{
             if(!(world instanceof ServerLevel level)||!(player instanceof ServerPlayer sp))return InteractionResult.PASS;
             var part=PartConnections.at(level,hit.getBlockPos());
+            if(part!=null&&WorldUninstall.running(level.getServer()))return InteractionResult.FAIL;
             if(part==null||hit.getDirection()!=part.placement.forward().getOpposite())return InteractionResult.PASS;
             // Restrict activation to the blocks behind the visible terminal.
             boolean terminal=part.kind==PartConnections.Kind.HEAD?HeadTerminal.contains(part.placement,hit.getLocation()):

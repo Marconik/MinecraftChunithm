@@ -5,6 +5,8 @@ public final class TrackBoundsCheck {
     public static void main(String[] args) {
         NoteCueCheck.run();
         AutoScoreCheck.run();
+        GroundSlidePlaybackCheck.run();
+        UninstallCheck.run();
         AirHoldActionCheck.run();
         int checked = 0;
         for (double min : new double[] {-100.5, 0.5, 200.5}) {

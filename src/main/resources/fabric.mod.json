@@ -10,6 +10,7 @@
     "issues": "https://github.com/Marconik/MinecraftChunithm/issues"
   },
   "environment": "*",
+  "accessWidener": "minecraftchunithm.accesswidener",
   "entrypoints": {
     "main": ["io.github.marconik.minecraftchunithm.MinecraftChunithm"],
     "client": ["io.github.marconik.minecraftchunithm.client.MinecraftChunithmClient"]

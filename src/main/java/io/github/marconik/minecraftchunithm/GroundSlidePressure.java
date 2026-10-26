@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 
-/** Contact-to-colour effect and the same 16 physical input channels for the head. */
+/** Combined contact/playback colour effect and the same 16 channels for the head. */
 final class GroundSlidePressure {
     private GroundSlidePressure(){}
     static void initialize(){ServerTickEvents.END_LEVEL_TICK.register(GroundSlidePressure::tick);}
@@ -62,6 +62,7 @@ final class GroundSlidePressure {
                 var entities=level.getEntitiesOfClass(Entity.class,area,
                         EntitySelector.NO_SPECTATORS.and(entity->!entity.isIgnoringBlockTriggers()));
                 mask=contacts(part.placement,entities.stream().map(Entity::getBoundingBox).toList());
+                mask|=ChartPlayback.groundSlideMask(level,part.placement);
             }
             // Refresh every loaded intact tile even when no entity remains, including after reload.
             for(int z=0;z<GroundSlide.DEPTH;z++)for(int x=0;x<GroundSlide.WIDTH;x++){

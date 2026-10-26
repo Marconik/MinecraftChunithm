@@ -79,6 +79,13 @@ public final class ChartPlayback {
     }
     private static int missing(CommandSourceStack source){source.sendFailure(Component.literal("尚未加载谱面：/chunithm chart load 180 10 false"));return 0;}
     public static void unload(ServerLevel level){var s=SESSIONS.remove(level);if(s!=null){s.clear();RailAudio.clear(level);NoteCueAudio.clear(level);}}
+    static int groundSlideMask(ServerLevel level,Placement ground){
+        var session=SESSIONS.get(level);
+        if(session==null||session.state!=HeadControlServices.Playback.PLAYING
+                ||!PartConnections.groundTarget(session.track.placement,session.track.length).equals(ground)
+                ||PartConnections.integrity(level,session.track)!=PartConnections.Status.CONNECTED)return 0;
+        return GroundSlidePlayback.mask(session.chart,session.time,session.mirror);
+    }
     public static void unload(ServerLevel level,Placement head){
         var session=SESSIONS.get(level);if(session!=null&&session.track.placement.equals(PartConnections.target(head,PartConnections.Kind.TRACK)))unload(level);
     }
