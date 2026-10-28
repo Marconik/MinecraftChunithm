@@ -8,7 +8,11 @@ import net.minecraft.server.level.ServerLevel;
 
 /** Immutable visual chart. Source segments remain independent across intersections. */
 public record ChartDefinition(String title,List<Note> notes,List<Speed> speeds,List<Double> markers,List<Double> beats,double lastTimeMs,
-                              Map<Integer,List<Speed>> profiles) {
+                              Map<Integer,List<Speed>> profiles,boolean extendedLanes) {
+    public ChartDefinition(String title,List<Note> notes,List<Speed> speeds,List<Double> markers,List<Double> beats,double lastTimeMs,
+                           Map<Integer,List<Speed>> profiles){
+        this(title,notes,speeds,markers,beats,lastTimeMs,profiles,false);
+    }
     public ChartDefinition(String title,List<Note> notes,List<Speed> speeds,List<Double> markers,List<Double> beats,double lastTimeMs){
         this(title,notes,speeds,markers,beats,lastTimeMs,Map.of());
     }
@@ -49,7 +53,7 @@ public record ChartDefinition(String title,List<Note> notes,List<Speed> speeds,L
                     "AIR","AUL","AUR","ADW","ADL","ADR","AHD","AHX","ASC","ASD","ALD").contains(n.type)
                     ||n.scrollProfile<0||n.scrollProfile>0&&!profiles.containsKey(n.scrollProfile)
                     ||!Double.isFinite(n.time)||!Double.isFinite(n.end)||n.time<0||n.end<n.time||n.end>lastTimeMs+1e-6
-                    ||!validLane(n.lane,n.width)||!validLane(n.endLane,n.endWidth)
+                    ||!validLane(n.lane,n.width,extendedLanes)||!validLane(n.endLane,n.endWidth,extendedLanes)
                     ||!Double.isFinite(n.height)||!Double.isFinite(n.endHeight)||n.height<0||n.endHeight<0||n.height>32||n.endHeight>32)
                 throw new IllegalArgumentException("Invalid chart note: "+n.id);
             if(Set.of("HLD","HXD","SLD","SLC","SXD","SXC","AHD","AHX","ASC","ASD","ALD").contains(n.type)!=(n.end>n.time))
@@ -70,8 +74,10 @@ public record ChartDefinition(String title,List<Note> notes,List<Speed> speeds,L
             previousEnd=s.end;
         }
     }
-    private static boolean validLane(double lane,double width){return Double.isFinite(lane)&&Double.isFinite(width)
-            &&lane>=0&&width>=1&&lane+width<=16&&lane==Math.rint(lane)&&width==Math.rint(width);}
+    private static boolean validLane(double lane,double width,boolean extended){return Double.isFinite(lane)&&Double.isFinite(width)
+            // Bound malformed resources while allowing signed source coordinates.
+            &&lane>=(extended?-256:0)&&width>=1&&width<=16&&lane+width<=(extended?272:16)
+            &&lane==Math.rint(lane)&&width==Math.rint(width);}
     /** Visual coordinate in milliseconds. Sound/judgment time is never stopped. */
     public double scrollTime(double time){
         return scrollTime(time,0);
@@ -126,6 +132,17 @@ public record ChartDefinition(String title,List<Note> notes,List<Speed> speeds,L
             curve.sort(Comparator.comparingDouble(Speed::start));
             if(profiles.put(id,curve)!=null)throw new IllegalArgumentException("Duplicate scroll profile ID");
         }
-        return new ChartDefinition(json.get("title").getAsString(),notes,speeds,markers,beats,json.get("lastTimeMs").getAsDouble(),profiles);
+        boolean extended=false;
+        if(json.has("outOfBoundsPolicy")){
+            var policy=json.getAsJsonObject("outOfBoundsPolicy");String mode=policy.get("mode").getAsString();
+            if(!Set.of("PRESERVE_SOURCE_COORDINATES","CLAMP_DISPLAY_PRESERVE_SOURCE").contains(mode))
+                throw new IllegalArgumentException("Unsupported off-track policy: "+mode);
+            if(mode.equals("PRESERVE_SOURCE_COORDINATES")){
+                long outside=notes.stream().filter(n->n.lane<0||n.lane+n.width>16||n.endLane<0||n.endLane+n.endWidth>16).count();
+                if(outside!=policy.get("recordCount").getAsLong())throw new IllegalArgumentException("Off-track record count mismatch");
+                extended=outside>0;
+            }
+        }
+        return new ChartDefinition(json.get("title").getAsString(),notes,speeds,markers,beats,json.get("lastTimeMs").getAsDouble(),profiles,extended);
     }
 }

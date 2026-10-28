@@ -11,6 +11,8 @@ final class AirHoldActionCheck {
             if(frame.values().stream().anyMatch(s->s.item().startsWith("chart_air_arrow")))throw new AssertionError("AHX must not add a green direction arrow");
             if(frame.values().stream().filter(s->s.item().startsWith("chart_action_bar")).count()!=2
                     ||frame.values().stream().noneMatch(s->s.item().equals("chart_air_body")))throw new AssertionError("AHX action endpoints/beam missing");
+            if(frame.values().stream().anyMatch(s->s.y()!=NoteDefinition.AIR_ACTION_HEIGHT||s.lift()!=0))
+                throw new AssertionError("Ordinary Air Hold/Action must retain the one-block height");
         }
         if(!NoteCueTimeline.of(chart).equals(List.of(1000.0,1500.0)))throw new AssertionError("AHX cue times missing");
         var score=AutoScoreTimeline.of(chart);

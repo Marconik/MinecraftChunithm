@@ -25,21 +25,20 @@ input judgment and penalty behavior are not implemented.
 ULTIMA also uses 86 `VLT` decoration records. A violet emissive line model is
 registered for that color, using the same constant color and halo as other ALD.
 
-## Deferred off-track motion
+## Off-track motion
 
 ULTIMA has 2,559 records whose start or end coordinates are outside the track;
 source horizontal extents reach -16 through 32. The analysis retains them
 unchanged and resolves original path links, Air attachments and scroll groups
-before exporting a bounded playback copy.
+before export. Off-track playback is now implemented; see
+[parameters, examples and checks](MELODiniq_OFF_TRACK.md).
 
 Each affected JSON note retains `sourceFields`, `sourceLane`, and (for paths)
 `sourceEndLane`, plus `sourceOutOfBounds: true`. Widths and musical timestamps
-remain unchanged. `lane` and `endLane` are clamped to `[0, 16 - width]` for
-current rendering. The root `outOfBoundsPolicy` is
-`CLAMP_DISPLAY_PRESERVE_SOURCE`; off-track flight is deliberately deferred.
-No source records are dropped. These preview coordinates are not the original
-arcade choreography and should be replaced from the preserved fields when
-off-track rendering is implemented.
+remain unchanged. `lane` and `endLane` now retain the source coordinates;
+the root `outOfBoundsPolicy` is `PRESERVE_SOURCE_COORDINATES`. No source
+records are dropped. Horizontal excursions, tapered paths and source heights
+are rendered without moving outside notes onto a track edge.
 
 A coincident Slide junction has one incoming path and two outgoing paths.
 The extra start is retained as a new head in source order; the resulting 176

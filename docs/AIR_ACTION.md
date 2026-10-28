@@ -1,6 +1,6 @@
 # Air Action 高度与荧光材质
 
-`NoteDefinition.AIR_ACTION_HEIGHT = 1.0` 表示相对轨道表面（`TrackBlock.SURFACE_HEIGHT = 0.625`）的高度，世界坐标为轨道基准 Y + 1.625。AHD、ASC、ASD 的连接线和动作条统一使用这一高度，ALD 的 NON 动作条同样处理；源数据中的空间高度字段仍保留，其他彩色 ALD 特效继续使用原有高度。
+`NoteDefinition.AIR_ACTION_HEIGHT = 1.0` 表示相对轨道表面（`TrackBlock.SURFACE_HEIGHT = 0.625`）的默认高度，世界坐标为轨道基准 Y + 1.625。AHD/AHX 的连接线和动作条固定使用这一高度。自 Melodiniq 超界功能起，ASC/ASD 和 ALD（包括 NON 动作条）使用源起止高度，以源高度 5 对应 MC 1 格；细节见 [超界参数](MELODiniq_OFF_TRACK.md)。
 
 连接线采用用户提供的 `ntt_ahline.dds`，64×64 RGBA 原始转换保存在 `tools/assets/air-action-line.png`。运行纹理的 alpha 取原始值的 80%，透明边缘保留，中心最大 alpha 为 204。原有不透明方管替换为水平/竖直交叉的双面薄片，材质启用 `force_translucent`，模型满亮并关闭面部阴影。柔边光晕外径为 0.30 格，原语义线宽 0.075 格不变；不会添加遮盖整条轨道的实体绿块。
 
@@ -8,7 +8,7 @@ Air 上抬、下压及四种斜向箭头的标记高度从 13 模型单位增加
 
 `tools/air-action-models.cjs` 定向更新荧光连接线、示例及箭头，重复运行不会二次拉伸。完整 `generate-models.cjs` 经 `note-models.cjs` 调用同一生成器。模型仍使用原版半透明绘制，不依赖外部着色器。
 
-谱面几何回归会检查每个 Air Action 连接线和动作条的高度恰好为 1、竖直倾斜为 0，并检查横向/纵向裁切。独立测试存档保存 `air-action-front.png`、`air-action-oblique.png`；测试包含原始高度 0、2、8 的节点，以验证统一高度规则。
+谱面几何回归检查普通 AHD/AHX 的高度恰好为 1、竖直倾斜为 0，并另外检查 ASC/ASD 的源高度插值、动作条位置及纵向裁切。独立展示存档的 `air-action-front.png`、`air-action-oblique.png` 包含默认 Air Hold 和原始高度 2→8 的空间路径；超界定向测试另存 `melodiniq-off-track-*.png`。
 
 ## ALD 装饰线
 

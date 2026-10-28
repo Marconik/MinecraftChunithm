@@ -32,7 +32,7 @@ public final class ChartPlaybackCheck {
                 }
             for(var note:chart.notes())for(double t:new double[]{note.time(),(note.time()+note.end())/2,note.end()}){
                 double normal=note.laneAt(t,false),mirror=note.laneAt(t,true),width=note.widthAt(t);
-                if(Math.abs(normal+mirror+width-16)>1e-8||mirror< -1e-8||mirror+width>16+1e-8)
+                if(Math.abs(normal+mirror+width-16)>1e-8||!chart.extendedLanes()&&(mirror< -1e-8||mirror+width>16+1e-8))
                     throw new AssertionError("Mirrored path exceeds lanes: "+id+" "+note.id());
             }
             // Every note endpoint reaches the same stripe that TrackMotion.addJudgment draws.
@@ -70,6 +70,7 @@ public final class ChartPlaybackCheck {
                 throw new AssertionError("Unexpected ID103 conversion");
             if(id.equals("2579"))checkLastPieceReverse(chart);
             if(id.equals("2969"))DifferentialScrollCheck.run(chart);
+            if(id.equals("2999/ultima"))OffTrackCheck.run(chart);
         }
         var reverseNote=new ChartDefinition.Note("reverse_path","HLD",0,10000,7,2,7,2,"",true,true,5,5,"DEF");
         var reverseChart=new ChartDefinition("Reverse regression",List.of(reverseNote),
@@ -95,7 +96,7 @@ public final class ChartPlaybackCheck {
                 for(var entry:before.entrySet()){
                     var old=entry.getValue();var next=after.get(entry.getKey());
                     if(next==null||old.item().endsWith("_body")||old.item().equals("beat_line")||old.item().equals("speed_change_line"))continue;
-                    if(old.z()>.25&&old.z()<23.75&&next.z()>.25&&next.z()<23.75){
+                    if(old.z()>.25&&old.z()<23.25&&next.z()>.25&&next.z()<23.25){
                         if(next.z()>=old.z())throw new AssertionError("Visible note did not reverse");
                         visibleReverse++;
                     }

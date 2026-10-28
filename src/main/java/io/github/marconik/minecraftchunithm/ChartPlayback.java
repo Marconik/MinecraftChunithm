@@ -1,6 +1,5 @@
 package io.github.marconik.minecraftchunithm;
 
-import com.mojang.math.Transformation;
 import com.mojang.brigadier.arguments.*;
 import java.util.*;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -15,7 +14,6 @@ import net.minecraft.util.Brightness;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.*;
 import net.minecraft.world.phys.AABB;
-import org.joml.Matrix4f;
 
 /** Chart and rail-audio transport. One selected track per dimension, no input judging. */
 public final class ChartPlayback {
@@ -123,9 +121,9 @@ public final class ChartPlayback {
         var frame=checkFrame(chart,speed,mirror,time);
         for(var spec:frame.values()){
             if(spec.item.endsWith("_body")){
-                if(spec.x-spec.sx/2-Math.abs(spec.shear)/2<.5-1e-6
-                        ||spec.x+spec.sx/2+Math.abs(spec.shear)/2>8.5+1e-6
-                        ||spec.z-spec.sz/2< -1e-6||spec.z+spec.sz/2>24+1e-6)
+                if(!chart.extendedLanes()&&(spec.x-spec.sx/2-Math.abs(spec.shear)/2<.5-1e-6
+                        ||spec.x+spec.sx/2+Math.abs(spec.shear)/2>8.5+1e-6)
+                        ||spec.z-spec.sz/2< -1e-6||spec.z+spec.sz/2>RhythmTiming.judgment(24)+1e-6)
                     throw new AssertionError("Ribbon leaves the track: "+spec);
             }
             if(spec.item.equals("speed_change_line")&&spec.bright)throw new AssertionError("Speed marker is fullbright");
@@ -133,9 +131,9 @@ public final class ChartPlayback {
                 if(Math.abs(spec.sx-NoteDefinition.AIR_ACTION_GLOW_SIZE)>1e-8
                         ||Math.abs(spec.sy-NoteDefinition.AIR_ACTION_GLOW_SIZE)>1e-8||!spec.bright)
                     throw new AssertionError("Air and ALD glow must share a constant cross-section");
-            if((spec.item.equals("chart_air_body")||spec.item.startsWith("chart_action_bar_"))
-                    &&(Math.abs(spec.y-NoteDefinition.AIR_ACTION_HEIGHT)>1e-8||spec.lift!=0))
-                throw new AssertionError("Air Action must remain one block above the deck");
+            if(!Double.isFinite(spec.x)||!Double.isFinite(spec.y)||!Double.isFinite(spec.z)
+                    ||!Double.isFinite(spec.shear)||!Double.isFinite(spec.lift)||spec.y<0||spec.sx<=0||spec.sy<=0||spec.sz<=0)
+                throw new AssertionError("Invalid display geometry: "+spec);
         }
         return frame.size();
     }
@@ -174,7 +172,10 @@ public final class ChartPlayback {
         var s=SESSIONS.get(level);if(s==null)return null;
         Map<String,Spec> specs=new HashMap<>();Map<String,net.minecraft.world.phys.Vec3> positions=new HashMap<>();
         for(var e:s.entities.entrySet())if(!s.retiring.containsKey(e.getKey())&&!e.getValue().isRemoved()){
-            specs.put(e.getKey(),s.lastSpecs.get(e.getKey()));positions.put(e.getKey(),e.getValue().position());
+            specs.put(e.getKey(),s.lastSpecs.get(e.getKey()));
+            var pose=e.getValue().getItemStack().get(ChartDisplayPose.TYPE);
+            var offset=s.track.placement.point(pose.x(),pose.y(),pose.z()).subtract(s.track.placement.point(0,0,0));
+            positions.put(e.getKey(),e.getValue().position().add(offset));
         }
         return new NativeFrame(s.time,s.track.placement,Map.copyOf(specs),Map.copyOf(positions));
     }
@@ -225,13 +226,23 @@ public final class ChartPlayback {
             cap(frame,key,item,t,lane,width,height,marker,1);
         }
         void cap(Map<String,Spec> frame,String key,String item,double t,double lane,double width,double height,boolean marker,double widthScale){
-            double z=z(t,marker),depth=marker||item.equals("beat_line")?.03125:.5,lo=Math.max(0,z-depth/2),hi=Math.min(track.length,z+depth/2);
+            cap(frame,key,item,t,lane,width,height,marker,widthScale,lane,width);
+        }
+        void cap(Map<String,Spec> frame,String key,String item,double t,double lane,double width,double height,boolean marker,double widthScale,double rampLane,double rampWidth){
+            double z=z(t,marker),depth=marker||item.equals("beat_line")?.03125:.5,lo=Math.max(0,z-depth/2),hi=Math.min(RhythmTiming.judgment(track.length),z+depth/2);
             if(hi<=lo)return;double left=mirror?16-lane-width:lane;
-            frame.put(key,new Spec(item,.5+(left+width/2)*.5,height,(lo+hi)/2,widthScale,1,(hi-lo)/depth,0,0,!marker,activeProfile));
+            double center=(lo+hi)/2;
+            double lift=(OffTrackRamp.height(rampLane,rampWidth,hi,track.length)-OffTrackRamp.height(rampLane,rampWidth,lo,track.length))/depth;
+            frame.put(key,new Spec(item,.5+(left+width/2)*.5,height+OffTrackRamp.height(rampLane,rampWidth,center,track.length),
+                    center,widthScale,1,(hi-lo)/depth,0,lift,!marker,activeProfile));
         }
         void actionBar(Map<String,Spec> frame,String key,double t,double lane,double width){
-            double barWidth=Math.max(2,width),left=Math.clamp(lane+(width-barWidth)/2,0,16-barWidth);
-            cap(frame,key,"chart_action_bar_"+(int)barWidth,t,left,barWidth,NoteDefinition.AIR_ACTION_HEIGHT,false);
+            actionBar(frame,key,t,lane,width,NoteDefinition.AIR_ACTION_HEIGHT);
+        }
+        void actionBar(Map<String,Spec> frame,String key,double t,double lane,double width,double height){
+            double barWidth=Math.max(2,width),left=lane+(width-barWidth)/2;
+            if(!chart.extendedLanes())left=Math.clamp(left,0,16-barWidth);
+            cap(frame,key,"chart_action_bar_"+(int)barWidth,t,left,barWidth,height,false,1,lane,width);
         }
         String arrow(ChartDefinition.Note n){
             String variant=n.airVariant(mirror);
@@ -243,12 +254,23 @@ public final class ChartPlayback {
             TreeSet<Double> samples=new TreeSet<>();
             samples.add(n.time());samples.add(n.end());
             for(var effect:chart.speeds(n.scrollProfile())){if(effect.start()>n.time()&&effect.start()<n.end())samples.add(effect.start());if(effect.end()>n.time()&&effect.end()<n.end())samples.add(effect.end());}
+            if(chart.extendedLanes()){
+                OffTrackRamp.boundaries(samples,n);
+                // The raised surface becomes horizontal after the judgment stripe.
+                Double last=null;var stripes=new ArrayList<Double>();
+                for(double next:samples){
+                    if(last!=null){double aZ=z(last,false),bZ=z(next,false),stripe=RhythmTiming.judgment(track.length);
+                        if((aZ<stripe&&bZ>stripe)||(bZ<stripe&&aZ>stripe))stripes.add(last+(next-last)*(stripe-aZ)/(bZ-aZ));}
+                    last=next;
+                }
+                samples.addAll(stripes);
+            }
             Double previous=null;int index=0;
             boolean spatial=Set.of("ASC","ASD","ALD").contains(n.type());
             boolean thinLine=air||n.type().equals("ALD");
             for(double next:samples){if(previous==null){previous=next;continue;}double a=previous,b=next;previous=next;
                 double aZ=z(a,false),bZ=z(b,false);if(Math.abs(aZ-bZ)<1e-6)continue;
-                double lo=Math.max(0,Math.min(aZ,bZ)),hi=Math.min(track.length,Math.max(aZ,bZ));if(hi<=lo)continue;
+                double lo=Math.max(0,Math.min(aZ,bZ)),hi=Math.min(RhythmTiming.judgment(track.length),Math.max(aZ,bZ));if(hi<=lo)continue;
                 double tLo=a+(b-a)*(lo-aZ)/(bZ-aZ),tHi=a+(b-a)*(hi-aZ)/(bZ-aZ);
                 // A sheared cube represents a constant-width linear segment
                 // exactly, including its vertical slope. Only tapering needs
@@ -257,17 +279,25 @@ public final class ChartPlayback {
                 // Air and decoration follow the source centreline at constant
                 // thickness. Source lane width is not the width of their glow.
                 if(thinLine)steps=1;
-                // Dense control paths can change width many times within a few
-                // pixels. Keep every source segment, but do not subdivide its
-                // taper beyond 1/16 block along the visible track.
+                // Limit taper tessellation, but never sacrifice the ramp's
+                // curvature tolerance on short tracks or very short segments.
                 steps=Math.min(steps,Math.max(1,(int)Math.ceil((hi-lo)*16)));
+                if(chart.extendedLanes()){
+                    double tm=(tLo+tHi)/2;
+                    steps=Math.max(steps,OffTrackRamp.steps(
+                            OffTrackRamp.height(n.laneAt(tLo,false),n.widthAt(tLo),lo,track.length),
+                            OffTrackRamp.height(n.laneAt(tm,false),n.widthAt(tm),(lo+hi)/2,track.length),
+                            OffTrackRamp.height(n.laneAt(tHi,false),n.widthAt(tHi),hi,track.length)));
+                }
                 for(int step=0;step<steps;step++){
                     double u=(double)step/steps,v=(double)(step+1)/steps;
                     double ta=tLo+(tHi-tLo)*u,tb=tLo+(tHi-tLo)*v;
                     double wa=n.widthAt(ta),wb=n.widthAt(tb);
                     double ca=.5+(n.laneAt(ta,mirror)+wa/2)*.5,cb=.5+(n.laneAt(tb,mirror)+wb/2)*.5;
-                    double ya=air?NoteDefinition.AIR_ACTION_HEIGHT:spatial?n.heightAt(ta)*.2:height,
-                        yb=air?NoteDefinition.AIR_ACTION_HEIGHT:spatial?n.heightAt(tb)*.2:height;
+                    double ya=spatial?n.heightAt(ta)*.2:air?NoteDefinition.AIR_ACTION_HEIGHT:height,
+                        yb=spatial?n.heightAt(tb)*.2:air?NoteDefinition.AIR_ACTION_HEIGHT:height;
+                    ya+=OffTrackRamp.height(n.laneAt(ta,false),wa,lo+(hi-lo)*u,track.length);
+                    yb+=OffTrackRamp.height(n.laneAt(tb,false),wb,lo+(hi-lo)*v,track.length);
                     double width=thinLine?NoteDefinition.AIR_ACTION_GLOW_SIZE:Math.min(wa,wb)*.5;
                     // Narrow only ground sustain bodies, keeping their source centreline and path shear.
                     if(item.equals("chart_hold_body")||item.equals("chart_slide_body"))width*=SUSTAIN_WIDTH_SCALE;
@@ -298,10 +328,10 @@ public final class ChartPlayback {
                         actionBar(frame,prefix+"_action_end",n.end(),n.endLane(),n.endWidth());}
                     case "ASC","ASD"->{ribbon(frame,n,"chart_air_body",1,true);
                         if(n.root())cap(frame,prefix+"_arrow",arrow(n),n.time(),n.lane(),n.width(),.025,false);
-                        if(n.root()||n.type().equals("ASD"))actionBar(frame,prefix+"_action_start",n.time(),n.lane(),n.width());
-                        if(n.terminal())actionBar(frame,prefix+"_action_end",n.end(),n.endLane(),n.endWidth());}
+                        if(n.root()||n.type().equals("ASD"))actionBar(frame,prefix+"_action_start",n.time(),n.lane(),n.width(),n.height()*.2);
+                        if(n.terminal())actionBar(frame,prefix+"_action_end",n.end(),n.endLane(),n.endWidth(),n.endHeight()*.2);}
                     case "ALD"->{
-                        if(n.color().equals("NON"))actionBar(frame,prefix+"_effect_action",n.time(),n.lane(),n.width());
+                        if(n.color().equals("NON"))actionBar(frame,prefix+"_effect_action",n.time(),n.lane(),n.width(),n.height()*.2);
                         else ribbon(frame,n,"chart_effect_"+n.color().toLowerCase(Locale.ROOT)+"_body",1,false);
                     }
                     default->throw new IllegalArgumentException("Unsupported note");
@@ -316,11 +346,12 @@ public final class ChartPlayback {
                 var entry=remove.next();
                 if(frame.containsKey(entry.getKey())&&!entry.getValue().isRemoved()){retiring.remove(entry.getKey());continue;}
                 long reached=retiring.computeIfAbsent(entry.getKey(),key->level.getGameTime());
-                if(!entry.getValue().isRemoved()&&level.getGameTime()-reached<RhythmTiming.ENDPOINT_GRACE_TICKS){
+                if(!lastSpecs.get(entry.getKey()).item.endsWith("_body")&&!entry.getValue().isRemoved()&&level.getGameTime()-reached<RhythmTiming.ENDPOINT_GRACE_TICKS){
                     var last=lastSpecs.get(entry.getKey());double depth=last.item.endsWith("_body")?last.sz:(last.item.equals("speed_change_line")||last.item.equals("beat_line")?.03125:.5)*last.sz;
-                    double edge=last.z<track.length/2.0?depth/2:track.length-depth/2;
-                    var end=track.placement.point(last.x,TrackBlock.SURFACE_HEIGHT+last.y,edge);
-                    entry.getValue().setPos(end.x,end.y,end.z);continue;
+                    double edge=last.z<track.length/2.0?depth/2:RhythmTiming.judgment(track.length)-depth/2;
+                    var end=new Spec(last.item,last.x,last.y,edge,last.sx,last.sy,last.sz,last.shear,last.lift,last.bright,last.profile);
+                    var stack=entry.getValue().getItemStack().copy();stack.set(ChartDisplayPose.TYPE,ChartDisplayPose.of(end,track.length,level.getGameTime()));
+                    entry.getValue().setItemStack(stack);continue;
                 }
                 LIVE.remove(entry.getValue().getUUID());entry.getValue().discard();lastSpecs.remove(entry.getKey());retiring.remove(entry.getKey());remove.remove();}
             for(var entry:frame.entrySet()){
@@ -328,13 +359,19 @@ public final class ChartPlayback {
                 if(fresh){entity=EntityTypes.ITEM_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);if(entity==null)throw new IllegalStateException("Cannot create chart display");
                     entity.setItemStack(new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(MinecraftChunithm.MOD_ID,s.item))));
                     entity.setItemTransform(ItemDisplayContext.FIXED);entity.setYRot(track.placement.yaw());
-                    entity.setPosRotInterpolationDuration(1);entity.setTransformationInterpolationDuration(1);
+                    // Geometry travels as one raw affine pose component. Vanilla's
+                    // separate teleport/SVD interpolation must never run on it.
+                    entity.setPosRotInterpolationDuration(0);entity.setTransformationInterpolationDuration(0);
+                    var anchor=track.placement.point(0,TrackBlock.SURFACE_HEIGHT,0);entity.setPos(anchor.x,anchor.y,anchor.z);
                     if(s.bright)entity.setBrightnessOverride(new Brightness(15,15));
-                    entity.setWidth(10);entity.setHeight(4);entity.addTag(TAG);LIVE.add(entity.getUUID());entities.put(entry.getKey(),entity);
+                    entity.addTag(TAG);LIVE.add(entity.getUUID());entities.put(entry.getKey(),entity);
                 }
-                var pos=track.placement.point(s.x,TrackBlock.SURFACE_HEIGHT+s.y,s.z);entity.setPos(pos.x,pos.y,pos.z);
-                entity.setTransformation(new Transformation(new Matrix4f().scaling((float)s.sx,(float)s.sy,(float)s.sz).m20((float)s.shear).m21((float)s.lift)));
-                entity.setTransformationInterpolationDelay(0);
+                // A crossing ribbon can span well beyond the deck; its bounds must
+                // include the shear so the client does not cull the visible part.
+                var pose=ChartDisplayPose.of(s,track.length,level.getGameTime());
+                entity.setWidth((float)(2*Math.max(Math.abs(s.x)+(s.sx+Math.abs(s.shear))/2,s.z+pose.depth()*s.sz/2)+2));
+                entity.setHeight((float)Math.max(4,s.y+(s.sy+Math.abs(s.lift))/2+2));
+                var stack=entity.getItemStack().copy();stack.set(ChartDisplayPose.TYPE,pose);entity.setItemStack(stack);
                 lastSpecs.put(entry.getKey(),s);
                 if(fresh)level.addFreshEntity(entity);
             }

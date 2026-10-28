@@ -43,7 +43,7 @@ Hold/Slide 的条带主体以原定义宽度的 95% 居中显示，两侧各内�
 
 JSON根字段：schemaVersion=1、title、songId、difficulty、lastTimeMs、notes、scrollEvents、speedChangeMarkers、beatTimesMs。notes保留原始段，不会因交汇坐标相同而丢弃。每条记录包括id、command、timeMs、lane、width；持续记录另含endTimeMs、endLane、endWidth。SLD/SLC保留root/terminal标记；AIR/AHD保留targetType。
 
-支持已核验的TAP、CHR、FLK、HLD/HXD、SLD/SLC/SXD/SXC、六种方向AIR、AHD、ASC/ASD、ALD及SFL正/零/负倍率区间。未知类型、越界坐标和重叠SFL会明确拒绝，不宣称支持全部C2S版本。自定义JSON需满足同一格式；本模块不直接执行原C2S文本。新增六首的路径与兼容细节见[批量歌曲导入](SONG_IMPORT_BATCH.md)。
+支持已核验的 TAP、CHR、MNE、FLK、HLD/HXD、SLD/SLC/SXD/SXC、六种方向 AIR、AHD/AHX、ASC/ASD、ALD 及正/零/负滚动倍率。显式采用 `PRESERVE_SOURCE_COORDINATES` 策略的谱支持轨外坐标；未声明的越界坐标、非法类型和重叠滚动区间仍拒绝加载。超界参数与实际映射见 [Melodiniq 超界](MELODiniq_OFF_TRACK.md)。本模块不直接执行原 C2S 文本。
 
 转换：
 
@@ -65,7 +65,7 @@ python -B tools/export-playable-charts.py 103 180
 
 ## 长音符与边界
 
-HOLD用固定宽尾带和首尾条；SLIDE按每条原始路径段绘制蓝色中心渐变尾带及节点；AIR只绘制薄片箭头，复用其已有地面音符；AHD/ASC/ASD 绘制位于轨道表面上方 1 格的半透明绿色荧光连接线和悬空紫色动作条，并对真正起始动作绘制加长箭头。材质采用提供的 ntt_ahline 贴图，细节见 `AIR_ACTION.md`。
+HOLD 用尾带和首尾条；SLIDE 按每条原始路径段绘制蓝色中心渐变尾带及节点；AIR 绘制薄片箭头。AHD/AHX 的半透明绿色荧光连接线和悬空紫色动作条固定在轨道上方 1 格；ASC/ASD 则跟随起止高度，以源高度 5 对应 1 格。真正起始动作绘制加长箭头。材质采用提供的 ntt_ahline 贴图。
 
 长条先在SFL边界分段，再裁切可见部分。恒宽直线用一个可剪切模型表示，变宽时按每0.25分区宽度差进一步拆分；每片采用保守宽度，确保曲线/变宽时不越出金边。倒退段分别裁切，不能因长条的两个端点都在屏幕外而丢掉中间的可见部分。持续尾部必须离开末端后才清除，经过判定线不会整条消失。
 

@@ -137,7 +137,7 @@ def main():
         kind, fields = row["command"], row["fields"]
         measure, offset, lane, width = map(int, fields[:4])
         # Source coordinates can lie outside the playfield (Melodiniq ULTIMA).
-        # Keep them intact here; the playable exporter applies its bounded preview policy.
+        # Keep them intact through export and rendering, including path endpoints.
         if not (0 < width <= 16 and measure >= 0 and 0 <= offset < resolution):
             raise ValueError(f"Invalid time or lane bounds at line {row['line']}")
         tick = measure * resolution + offset
@@ -263,6 +263,9 @@ def main():
                 "enabled": fumen.findtext("enable") == "true",
                 "headerMusic": header.get("MUSIC"), "headerDifficulty": header.get("DIFFICULT"),
             }
+    outside = [row for row in records if min(row['lane'], row.get('endLane', row['lane'])) < 0
+               or max(row['lane'] + row['width'], row.get('endLane', row['lane']) + row.get('endWidth', row['width'])) > 16]
+    spatial = [row for row in records if 'height' in row]
     report = {
         "purpose": "structural-analysis-only", "source": str(args.source),
         "identity": identity, "header": header,
@@ -286,6 +289,16 @@ def main():
                    "lastTick": last_tick, "lastTimeMs": time_ms(last_tick),
                    "visualLastTimeMs": max(row.get("endTimeMs", row["timeMs"]) for row in records)},
         "records": records,
+        "spatialSummary": {
+            "outsideRecordCount": len(outside),
+            "outsideTypes": dict(sorted(Counter(row['command'] for row in outside).items())),
+            "minLeft": min(min(row['lane'], row.get('endLane', row['lane'])) for row in records),
+            "maxRight": max(max(row['lane'] + row['width'], row.get('endLane', row['lane']) + row.get('endWidth', row['width'])) for row in records),
+            "widthChangeRecords": sum(row['width'] != row.get('endWidth', row['width']) for row in records),
+            "outsideWidthChangeRecords": sum(row['width'] != row.get('endWidth', row['width']) for row in outside),
+            "minHeight": min((min(row['height'], row['endHeight']) for row in spatial), default=0),
+            "maxHeight": max((max(row['height'], row['endHeight']) for row in spatial), default=0),
+        },
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

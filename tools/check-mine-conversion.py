@@ -1,4 +1,4 @@
-"""Verify Melodiniq source fidelity, deferred off-track coordinates and mine models."""
+"""Verify Melodiniq source fidelity, original off-track coordinates and mine models."""
 import json
 from pathlib import Path
 
@@ -25,20 +25,21 @@ for difficulty, suffix, expected, mines in [('master', '03', 3333, 0), ('ultima'
         assert note['timeMs'] == row['timeMs']
         assert note['width'] == row['width']
         assert note['scrollProfile'] == analysis['scrollAssignments'].get(note['id'], 0)
-        assert 0 <= note['lane'] <= 16 - note['width']
+        assert note['lane'] == row['lane']
         assert note.get('sourceLane', note['lane']) == row['lane']
         if 'endTimeMs' in row:
             assert note['endTimeMs'] == row['endTimeMs']
             assert note['endWidth'] == row['endWidth']
-            assert 0 <= note['endLane'] <= 16 - note['endWidth']
+            assert note['endLane'] == row['endLane']
             assert note.get('sourceEndLane', note['endLane']) == row['endLane']
         flagged = row['lane'] < 0 or row['lane'] + row['width'] > 16
         flagged |= row.get('endLane', row['lane']) < 0 or row.get('endLane', row['lane']) + row.get('endWidth', row['width']) > 16
         assert bool(note.get('sourceOutOfBounds')) == flagged
         outside += flagged
     assert chart['outOfBoundsPolicy']['recordCount'] == outside
+    assert chart['outOfBoundsPolicy']['mode'] == 'PRESERVE_SOURCE_COORDINATES'
     assert outside == (2559 if difficulty == 'ultima' else 0)
-    print(f'{difficulty}: {expected} records, {mines} mines, {outside} original off-track paths preserved; playback coordinates bounded.')
+    print(f'{difficulty}: {expected} records, {mines} mines, {outside} original off-track paths rendered without clamping.')
 
 for width in range(1, 17):
     model = read(ASSETS / f'models/item/mine_{width}.json')

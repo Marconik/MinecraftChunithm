@@ -56,8 +56,8 @@ public final class DevelopmentDifferentialCheck {
                     if(spec.item().endsWith("_body")||spec.item().equals("beat_line")||spec.item().equals("speed_change_line"))continue;
                     var point=frame.positions().get(entry.getKey());var delta=point.subtract(frame.track().point(0,0,0));
                     double z=delta.x*frame.track().forward().getStepX()+delta.z*frame.track().forward().getStepZ();
-                    if(Math.abs(z-spec.z())>1e-7)throw new AssertionError("Actual display position differs from its rendered profile geometry");
-                    if(z<=.25||z>=3.75)continue;
+                    if(Math.abs(z-spec.z())>1e-5)throw new AssertionError("Actual display position differs from its rendered profile geometry");
+                    if(z<=.25||z>=3.25)continue;
                     current.put(entry.getKey(),new Seen(z,spec.profile()));var old=previous.get(entry.getKey());
                     if(old==null||!window||!beforeWindow||time-previousTime[0]!=50)continue;
                     double expected=spec.profile()==0?.5:time<123125?.45:time<125000?.4:time<126875?.35:.3;

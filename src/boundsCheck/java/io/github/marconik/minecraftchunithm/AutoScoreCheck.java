@@ -65,7 +65,7 @@ public final class AutoScoreCheck {
                     throw new AssertionError("Imported chart scoring failed: "+path);
                 long mineCount=chart.notes().stream().filter(n->n.type().equals("MNE")).count();
                 if(mineCount>0){
-                    var withoutMines=new ChartDefinition(chart.title(),chart.notes().stream().filter(n->!n.type().equals("MNE")).toList(),chart.speeds(),chart.markers(),chart.beats(),chart.lastTimeMs(),chart.profiles());
+                    var withoutMines=new ChartDefinition(chart.title(),chart.notes().stream().filter(n->!n.type().equals("MNE")).toList(),chart.speeds(),chart.markers(),chart.beats(),chart.lastTimeMs(),chart.profiles(),chart.extendedLanes());
                     if(end.total()-AutoScoreTimeline.of(withoutMines).at(chart.lastTimeMs()).total()!=mineCount)throw new AssertionError("Imported mines missing from denominator");
                     System.out.println(path+": "+mineCount+" mines included in score total "+end.total());
                 }

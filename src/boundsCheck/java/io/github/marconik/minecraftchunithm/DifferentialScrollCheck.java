@@ -26,7 +26,7 @@ final class DifferentialScrollCheck {
                 for(var entry:before.entrySet()){
                     var old=entry.getValue();var next=after.get(entry.getKey());
                     if(next==null||old.item().endsWith("_body")||old.item().equals("beat_line")||old.item().equals("speed_change_line"))continue;
-                    if(old.z()>.25&&old.z()<23.75&&next.z()>.25&&next.z()<23.75){
+                    if(old.z()>.25&&old.z()<23.25&&next.z()>.25&&next.z()<23.25){
                         double expected=old.profile()==1?factors[i]:.5;
                         if(Math.abs(next.z()-old.z()-expected)>1e-6)throw new AssertionError("Rendered cap ignored its profile");
                         pairs++;

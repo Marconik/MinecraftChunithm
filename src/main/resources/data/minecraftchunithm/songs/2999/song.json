@@ -86,9 +86,7 @@
       "logicalNoteCount": 3668,
       "judgmentCount": 5716,
       "speedChangeMarkerCount": 51,
-      "visualWarnings": [
-        "2559 out-of-bounds source records retained; off-track flight is deferred and playback coordinates are clamped."
-      ]
+      "visualWarnings": []
     }
   },
   "source": {

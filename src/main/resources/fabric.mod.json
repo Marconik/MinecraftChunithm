@@ -11,6 +11,7 @@
   },
   "environment": "*",
   "accessWidener": "minecraftchunithm.accesswidener",
+  "mixins": [{"config": "minecraftchunithm.client.mixins.json", "environment": "client"}],
   "entrypoints": {
     "main": ["io.github.marconik.minecraftchunithm.MinecraftChunithm"],
     "client": ["io.github.marconik.minecraftchunithm.client.MinecraftChunithmClient"]

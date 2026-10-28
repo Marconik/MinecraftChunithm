@@ -13,6 +13,16 @@ loom {
     }
     runs {
         client {
+            if (project.hasProperty('offTrackQuickPlay')) {
+                runDir 'build/air-input-test'
+                vmArg '-Dminecraftchunithm.offTrackQuickPlay=true'
+                programArg '--quickPlaySingleplayer'
+                programArg 'New World'
+                programArg '--width'
+                programArg '1280'
+                programArg '--height'
+                programArg '800'
+            }
             if (project.hasProperty('uninstallQuickPlay')) {
                 runDir 'build/air-input-test'
                 vmArg '-Dminecraftchunithm.uninstallQuickPlay=true'
@@ -102,6 +112,13 @@ tasks.register('checkTrackBounds', JavaExec) {
 }
 
 check.dependsOn checkTrackBounds
+
+tasks.register('checkDisplayTransport', JavaExec) {
+    dependsOn boundsCheckClasses
+    classpath = sourceSets.boundsCheck.runtimeClasspath
+    mainClass = 'io.github.marconik.minecraftchunithm.DisplayTransportCheck'
+}
+check.dependsOn checkDisplayTransport
 
 tasks.register('checkAutoScore', JavaExec) {
     dependsOn boundsCheckClasses

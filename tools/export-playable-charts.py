@@ -53,17 +53,15 @@ def main():
                 if key in row: note[key]=row[key]
             if row['command'] in AIR_TYPES | {'AHD','AHX'} and row['fields'][-1] == 'DEF':
                 note['color']='DEF'
-            # Preserve source coordinates before making a bounded playback copy.
-            # Associations and scroll profiles were resolved against the original path.
+            # Off-track choreography uses the same coordinates as ordinary notes.
+            # Never collapse outside notes onto the nearest edge or shorten paths.
             outside = row['lane'] < 0 or row['lane'] + row['width'] > 16
             outside |= row.get('endLane', row['lane']) < 0 or row.get('endLane', row['lane']) + row.get('endWidth', row['width']) > 16
             if outside:
                 note['sourceOutOfBounds'] = True
                 note['sourceLane'] = row['lane']
-                note['lane'] = max(0, min(16 - row['width'], row['lane']))
                 if 'endLane' in row:
                     note['sourceEndLane'] = row['endLane']
-                    note['endLane'] = max(0, min(16 - row['endWidth'], row['endLane']))
             notes.append(note)
         tempos=sorted(analysis['tempoEvents'],key=lambda event:event['tick'])
         beats=[]
@@ -81,10 +79,7 @@ def main():
                 'visualWarnings':analysis.get('visualWarnings',[]),
                 'sourceHeader':analysis['header'],'sourceStatistics':analysis['sourceStatistics']}
         outside_count = sum(note.get('sourceOutOfBounds', False) for note in notes)
-        result['outOfBoundsPolicy'] = dict(mode='CLAMP_DISPLAY_PRESERVE_SOURCE', recordCount=outside_count)
-        if outside_count:
-            result['visualWarnings'] = [*result['visualWarnings'],
-                f'{outside_count} out-of-bounds source records retained; off-track flight is deferred and playback coordinates are clamped.']
+        result['outOfBoundsPolicy'] = dict(mode='PRESERVE_SOURCE_COORDINATES', recordCount=outside_count)
         if 'resolvedScrollEvents' in analysis:
             result['sourceScrollEvents']=analysis['scrollEvents']
             result['scrollEvents']=analysis['resolvedScrollEvents']

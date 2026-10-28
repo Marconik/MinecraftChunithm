@@ -77249,7 +77249,7 @@
     ]
   },
   "outOfBoundsPolicy": {
-    "mode": "CLAMP_DISPLAY_PRESERVE_SOURCE",
+    "mode": "PRESERVE_SOURCE_COORDINATES",
     "recordCount": 0
   },
   "sourceScrollEvents": [],

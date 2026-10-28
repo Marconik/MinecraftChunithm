@@ -29,6 +29,7 @@ public final class MinecraftChunithm implements ModInitializer {
         TrackMotion.initialize();
         RailAudio.initialize();
         NoteCueAudio.initialize();
+        ChartDisplayPose.initialize();
         ChartPlayback.initialize();
         WorldUninstall.initialize();
         DevelopmentMotionTest.initialize();
@@ -36,6 +37,7 @@ public final class MinecraftChunithm implements ModInitializer {
         DevelopmentMineCheck.initialize();
         DevelopmentScoreCheck.initialize();
         DevelopmentUninstallCheck.initialize();
+        DevelopmentOffTrackCheck.initialize();
         LOGGER.info("MinecraftChunithm initialized: build={}, control logo registered={}",BUILD_LABEL,PartPorts.ready());
     }
 }
