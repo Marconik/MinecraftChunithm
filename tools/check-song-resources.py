@@ -14,6 +14,12 @@ def main():
         assert archive.testzip() is None, "JAR CRC validation failed"
         assert not any(path.startswith("data/minecraftchunithm/charts/") for path in archive.namelist()), "Stale chart resources in JAR"
         catalog = json.loads(archive.read("data/minecraftchunithm/songs/index.json"))
+        genre_path = "data/minecraftchunithm/songs/genres.json"
+        genres = json.loads(archive.read(genre_path))["genres"]
+        assert archive.read(genre_path) == (resources / genre_path).read_bytes(), "Genre registry is stale"
+        assert [genre["id"] for genre in genres] == sorted({genre["id"] for genre in genres}), "Genre IDs must be unique and sorted"
+        genre_names = {genre["name"] for genre in genres}
+        assert len(genre_names) == len(genres), "Duplicate genre names"
         sounds = json.loads(archive.read("assets/minecraftchunithm/sounds.json"))
         item_atlas = json.loads(archive.read("assets/minecraft/atlases/items.json"))
         assert any(source.get("type") == "minecraft:directory" and source.get("source") == "song"
@@ -25,6 +31,7 @@ def main():
             namespace, metadata_path = entry["metadata"].split(":", 1)
             metadata = json.loads(archive.read(f"data/{namespace}/{metadata_path}"))
             assert metadata["id"] == entry["id"]
+            assert metadata.get("genres") and all(name in genre_names for name in metadata["genres"]), "Song has an unregistered genre"
             assert entry["title"] == metadata["title"]
             assert entry["difficulties"] == [name for name, chart in sorted(
                 metadata["charts"].items(), key=lambda item: item[1]["difficultyId"]

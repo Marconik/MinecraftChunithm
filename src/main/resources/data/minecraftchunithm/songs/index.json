@@ -34,6 +34,15 @@
       "metadata": "minecraftchunithm:songs/0258/song.json"
     },
     {
+      "id": 333,
+      "title": "Oshama Scramble!",
+      "difficulties": [
+        "MASTER",
+        "ULTIMA"
+      ],
+      "metadata": "minecraftchunithm:songs/0333/song.json"
+    },
+    {
       "id": 386,
       "title": "神威",
       "difficulties": [
@@ -108,6 +117,14 @@
       "metadata": "minecraftchunithm:songs/1035/song.json"
     },
     {
+      "id": 1058,
+      "title": "the EmpErroR",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/1058/song.json"
+    },
+    {
       "id": 1086,
       "title": "祈 -我ら神祖と共に歩む者なり-",
       "difficulties": [
@@ -140,6 +157,30 @@
       "metadata": "minecraftchunithm:songs/2060/song.json"
     },
     {
+      "id": 2140,
+      "title": "ピアノ協奏曲第１番”蠍火”",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2140/song.json"
+    },
+    {
+      "id": 2218,
+      "title": "Re：End of a Dream",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2218/song.json"
+    },
+    {
+      "id": 2229,
+      "title": "QZKago Requiem",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2229/song.json"
+    },
+    {
       "id": 2241,
       "title": "DA'AT -The First Seeker of Souls-",
       "difficulties": [
@@ -154,6 +195,14 @@
         "MASTER"
       ],
       "metadata": "minecraftchunithm:songs/2279/song.json"
+    },
+    {
+      "id": 2320,
+      "title": "エータ・ベータ・イータ",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2320/song.json"
     },
     {
       "id": 2354,
@@ -172,6 +221,14 @@
       "metadata": "minecraftchunithm:songs/2475/song.json"
     },
     {
+      "id": 2477,
+      "title": "sølips",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2477/song.json"
+    },
+    {
       "id": 2579,
       "title": "ラストピースに祝福と栄光を",
       "difficulties": [
@@ -187,6 +244,14 @@
         "ULTIMA"
       ],
       "metadata": "minecraftchunithm:songs/2712/song.json"
+    },
+    {
+      "id": 2826,
+      "title": "ニルヴの心臓",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2826/song.json"
     },
     {
       "id": 2838,
@@ -212,6 +277,14 @@
         "ULTIMA"
       ],
       "metadata": "minecraftchunithm:songs/2967/song.json"
+    },
+    {
+      "id": 2968,
+      "title": "PANDORA PARADOXXX",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2968/song.json"
     },
     {
       "id": 2969,

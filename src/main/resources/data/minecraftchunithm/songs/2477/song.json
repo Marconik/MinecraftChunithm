@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2477,
+  "title": "sølips",
+  "artist": "rintaro soma",
+  "sortName": "SOLIPS",
+  "genres": [
+    "ゲキマイ"
+  ],
+  "releaseDate": "20231102",
+  "defaultBpm": 199.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2477/cover.png",
+    "itemModel": "minecraftchunithm:cover/2477",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2477",
+    "resource": "minecraftchunithm:sounds/songs/2477/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 145941.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2477_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "2477_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 60,
+      "internalLevel": 13.6,
+      "sourceFile": "2477_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 30,
+      "internalLevel": 15.3,
+      "sourceFile": "2477_03.c2s",
+      "notesDesigner": "One øf Chuni Fumen Boys",
+      "chartResource": "minecraftchunithm:songs/2477/master.json",
+      "imported": true,
+      "firstNoteMs": 6030.150754,
+      "lastNoteMs": 143592.837557,
+      "logicalNoteCount": 1568,
+      "judgmentCount": 2750,
+      "speedChangeMarkerCount": 13,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2477",
+    "metadataFile": "Music.xml"
+  }
+}

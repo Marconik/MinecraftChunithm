@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "genres": [
+    { "id": 0, "name": "POPS & ANIME" },
+    { "id": 2, "name": "niconico" },
+    { "id": 3, "name": "東方Project" },
+    { "id": 5, "name": "ORIGINAL" },
+    { "id": 6, "name": "VARIETY" },
+    { "id": 7, "name": "イロドリミドリ" },
+    { "id": 9, "name": "ゲキマイ" }
+  ]
+}

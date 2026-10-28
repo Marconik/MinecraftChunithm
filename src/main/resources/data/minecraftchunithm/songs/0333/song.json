@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "id": 333,
+  "title": "Oshama Scramble!",
+  "artist": "t+pazolite",
+  "sortName": "OSHAMASCRAMBLE",
+  "genres": [
+    "ゲキマイ"
+  ],
+  "releaseDate": "20201001",
+  "defaultBpm": 190.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/0333/cover.png",
+    "itemModel": "minecraftchunithm:cover/0333",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.0333",
+    "resource": "minecraftchunithm:sounds/songs/0333/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 122858.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "0333_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 0,
+      "internalLevel": 8.0,
+      "sourceFile": "0333_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 11,
+      "levelDecimal": 30,
+      "internalLevel": 11.3,
+      "sourceFile": "0333_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 0,
+      "internalLevel": 14.0,
+      "sourceFile": "0333_03.c2s",
+      "notesDesigner": "アミノハバキリ",
+      "chartResource": "minecraftchunithm:songs/0333/master.json",
+      "imported": true,
+      "firstNoteMs": 1263.157895,
+      "lastNoteMs": 120947.368421,
+      "logicalNoteCount": 1369,
+      "judgmentCount": 1709,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    },
+    "ULTIMA": {
+      "difficultyId": 4,
+      "level": 15,
+      "levelDecimal": 0,
+      "internalLevel": 15.0,
+      "sourceFile": "0333_04.c2s",
+      "notesDesigner": "じゃこみるく & れもしゃま",
+      "chartResource": "minecraftchunithm:songs/0333/ultima.json",
+      "imported": true,
+      "firstNoteMs": 1263.157895,
+      "lastNoteMs": 120947.368421,
+      "logicalNoteCount": 1541,
+      "judgmentCount": 2390,
+      "speedChangeMarkerCount": 2,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music0333",
+    "metadataFile": "Music.xml"
+  }
+}

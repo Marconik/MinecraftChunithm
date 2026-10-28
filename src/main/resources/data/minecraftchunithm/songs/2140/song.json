@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2140,
+  "title": "ピアノ協奏曲第１番”蠍火”",
+  "artist": "virkato",
+  "sortName": "ヒアノキヨウソウキヨクタイ1ハンサソリヒ",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20211104",
+  "defaultBpm": 185.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2140/cover.png",
+    "itemModel": "minecraftchunithm:cover/2140",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2140",
+    "resource": "minecraftchunithm:sounds/songs/2140/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 131306.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2140_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 0,
+      "internalLevel": 9.0,
+      "sourceFile": "2140_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 20,
+      "internalLevel": 14.2,
+      "sourceFile": "2140_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 50,
+      "internalLevel": 15.5,
+      "sourceFile": "2140_03.c2s",
+      "notesDesigner": "Op.hx",
+      "chartResource": "minecraftchunithm:songs/2140/master.json",
+      "imported": true,
+      "firstNoteMs": 1297.297297,
+      "lastNoteMs": 125857.140693,
+      "logicalNoteCount": 1455,
+      "judgmentCount": 1730,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2140",
+    "metadataFile": "Music.xml"
+  }
+}

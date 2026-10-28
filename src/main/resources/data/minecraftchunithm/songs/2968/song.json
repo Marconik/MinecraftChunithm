@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2968,
+  "title": "PANDORA PARADOXXX",
+  "artist": "削除",
+  "sortName": "PANDORAPARADOXXX",
+  "genres": [
+    "ゲキマイ"
+  ],
+  "releaseDate": "20260423",
+  "defaultBpm": 150.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2968/cover.png",
+    "itemModel": "minecraftchunithm:cover/2968",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2968",
+    "resource": "minecraftchunithm:sounds/songs/2968/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 147221.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 6,
+      "levelDecimal": 0,
+      "internalLevel": 6.0,
+      "sourceFile": "2968_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 11,
+      "levelDecimal": 80,
+      "internalLevel": 11.8,
+      "sourceFile": "2968_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 50,
+      "internalLevel": 14.5,
+      "sourceFile": "2968_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 60,
+      "internalLevel": 15.6,
+      "sourceFile": "2968_03.c2s",
+      "notesDesigner": "Infected \"PARADOXXX\"",
+      "chartResource": "minecraftchunithm:songs/2968/master.json",
+      "imported": true,
+      "firstNoteMs": 3150.0,
+      "lastNoteMs": 143875.0,
+      "logicalNoteCount": 2217,
+      "judgmentCount": 3414,
+      "speedChangeMarkerCount": 2,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2968",
+    "metadataFile": "Music.xml"
+  }
+}

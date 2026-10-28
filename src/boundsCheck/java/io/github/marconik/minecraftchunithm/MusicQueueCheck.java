@@ -42,21 +42,39 @@ public final class MusicQueueCheck {
         }
         try{SongPanelMenu.selectAction(3,180,"MASTER");throw new AssertionError("Fourth selector slot accepted");}catch(IllegalArgumentException expected){}
         var entry=new SongLibrary.Song(180,"怒槌","光吉猛修","minecraftchunithm:textures/song/0180/cover.png",
-            List.of(new SongLibrary.Difficulty("EXPERT","14","14.0",false),new SongLibrary.Difficulty("MASTER","15","15.4",true)));
+            List.of(new SongLibrary.Difficulty("EXPERT","14","14.0",false),new SongLibrary.Difficulty("MASTER","15","15.4",true)),List.of(5));
         var entries=List.of(entry,entry,entry);
         var blank=entry.difficulties().getLast();
         if(!blank.name().equals("ULTIMA")||!blank.constant().isEmpty()||!blank.level().isEmpty()||blank.available())
             throw new AssertionError("Missing ULTIMA must retain an empty, non-selectable label");
         var realUltima=new SongLibrary.Difficulty("ULTIMA","15+","15.8",true);
-        var withUltima=new SongLibrary.Song(180,entry.title(),entry.artist(),entry.texture(),List.of(realUltima,entry.difficulties().get(1)));
+        var withUltima=new SongLibrary.Song(180,entry.title(),entry.artist(),entry.texture(),List.of(realUltima,entry.difficulties().get(1)),entry.genreIds());
         if(withUltima.difficulties().stream().filter(d->d.name().equals("ULTIMA")).count()!=1||!withUltima.difficulties().getLast().equals(realUltima))
             throw new AssertionError("An existing ULTIMA chart must keep its constant and availability, without a duplicate slot");
         var empty=MusicQueue.View.empty();var queue=new MusicQueue.View(10,false,true,true,false,empty.rows());
-        var state=new SongPanelMenu.State(queue,6,9,entries);
+        var genres=List.of(new SongLibrary.Genre(0,"POPS & ANIME"),new SongLibrary.Genre(5,"ORIGINAL"),new SongLibrary.Genre(6,"VARIETY"));
+        var state=new SongPanelMenu.State(queue,6,9,entries,5,genres);
         if(!SongPanelMenu.decode(SongPanelMenu.encode(state)).equals(state)||SongPanelMenu.decode(SongPanelMenu.encode(state)).queue().canSelect())
             throw new AssertionError("Catalog metadata, unavailable difficulties or playback lock were lost in synchronization");
-        try{SongPanelMenu.decode(SongPanelMenu.encode(new SongPanelMenu.State(queue,7,9,entries)));throw new AssertionError("Overscrolled window accepted");}catch(IllegalArgumentException expected){}
-        try{SongPanelMenu.decode(SongPanelMenu.encode(new SongPanelMenu.State(queue,0,9,List.of(entry))));throw new AssertionError("Incomplete three-song window accepted");}catch(IllegalArgumentException expected){}
+        try{SongPanelMenu.decode(SongPanelMenu.encode(new SongPanelMenu.State(queue,7,9,entries,5,genres)));throw new AssertionError("Overscrolled window accepted");}catch(IllegalArgumentException expected){}
+        try{SongPanelMenu.decode(SongPanelMenu.encode(new SongPanelMenu.State(queue,0,9,List.of(entry),5,genres)));throw new AssertionError("Incomplete three-song window accepted");}catch(IllegalArgumentException expected){}
+        for(int id:new int[]{-1,0,2,5,9,499_998}){
+            int action=SongPanelMenu.genreAction(id);
+            if(!SongPanelMenu.isGenreAction(action)||SongPanelMenu.genreSelection(action)!=id)throw new AssertionError("Genre actions did not round trip");
+            try{SongPanelMenu.selection(action);throw new AssertionError("Genre and chart actions overlap");}catch(IllegalArgumentException expected){}
+        }
+        var mixed=List.of(entry,new SongLibrary.Song(3,"Other","Artist","",entry.difficulties(),List.of(0,6)));
+        if(!SongLibrary.filter(mixed,-1).equals(mixed)||!SongLibrary.filter(mixed,5).equals(List.of(entry))||!SongLibrary.filter(mixed,2).isEmpty()
+                ||SongLibrary.filter(mixed,0).size()!=1||SongLibrary.filter(mixed,6).size()!=1)throw new AssertionError("ALL, empty and multi-genre filtering failed");
+        try{SongPanelMenu.decode(SongPanelMenu.encode(new SongPanelMenu.State(queue,0,3,entries,6,genres)));throw new AssertionError("Wrong-genre rows accepted");}catch(IllegalArgumentException expected){}
+        try{SongPanelMenu.decode(SongPanelMenu.encode(new SongPanelMenu.State(queue,0,0,List.of(),9,genres)));throw new AssertionError("Unknown genre accepted");}catch(IllegalArgumentException expected){}
+        var emptyGenre=new SongPanelMenu.State(queue,0,0,List.of(),0,genres);
+        if(!SongPanelMenu.decode(SongPanelMenu.encode(emptyGenre)).equals(emptyGenre))throw new AssertionError("Empty category did not synchronize");
+        var registry=com.google.gson.JsonParser.parseString("{\"genres\":[{\"id\":9,\"name\":\"ゲキマイ\"},{\"id\":0,\"name\":\"POPS & ANIME\"}]}").getAsJsonObject();
+        var sorted=SongLibrary.readGenres(registry);
+        if(sorted.getFirst().id()!=0||sorted.getLast().id()!=9)throw new AssertionError("Genres not ordered by numeric ID");
+        var metadata=com.google.gson.JsonParser.parseString("{\"genres\":[\"ゲキマイ\",\"POPS & ANIME\"]}").getAsJsonObject();
+        if(!SongLibrary.genreIds(metadata,sorted).equals(List.of(0,9)))throw new AssertionError("XML genre names did not resolve to original IDs");
         try{SongPanelMenu.selection(SongPanelMenu.scrollAction(0));throw new AssertionError("Scroll action overlaps song choice actions");}catch(IllegalArgumentException expected){}
         if(SongPanelMenu.clampOffset(-1,9)!=0||SongPanelMenu.clampOffset(1000,9)!=6||SongPanelMenu.clampOffset(5,2)!=0||SongPanelMenu.clampOffset(5,0)!=0)
             throw new AssertionError("Scrolling must preserve three visible songs and clamp at both ends");
@@ -66,7 +84,7 @@ public final class MusicQueueCheck {
         if(MusicQueue.keepPrepared(pending,c->c.songId()==180?"READY":""))throw new AssertionError("Selecting TRACK 2 before TRACK 1 must not change playback order");
         if(!MusicQueue.keepPrepared(pending,c->c.songId()==103?"READY":"")||!MusicQueue.keepPrepared(pending,c->c.songId()==180?"PAUSED":""))
             throw new AssertionError("Ready first track or an active paused chart was unnecessarily replaced");
-        System.out.println("Song selector: stable choices, three-song scrolling bounds, exact constants, invalid requests and lock synchronization passed.");
+        System.out.println("Song selector: genre ordering/filtering/synchronization, stable choices, three-song scrolling bounds, constants and playback lock passed.");
     }
     private static void checkPanelInputs(){
         var inputs=SongQueueData.empty();

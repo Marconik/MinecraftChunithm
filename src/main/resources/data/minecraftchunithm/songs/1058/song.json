@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 1058,
+  "title": "the EmpErroR",
+  "artist": "sasakure.UK",
+  "sortName": "THEEMPERROR",
+  "genres": [
+    "ゲキマイ"
+  ],
+  "releaseDate": "20211216",
+  "defaultBpm": 240.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/1058/cover.png",
+    "itemModel": "minecraftchunithm:cover/1058",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.1058",
+    "resource": "minecraftchunithm:sounds/songs/1058/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 129002.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "1058_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 7,
+      "levelDecimal": 50,
+      "internalLevel": 7.5,
+      "sourceFile": "1058_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 40,
+      "internalLevel": 13.4,
+      "sourceFile": "1058_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 90,
+      "internalLevel": 14.9,
+      "sourceFile": "1058_03.c2s",
+      "notesDesigner": "PhOEnIx",
+      "chartResource": "minecraftchunithm:songs/1058/master.json",
+      "imported": true,
+      "firstNoteMs": 2000.0,
+      "lastNoteMs": 126500.0,
+      "logicalNoteCount": 1425,
+      "judgmentCount": 2000,
+      "speedChangeMarkerCount": 2,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music1058",
+    "metadataFile": "Music.xml"
+  }
+}

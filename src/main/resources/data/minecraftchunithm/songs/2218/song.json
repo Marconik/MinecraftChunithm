@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2218,
+  "title": "Re：End of a Dream",
+  "artist": "uma vs. モリモリあつし",
+  "sortName": "REENDOFADREAM",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20220707",
+  "defaultBpm": 212.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2218/cover.png",
+    "itemModel": "minecraftchunithm:cover/2218",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2218",
+    "resource": "minecraftchunithm:sounds/songs/2218/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 143786.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2218_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 0,
+      "internalLevel": 8.0,
+      "sourceFile": "2218_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 40,
+      "internalLevel": 13.4,
+      "sourceFile": "2218_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 10,
+      "internalLevel": 15.1,
+      "sourceFile": "2218_03.c2s",
+      "notesDesigner": "Re:vo@LC vs. ミストルティン",
+      "chartResource": "minecraftchunithm:songs/2218/master.json",
+      "imported": true,
+      "firstNoteMs": 2264.150943,
+      "lastNoteMs": 141650.943396,
+      "logicalNoteCount": 1717,
+      "judgmentCount": 2160,
+      "speedChangeMarkerCount": 6,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2218",
+    "metadataFile": "Music.xml"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2320,
+  "title": "エータ・ベータ・イータ",
+  "artist": "ルゼ",
+  "sortName": "エウタヘウタイウタ",
+  "genres": [
+    "ゲキマイ"
+  ],
+  "releaseDate": "20230112",
+  "defaultBpm": 186.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2320/cover.png",
+    "itemModel": "minecraftchunithm:cover/2320",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2320",
+    "resource": "minecraftchunithm:sounds/songs/2320/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 156458.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2320_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 50,
+      "internalLevel": 8.5,
+      "sourceFile": "2320_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 12,
+      "levelDecimal": 80,
+      "internalLevel": 12.8,
+      "sourceFile": "2320_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 80,
+      "internalLevel": 14.8,
+      "sourceFile": "2320_03.c2s",
+      "notesDesigner": "Redarrow",
+      "chartResource": "minecraftchunithm:songs/2320/master.json",
+      "imported": true,
+      "firstNoteMs": 1290.322581,
+      "lastNoteMs": 153709.677419,
+      "logicalNoteCount": 1497,
+      "judgmentCount": 2213,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2320",
+    "metadataFile": "Music.xml"
+  }
+}

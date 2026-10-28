@@ -48,7 +48,7 @@ def main():
             if len(fields) not in NOTE_FIELDS[command]:
                 raise ValueError(f"Unexpected fields at line {line_number}: {line}")
             records.append(row)
-        elif command in ("BPM", "MET", "SFL", "CLK"):
+        elif command in ("BPM", "MET", "SFL", "CLK", "DCM"):
             expected = 2 if command == "CLK" else 3 if command == "BPM" else 4
             if len(fields) != expected:
                 raise ValueError(f"Unexpected event fields at line {line_number}: {line}")
@@ -65,8 +65,10 @@ def main():
             unclassified.append(row)
 
     resolution = int(header["RESOLUTION"][0])
-    if resolution != 384 or int(header["CLK_DEF"][0]) not in (0, 384):
+    if resolution != 384 or int(header["CLK_DEF"][0]) < 0:
         raise ValueError("Only the verified 384-resolution subset is supported")
+    # CLK_DEF is a click cue interval, not the musical coordinate resolution.
+    # Nirv's Heart uses 576 while source first/final times still match the 384 grid.
     # MET's source order is denominator, numerator. It does not rescale the
     # fixed 384-coordinate measure used by the note clock.
     if any(int(value) <= 0 for value in header["MET_DEF"]):
@@ -103,8 +105,8 @@ def main():
             if denominator <= 0 or numerator < 0:
                 raise ValueError("Invalid display meter")
             row.update(numerator=numerator, denominator=denominator)
-        elif row["command"] == "SFL":
-            row["id"] = f"sfl_line_{row['line']}"
+        elif row["command"] in ("SFL", "DCM"):
+            row["id"] = f"{row['command'].lower()}_line_{row['line']}"
             duration = int(fields[2])
             multiplier = Fraction(fields[3])
             if duration <= 0:
@@ -273,11 +275,13 @@ def main():
         "meterEvents": [row for row in events if row["command"] == "MET"],
         "clockEvents": [row for row in events if row["command"] == "CLK"],
         "scrollEvents": [row for row in events if row["command"] == "SFL"],
+        "dynamicScrollEvents": [row for row in events if row["command"] == "DCM"],
         "speedChangeMarkers": build_speed_change_markers(
             [row for row in events if row["command"] == "SFL"], time_ms),
         "unclassifiedRecords": unclassified, "sourceStatistics": statistics,
         "sourceVisualControls": visual_controls,
-        "visualWarnings": [],
+        "visualWarnings": (["DCM per-note scroll controls are preserved in sourceDynamicScrollEvents but are not rendered."]
+                           if any(row["command"] == "DCM" for row in events) else []),
         **profiles,
         "recordCounts": dict(sorted(counts.items())), "noteRecordCountIncludingControls": len(records),
         "slide": {"segments": len(slide_segments), "rootSegments": len(roots),

@@ -29,12 +29,38 @@ public final class SongLibrary {
     public record Chart(int songId,String title,String artist,String texture,String coverModel,
                         String difficulty,String level,String constant,String resource){}
     public record Difficulty(String name,String level,String constant,boolean available){}
-    public record Song(int songId,String title,String artist,String texture,List<Difficulty> difficulties){
-        public Song {difficulties=withUltimaSlot(difficulties);}
+    public record Genre(int id,String name){}
+    public record Song(int songId,String title,String artist,String texture,List<Difficulty> difficulties,List<Integer> genreIds){
+        public Song {difficulties=withUltimaSlot(difficulties);genreIds=List.copyOf(genreIds);}
     }
     private static final Map<ResourceManager,List<Chart>> CACHE=new WeakHashMap<>();
     private static final Map<ResourceManager,List<Song>> CATALOG=new WeakHashMap<>();
+    private static final Map<ResourceManager,List<Genre>> GENRES=new WeakHashMap<>();
     private SongLibrary(){}
+    public static List<Genre> readGenres(JsonObject data){
+        var result=new ArrayList<Genre>();var ids=new HashSet<Integer>();var names=new HashSet<String>();
+        for(var entry:data.getAsJsonArray("genres")){
+            var genre=entry.getAsJsonObject();int id=genre.get("id").getAsInt();String name=genre.get("name").getAsString();
+            if(id<0||id>499_998||name.isBlank()||!ids.add(id)||!names.add(name))throw new IllegalArgumentException("Invalid song genre registry");
+            result.add(new Genre(id,name));
+        }
+        result.sort(Comparator.comparingInt(Genre::id));return List.copyOf(result);
+    }
+    public static List<Genre> genres(ServerLevel level){
+        return GENRES.computeIfAbsent(level.getServer().getResourceManager(),manager->{
+            try{return readGenres(read(manager,"minecraftchunithm:songs/genres.json"));}
+            catch(IOException|RuntimeException error){MinecraftChunithm.LOGGER.error("Cannot load song genres",error);return List.of();}
+        });
+    }
+    /** Existing song metadata stores the XML category names; the registry supplies their original IDs. */
+    public static List<Integer> genreIds(JsonObject metadata,List<Genre> genres){
+        var names=new HashSet<String>();var values=metadata.getAsJsonArray("genres");
+        if(values!=null)for(var value:values)names.add(value.getAsString());
+        return genres.stream().filter(genre->names.contains(genre.name())).map(Genre::id).toList();
+    }
+    public static List<Song> filter(List<Song> catalog,int genreId){
+        return genreId==SongPanelMenu.ALL_GENRES?catalog:catalog.stream().filter(song->song.genreIds().contains(genreId)).toList();
+    }
     private static List<Difficulty> withUltimaSlot(List<Difficulty> difficulties){
         var slots=new ArrayList<Difficulty>();Difficulty ultima=null;
         for(var difficulty:difficulties){if(difficulty.name().equals("ULTIMA"))ultima=difficulty;else slots.add(difficulty);}
@@ -89,7 +115,7 @@ public final class SongLibrary {
                         boolean available=Set.of("EXPERT","MASTER","ULTIMA").contains(name)&&imported.stream().anyMatch(c->c.songId()==songId&&c.difficulty().equals(name));
                         difficulties.add(new Difficulty(name,label,displayConstant(data.get("internalLevel").getAsString()),available));
                     }
-                    songs.add(new Song(songId,metadata.get("title").getAsString(),metadata.get("artist").getAsString(),metadata.getAsJsonObject("cover").get("texture").getAsString(),List.copyOf(difficulties)));
+                    songs.add(new Song(songId,metadata.get("title").getAsString(),metadata.get("artist").getAsString(),metadata.getAsJsonObject("cover").get("texture").getAsString(),List.copyOf(difficulties),genreIds(metadata,genres(level))));
                 }
             }catch(IOException|RuntimeException error){MinecraftChunithm.LOGGER.error("Cannot load song selector metadata",error);}
             songs.sort(Comparator.comparingInt(Song::songId));return List.copyOf(songs);

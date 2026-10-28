@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2826,
+  "title": "ニルヴの心臓",
+  "artist": "TJ.hangneil + Atomic Sphere feat.Annabel",
+  "sortName": "ニルウノシンソウ",
+  "genres": [
+    "VARIETY"
+  ],
+  "releaseDate": "20250716",
+  "defaultBpm": 256.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2826/cover.png",
+    "itemModel": "minecraftchunithm:cover/2826",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2826",
+    "resource": "minecraftchunithm:sounds/songs/2826/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 150485.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2826_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 7,
+      "levelDecimal": 0,
+      "internalLevel": 7.0,
+      "sourceFile": "2826_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 0,
+      "internalLevel": 13.0,
+      "sourceFile": "2826_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 0,
+      "internalLevel": 15.0,
+      "sourceFile": "2826_03.c2s",
+      "notesDesigner": "THE IVORY LIGHT",
+      "chartResource": "minecraftchunithm:songs/2826/master.json",
+      "imported": true,
+      "firstNoteMs": 2812.5,
+      "lastNoteMs": 148125.0,
+      "logicalNoteCount": 1401,
+      "judgmentCount": 1998,
+      "speedChangeMarkerCount": 2,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2826",
+    "metadataFile": "Music.xml"
+  }
+}

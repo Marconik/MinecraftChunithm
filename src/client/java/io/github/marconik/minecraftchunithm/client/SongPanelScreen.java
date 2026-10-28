@@ -11,7 +11,7 @@ public final class SongPanelScreen extends AbstractContainerScreen<SongPanelMenu
     private SongPanelView view;
     private float zoom;
     private Object catalog;
-    public SongPanelScreen(SongPanelMenu menu,Inventory inventory,Component title){super(menu,inventory,title,432,256);}
+    public SongPanelScreen(SongPanelMenu menu,Inventory inventory,Component title){super(menu,inventory,title,432,286);}
     @Override protected void init(){
         super.init();if(view==null)view=new SongPanelView(menu::state,font);
         int logicalHeight=view.height();zoom=Math.max(.1f,Math.min(1.2f,Math.min((width-12f)/432,(height-12f)/logicalHeight)));

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": 2229,
+  "title": "QZKago Requiem",
+  "artist": "t+pazolite",
+  "sortName": "QZKAGOREQUIEM",
+  "genres": [
+    "ゲキマイ"
+  ],
+  "releaseDate": "20220804",
+  "defaultBpm": 257.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2229/cover.png",
+    "itemModel": "minecraftchunithm:cover/2229",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2229",
+    "resource": "minecraftchunithm:sounds/songs/2229/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 139946.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "2229_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 50,
+      "internalLevel": 8.5,
+      "sourceFile": "2229_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 70,
+      "internalLevel": 13.7,
+      "sourceFile": "2229_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 0,
+      "internalLevel": 15.0,
+      "sourceFile": "2229_03.c2s",
+      "notesDesigner": "ミストルティン vs じゃこレモン",
+      "chartResource": "minecraftchunithm:songs/2229/master.json",
+      "imported": true,
+      "firstNoteMs": 1867.70428,
+      "lastNoteMs": 137685.407509,
+      "logicalNoteCount": 1275,
+      "judgmentCount": 1874,
+      "speedChangeMarkerCount": 4,
+      "visualWarnings": [
+        "DCM per-note scroll controls are preserved in sourceDynamicScrollEvents but are not rendered."
+      ]
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2229",
+    "metadataFile": "Music.xml"
+  }
+}

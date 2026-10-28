@@ -75,6 +75,7 @@ def main():
                 'scrollEvents':analysis['scrollEvents'],'speedChangeMarkers':analysis['speedChangeMarkers'],
                 'tempoEvents':analysis['tempoEvents'],'meterEvents':analysis['meterEvents'],
                 'clockEvents':analysis.get('clockEvents',[]),
+                'sourceDynamicScrollEvents':analysis.get('dynamicScrollEvents',[]),
                 'sourceVisualControls':analysis.get('sourceVisualControls',[]),
                 'visualWarnings':analysis.get('visualWarnings',[]),
                 'sourceHeader':analysis['header'],'sourceStatistics':analysis['sourceStatistics']}

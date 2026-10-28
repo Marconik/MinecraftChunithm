@@ -239,5 +239,77 @@
         "stream": true
       }
     ]
+  },
+  "music.0333": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/0333/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.1058": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/1058/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2968": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2968/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2320": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2320/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2229": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2229/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2477": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2477/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2218": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2218/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2140": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2140/music",
+        "stream": true
+      }
+    ]
+  },
+  "music.2826": {
+    "sounds": [
+      {
+        "name": "minecraftchunithm:songs/2826/music",
+        "stream": true
+      }
+    ]
   }
 }
