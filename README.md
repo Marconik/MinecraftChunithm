@@ -1,31 +1,35 @@
 # MinecraftChunithm
 Play CHUNITHM(NEW and Later) in Minecraft
 
+当前正式入口、`debug` 调试入口及提示规则见 [指令与提示](docs/COMMANDS.md)。
+
+正式 JAR 的构建、安装环境和当前限制见 [发布包说明](docs/RELEASE.md)。
+
 Minecraft Java 26.3 / Fabric 项目。已实现轨道模型、16 种宽度的 TAP、轨道生成、边界检查和按 BPM 运行的随机运动测试；尚未实现击打判定或音乐播放。
 
 ## 音符运动测试
 
-右侧曲目信息面板：`/chunithm song` 独立生成，`/chunithm song_data <JSON>` 更新封面、曲名、创作者、TRACK、难度、定级、速度及镜像。详见 [曲目面板](docs/SONG_PANEL.md)。
+右侧曲目信息面板：`/chunithm debug song` 独立生成，`/chunithm debug song_data <JSON>` 更新封面、曲名、创作者、TRACK、难度、定级、速度及镜像。详见 [曲目面板](docs/SONG_PANEL.md)。
 
-只生成空轨道：`/chunithm track_empty 24`，长度支持 2～1024 格，省略长度默认为 24。生成轨道、边框和尾部金色判定线，不生成头部、音符或节拍线。起点中央为脚下方块，沿玩家朝向延伸，会替换对应范围方块；当前维度的运动测试会停止，并清除本次范围内的旧展示音符和判定线后重新添加一条判定线。
+只生成空轨道：`/chunithm debug track_empty 24`，长度支持 2～1024 格，省略长度默认为 24。生成轨道、边框和尾部金色判定线，不生成头部、音符或节拍线。起点中央为脚下方块，沿玩家朝向延伸，会替换对应范围方块；当前维度的运动测试会停止，并清除本次范围内的旧展示音符和判定线后重新添加一条判定线。
 
-只生成 Ground Slide：`/chunithm ground_slide`。玩家脚下方块对应模型中央，朝玩家视线方向布置。外框占 13×3 格、厚 1 格，发光感应面高 0.75 格，与轨道两侧金色边框顶部齐平、比自身边框低 0.25 格；右侧空位中央有纵向装饰投币口，暂不提供交互功能。内侧常亮触摸面严格为 8×2 格，包含 16 个半格分区、12 条白线及 3 条紫色大区分界线。每个分区从中间向左右渐变，纵向连续。`/chunithm assemble [长度]` 会自动把它接在轨道末端。
+只生成 Ground Slide：`/chunithm debug ground_slide`。玩家脚下方块对应模型中央，朝玩家视线方向布置。外框占 13×3 格、厚 1 格，发光感应面高 0.75 格，与轨道两侧金色边框顶部齐平、比自身边框低 0.25 格；右侧空位中央有纵向装饰投币口，暂不提供交互功能。内侧常亮触摸面严格为 8×2 格，包含 16 个半格分区、12 条白线及 3 条紫色大区分界线。每个分区从中间向左右渐变，纵向连续。`/chunithm assemble [长度]` 会自动把它接在轨道末端。
 
 Ground Slide 现支持压感变色：一个玩家、生物或掉落物触碰发光面上的任一 0.5×0.5 格区域，就会使对应的整条 0.5×2 格感应带变红，离开后恢复浅黄色。边框不触发，旁观者不触发；当前只产生视觉变化，不发送红石或其他部件信号。详见 [Ground Slide](docs/GROUND_SLIDE.md)。
 
-左右 Air 感应器模型：`/chunithm air_sensors`。与 Ground Slide 使用相同中央定位，两侧各有 5×3×1 格底座和外侧 3×3×1 格立板，侧面白色；内侧感应面与底座可见顶面为黑色磨制石材感材质，外轮廓各有 1/6 格白边，底座上有三枚朝外箭头。五个凸出白框方孔位于站立面上方 0.5～2.5 格，左绿右红常亮。`/chunithm assemble [长度]` 也会一并生成它们，详见 [Air 感应器](docs/AIR_SENSORS.md)。
+左右 Air 感应器模型：`/chunithm debug air_sensors`。与 Ground Slide 使用相同中央定位，两侧各有 5×3×1 格底座和外侧 3×3×1 格立板，侧面白色；内侧感应面与底座可见顶面为黑色磨制石材感材质，外轮廓各有 1/6 格白边，底座上有三枚朝外箭头。五个凸出白框方孔位于站立面上方 0.5～2.5 格，左绿右红常亮。`/chunithm assemble [长度]` 也会一并生成它们，详见 [Air 感应器](docs/AIR_SENSORS.md)。
 
-独立的轨道控制头部可用 `/chunithm head` 生成，尺寸和放置说明见 [轨道头部](docs/TRACK_HEAD.md)。
+独立的轨道控制头部可用 `/chunithm debug head` 生成，尺寸和放置说明见 [轨道头部](docs/TRACK_HEAD.md)。
 
 已加入 EX-Tap、Hold、Slide、Flick、Air、Air-Action 的属性定义与全部 16 种宽度的静态模型，详见 [音符说明](docs/NOTES.md)。在空地运行 `/function minecraftchunithm:note_showcase` 可查看六类模型。
 
 在空地执行（会生成/替换脚下一层 9×24 格轨道）：
 
 ```mcfunction
-/chunithm test 24 120 20
+/chunithm debug test 24 120 20
 ```
 
-参数依次为长度、BPM、速度（格/秒）。`/chunithm test` 等价于上面的默认配置；`/chunithm test 32` 则使用 32 格长度、120 BPM、20 格/秒。BPM 范围 30～300，速度范围 0.25～30；预计同时显示的测试实体超过 512 个时会拒绝启动。
+参数依次为长度、BPM、速度（格/秒）。`/chunithm debug test` 等价于上面的默认配置；`/chunithm debug test 32` 则使用 32 格长度、120 BPM、20 格/秒。BPM 范围 30～300，速度范围 0.25～30；预计同时显示的测试实体超过 512 个时会拒绝启动。
 
 - 从 +Z 方向的起点端向终点端运动，TAP 沿运动方向长 0.5 格（原来的两倍），中央带横向白线。中心在起点内 0.25 格处出现，保证实体模型不伸到轨道后方。
 - 120 BPM 每 0.5 游戏秒（10 tick）产生一个 TAP 和一条灰色四分音符节拍线，随机宽度覆盖 1～16 分区，位置始终限制在有效的 8 格宽区域。
@@ -54,7 +58,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\dev.ps1 runClient -Pmotion
 在开启命令的世界中执行（需要管理员命令权限）：
 
 ```mcfunction
-/chunithm track 24
+/chunithm debug track_empty 24
 ```
 
 参数为长度，支持 2～1024 格，整个区域必须已加载。命令从执行位置向下一个方块层开始，向 +X 铺设 9 格宽、向 +Z 铺设指定长度，会替换该范围的方块。总宽为 9 格：左右边框各占 0.5 格，中间有效区域为 8 格、16 个半格分区。底部到轨道表面为 0.625 格，到金色边框顶部为 0.75 格；碰撞形状与这些高度一致。
@@ -126,7 +130,7 @@ $env:CHUNITHM_JAVA_HOME = 'C:\path\to\jdk-25'
 
 整机与连接窗口：`/chunithm assemble [长度]`，生成按接口对齐的空轨道、头部、玩家板及歌曲板。背面右键青色窗口查看连接或设置数据，详见 [部件接口说明](docs/CONNECTIONS.md)。
 
-左侧名牌：`/chunithm nameplate`，通过 `/chunithm nameplate_data <JSON>` 输入 TEAM、称号颜色、等级、名字、角色头像和 RATING。生成规则与歌曲信息板左右对称，详见 [名牌面板说明](docs/NAME_PANEL.md)。
+左侧名牌：`/chunithm debug nameplate`，通过 `/chunithm debug nameplate_data <JSON>` 输入 TEAM、称号颜色、等级、名字、角色头像和 RATING。生成规则与歌曲信息板左右对称，详见 [名牌面板说明](docs/NAME_PANEL.md)。
 
 - `src/main/java`：公共入口，后续加入轨道配置、谱面、播放状态及服务端逻辑。
 - `src/client/java`：客户端入口，后续加入轨道/音符渲染、音频与界面。
@@ -151,4 +155,4 @@ git push
 构建缓存、IDE 配置、运行目录和日志不会提交。
 项目许可证待仓库所有者确定；未附带原作音乐。头部背面控制入口使用用户提供的 CHUNITHM Logo 图片。
 
-生成锚点更新：`/chunithm track <长度>` 以脚下方块为起点行中央，向玩家朝向延伸；`/chunithm head` 以脚下方块沿朝向前进一格作为头部中间最下方块，正面朝玩家。站立方块按 floor(位置).below() 计算。普通启动不生成测试内容，保持空白测试世界请勿使用 QuickPlay 自动生成参数。
+生成锚点更新：`/chunithm debug track_empty <长度>` 以脚下方块为起点行中央，向玩家朝向延伸；`/chunithm debug head` 以脚下方块沿朝向前进一格作为头部中间最下方块，正面朝玩家。站立方块按 floor(位置).below() 计算。普通启动不生成测试内容，保持空白测试世界请勿使用 QuickPlay 自动生成参数。

@@ -1,5 +1,6 @@
 """Verify song resource references and exact packaged audio/cover contents."""
 
+import argparse
 import json
 import re
 from pathlib import Path
@@ -9,7 +10,9 @@ import zipfile
 def main():
     project = Path(__file__).resolve().parents[1]
     resources = project / "src/main/resources"
-    jar = project / "build/libs/minecraft-chunithm-0.1.0-dev.jar"
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--jar", type=Path, default=project / "build/libs/minecraft-chunithm-0.1.0-dev.jar")
+    jar = parser.parse_args().jar
     with zipfile.ZipFile(jar) as archive:
         assert archive.testzip() is None, "JAR CRC validation failed"
         assert not any(path.startswith("data/minecraftchunithm/charts/") for path in archive.namelist()), "Stale chart resources in JAR"
@@ -61,6 +64,13 @@ def main():
                     assert archive.read(f"data/{chart_namespace}/{chart_path}") == (resources / f"data/{chart_namespace}/{chart_path}").read_bytes()
                     assert definition["songId"]==metadata["id"] and definition["notes"]
                     assert definition["difficulty"]==difficulty, "Wrong chart difficulty"
+                    for color in {note.get("color", "DEF").lower() for note in definition["notes"]
+                                  if note["command"] == "ALD" and note.get("color", "DEF") != "NON"}:
+                        for effect in (f"items/chart_effect_{color}_body.json",
+                                       f"models/item/chart_effect_{color}_body.json",
+                                       f"textures/block/effect_{color}.png"):
+                            effect_path = f"assets/minecraftchunithm/{effect}"
+                            assert archive.read(effect_path) == (resources / effect_path).read_bytes(), "Missing/stale effect colour asset"
                 else:
                     assert chart["chartResource"] is None
             print(f"Verified song {entry['id']}: audio, cover, model, metadata and streaming references in JAR")

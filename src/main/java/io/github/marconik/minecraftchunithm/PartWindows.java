@@ -22,7 +22,7 @@ final class PartWindows {
                     (part.kind==PartConnections.Kind.PLAYER||part.kind==PartConnections.Kind.SONG)
                     &&HeadTerminal.contains(part.placement,hit.getLocation(),3.5,1.5,PanelTile.width(part.kind==PartConnections.Kind.PLAYER),1);
             if(!terminal)return InteractionResult.PASS;
-            if(PartConnections.integrity(level,part)!=PartConnections.Status.CONNECTED){sp.sendSystemMessage(Component.literal("部件损坏或区块未加载，请恢复完整结构。"));return InteractionResult.SUCCESS;}
+            if(PartConnections.integrity(level,part)!=PartConnections.Status.CONNECTED){CommandFeedback.failure(sp,Component.literal("部件损坏或区块未加载，请恢复完整结构。"));return InteractionResult.SUCCESS;}
             open(sp,level,part,0);return InteractionResult.SUCCESS;
         });
     }
@@ -66,8 +66,8 @@ final class PartWindows {
             if(player!=owner||!stillValid(player))return;
             if(slot==26){owner.closeContainer();return;}
             if(part.kind!=PartConnections.Kind.HEAD&&!net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS).test(owner.createCommandSourceStack())){
-                owner.sendSystemMessage(Component.literal("修改面板需要管理员权限。"));return;}
-            var action=actions.get(slot);if(action!=null)try{action.run();}catch(RuntimeException invalid){owner.sendSystemMessage(Component.literal(invalid.getMessage()==null?"面板设置失败":invalid.getMessage()));}
+                CommandFeedback.failure(owner,Component.literal("修改面板需要管理员权限。"));return;}
+            var action=actions.get(slot);if(action!=null)try{action.run();}catch(RuntimeException invalid){CommandFeedback.failure(owner,Component.literal(invalid.getMessage()==null?"面板设置失败":invalid.getMessage()));}
             broadcastChanges();
         }
         @Override public ItemStack quickMoveStack(Player p,int slot){return ItemStack.EMPTY;}

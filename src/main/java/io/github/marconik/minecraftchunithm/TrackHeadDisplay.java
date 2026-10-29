@@ -168,11 +168,11 @@ public final class TrackHeadDisplay {
             var pos=placement.block(col,row,0);
             var id=net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(source.getLevel().getBlockState(pos).getBlock());
             if(!id.toString().equals(MinecraftChunithm.MOD_ID+":head_"+col+"_"+row)) {
-                source.sendFailure(Component.literal("请在生成 head 时相同的锚点更新显示。"));return 0;
+                CommandFeedback.failure(source,Component.literal("请在生成 head 时相同的锚点更新显示。"));return 0;
             }
         }
         var data=new HeadDisplayData(critical,justice,attack,miss,combo,score);
         update(source.getLevel(),placement,data);
-        source.sendSuccess(()->Component.literal("头部显示已更新："+data.percent()+"%"),false);return 1;
+        return 1;
     }
 }

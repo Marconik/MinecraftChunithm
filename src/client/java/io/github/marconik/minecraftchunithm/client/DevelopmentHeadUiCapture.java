@@ -106,7 +106,7 @@ final class DevelopmentHeadUiCapture {
                         var p=track.placement.point(4.5,1,track.length+1);
                         commands.performPrefixedCommand(source,"tp @s "+p.x+" "+p.y+" "+p.z+" "+track.placement.forward().getOpposite().toYRot()+" 10");
                         commands.performPrefixedCommand(player.createCommandSourceStack(),"chunithm chart play 103 10 false");
-                    }else commands.performPrefixedCommand(source,"chunithm chart "+(tick==380?"pause":tick==400?"resume":tick==430?"seek 60":"stop"));
+                    }else commands.performPrefixedCommand(source,"chunithm chart "+(tick==380?"pause":tick==400?"play":tick==430?"seek 60":"stop"));
                 });
             }
             if(inputs&&(tick==370||tick==420||tick==450))RailMusicPlayback.verifyNative(true,tick==450?60000:0);

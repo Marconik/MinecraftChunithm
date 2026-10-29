@@ -55,7 +55,7 @@ public final class GroundSlide {
         for(int z=0;z<DEPTH;z++)for(int x=0;x<WIDTH;x++){
             var pos=placement.block(x,0,z);
             if(!level.isInWorldBounds(pos)||!level.hasChunkAt(pos)||!level.getWorldBorder().isWithinBounds(pos)){
-                source.sendFailure(Component.literal("Ground Slide 超出已加载区域或世界边界，未生成。"));
+                CommandFeedback.failure(source,Component.literal("Ground Slide 超出已加载区域或世界边界，未生成。"));
                 return 0;
             }
         }
@@ -63,7 +63,7 @@ public final class GroundSlide {
             level.setBlock(placement.block(x,0,z),TILES[z][x].defaultBlockState()
                     .setValue(GroundSlideBlock.FACING,placement.forward()),Block.UPDATE_ALL);
         PartConnections.register(level,PartConnections.Kind.GROUND_SLIDE,placement,1);
-        source.sendSuccess(()->Component.literal("已生成 Ground Slide：发光面 8×2 格、高 0.75 格；外框 13×3 格、厚 1 格，右侧含装饰投币口。"),false);
+        CommandFeedback.generated(source,"Ground Slide",null);
         return WIDTH*DEPTH;
     }
 }

@@ -114,7 +114,7 @@ public final class AirSensors {
                 if(!occupied(left,x,y))continue;
                 var pos=placement.block(x,y,z);
                 if(!level.isInWorldBounds(pos)||!level.hasChunkAt(pos)||!level.getWorldBorder().isWithinBounds(pos)){
-                    source.sendFailure(Component.literal("Air 感应器超出已加载区域或世界边界，未生成。"));return false;
+                    CommandFeedback.failure(source,Component.literal("Air 感应器超出已加载区域或世界边界，未生成。"));return false;
                 }
             }
         }
@@ -133,7 +133,7 @@ public final class AirSensors {
             }
             PartConnections.register(level,left?PartConnections.Kind.AIR_LEFT:PartConnections.Kind.AIR_RIGHT,placement,1);
         }
-        source.sendSuccess(()->Component.literal("已生成左右 Air 感应器：五路高度感应，经完整 Ground Slide 和轨道向头部传输输入。"),false);
+        CommandFeedback.generated(source,"左右 Air 感应器",null);
         return 1;
     }
 }

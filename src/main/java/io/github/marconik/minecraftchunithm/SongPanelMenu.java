@@ -129,7 +129,7 @@ public final class SongPanelMenu extends AbstractContainerMenu {
             var chart=SongLibrary.find(level,new MusicQueueData.Choice(selected.songId(),selected.difficulty(),false));
             if(chart==null||!Set.of("MASTER","EXPERT","ULTIMA").contains(chart.difficulty()))return false;
             MusicQueue.setPanelChoice(level,panel,selected.slot(),new MusicQueueData.Choice(chart.songId(),chart.difficulty(),false));
-        }catch(RuntimeException invalid){owner.sendSystemMessage(Component.literal(invalid.getMessage()==null?"选曲失败":invalid.getMessage()));}
+        }catch(RuntimeException invalid){CommandFeedback.failure(owner,Component.literal(invalid.getMessage()==null?"选曲失败":invalid.getMessage()));}
         refresh(true);return true;
     }
     @Override public boolean stillValid(Player player){return level==null||player==owner&&player.level()==level

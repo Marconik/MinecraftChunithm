@@ -51,13 +51,13 @@ public final class NamePanel {
         for(int y=0;y<3;y++)for(int x=0;x<7;x++){
             var pos=p.block(x,y,0);
             if(!level.isInWorldBounds(pos)||!level.hasChunkAt(pos)||!level.getWorldBorder().isWithinBounds(pos)){
-                source.sendFailure(Component.literal("名牌面板超出已加载区域或世界边界。"));return 0;
+                CommandFeedback.failure(source,Component.literal("名牌面板超出已加载区域或世界边界。"));return 0;
             }
         }
         for(int y=0;y<3;y++)for(int x=0;x<7;x++)level.setBlock(p.block(x,y,0),tile.defaultBlockState().setValue(HeadTile.FACING,p.forward()),Block.UPDATE_ALL);
         PartConnections.register(level,PartConnections.Kind.PLAYER,p,1);
         update(level,p,NameDisplayData.defaults());
-        source.sendSuccess(()->Component.literal("已生成名牌面板：右下角在玩家所在方格前一格，向左展开，面朝玩家；宽7、高3、厚1。"),false);
+        CommandFeedback.generated(source,"玩家信息面板",null);
         return 21;
     }
     private static void add(ServerLevel level,Placement p,Display e,double x,double y,double z,Vector3f scale){
@@ -143,9 +143,9 @@ public final class NamePanel {
                     o.get("level").getAsString(),o.get("name").getAsString(),Identifier.parse(o.get("character").getAsString()),o.get("rating").getAsString());
             var p=placement(source);
             for(int y=0;y<3;y++)for(int x=0;x<7;x++)if(source.getLevel().getBlockState(p.block(x,y,0)).getBlock()!=tile){
-                source.sendFailure(Component.literal("请先在相同位置和朝向执行 /chunithm nameplate。"));return 0;
+                CommandFeedback.failure(source,Component.literal("请先在相同位置和朝向执行 /chunithm debug nameplate。"));return 0;
             }
-            update(source.getLevel(),p,data);source.sendSuccess(()->Component.literal("名牌信息已更新。"),false);return 1;
-        }catch(RuntimeException invalid){source.sendFailure(Component.literal("名牌数据无效，请检查 JSON 字段、SILVER/GOLD 称号颜色和角色模型资源 ID。"));return 0;}
+            update(source.getLevel(),p,data);return 1;
+        }catch(RuntimeException invalid){CommandFeedback.failure(source,Component.literal("名牌数据无效，请检查 JSON 字段、SILVER/GOLD 称号颜色和角色模型资源 ID。"));return 0;}
     }
 }

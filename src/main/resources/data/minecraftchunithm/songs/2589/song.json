@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2589,
+  "title": "ÅMARA (大未来電脳)",
+  "artist": "sasakure.UK",
+  "sortName": "AMARAタイミライテンノウ",
+  "genres": [
+    "niconico"
+  ],
+  "releaseDate": "20240620",
+  "defaultBpm": 115.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2589/cover.png",
+    "itemModel": "minecraftchunithm:cover/2589",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2589",
+    "resource": "minecraftchunithm:sounds/songs/2589/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 155925.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2589_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 0,
+      "internalLevel": 9.0,
+      "sourceFile": "2589_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 30,
+      "internalLevel": 13.3,
+      "sourceFile": "2589_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 80,
+      "internalLevel": 14.8,
+      "sourceFile": "2589_03.c2s",
+      "notesDesigner": "xmxoxnxoxcxlxoxcxkx",
+      "chartResource": "minecraftchunithm:songs/2589/master.json",
+      "imported": true,
+      "firstNoteMs": 2086.956522,
+      "lastNoteMs": 153639.14063,
+      "logicalNoteCount": 1436,
+      "judgmentCount": 2511,
+      "speedChangeMarkerCount": 14,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2589",
+    "metadataFile": "Music.xml"
+  }
+}

@@ -54,11 +54,12 @@ public record ChartDefinition(String title,List<Note> notes,List<Speed> speeds,L
                     ||n.scrollProfile<0||n.scrollProfile>0&&!profiles.containsKey(n.scrollProfile)
                     ||!Double.isFinite(n.time)||!Double.isFinite(n.end)||n.time<0||n.end<n.time||n.end>lastTimeMs+1e-6
                     ||!validLane(n.lane,n.width,extendedLanes)||!validLane(n.endLane,n.endWidth,extendedLanes)
-                    ||!Double.isFinite(n.height)||!Double.isFinite(n.endHeight)||n.height<0||n.endHeight<0||n.height>32||n.endHeight>32)
+                    // Source units map to 0.2 blocks: Sou uses height 91, I Wanna 72.6.
+                    ||!Double.isFinite(n.height)||!Double.isFinite(n.endHeight)||n.height<0||n.endHeight<0||n.height>128||n.endHeight>128)
                 throw new IllegalArgumentException("Invalid chart note: "+n.id);
             if(Set.of("HLD","HXD","SLD","SLC","SXD","SXC","AHD","AHX","ASC","ASD","ALD").contains(n.type)!=(n.end>n.time))
                 throw new IllegalArgumentException("Invalid sustain duration: "+n.id);
-            if(n.type.equals("ALD")&&!Set.of("GRY","AQA","RED","BLK","DEF","DGR","GRN","PNK","CYN","BLU","ORN","YEL","PPL","VLT","NON").contains(n.color))
+            if(n.type.equals("ALD")&&!Set.of("GRY","AQA","RED","BLK","DEF","DGR","GRN","PNK","CYN","BLU","ORN","YEL","PPL","VLT","LIM","NON").contains(n.color))
                 throw new IllegalArgumentException("Unsupported effect color: "+n.color);
         }
         validateSpeeds(speeds);

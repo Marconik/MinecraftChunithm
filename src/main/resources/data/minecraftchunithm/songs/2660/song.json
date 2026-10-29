@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2660,
+  "title": "What's up? Pop!",
+  "artist": "Capchii",
+  "sortName": "WHATSUPPOP",
+  "genres": [
+    "niconico"
+  ],
+  "releaseDate": "20241114",
+  "defaultBpm": 190.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2660/cover.png",
+    "itemModel": "minecraftchunithm:cover/2660",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2660",
+    "resource": "minecraftchunithm:sounds/songs/2660/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 164224.0,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2660_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 0,
+      "internalLevel": 8.0,
+      "sourceFile": "2660_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 10,
+      "internalLevel": 14.1,
+      "sourceFile": "2660_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 30,
+      "internalLevel": 15.3,
+      "sourceFile": "2660_03.c2s",
+      "notesDesigner": "ミニミライト vs ミストルティン",
+      "chartResource": "minecraftchunithm:songs/2660/master.json",
+      "imported": true,
+      "firstNoteMs": 1894.736842,
+      "lastNoteMs": 158090.351813,
+      "logicalNoteCount": 2275,
+      "judgmentCount": 3090,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2660",
+    "metadataFile": "Music.xml"
+  }
+}

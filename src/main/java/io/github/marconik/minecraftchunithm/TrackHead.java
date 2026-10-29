@@ -34,12 +34,12 @@ public final class TrackHead {
         for(int row=0;row<4;row++)for(int col=0;col<11;col++) {
             var pos=placement.block(col,row,0);
             if(!level.isInWorldBounds(pos)||!level.hasChunkAt(pos)||!level.getWorldBorder().isWithinBounds(pos)) {
-                source.sendFailure(Component.literal("头部超出已加载区域或世界边界。"));return 0;
+                CommandFeedback.failure(source,Component.literal("头部超出已加载区域或世界边界。"));return 0;
             }
         }
         for(int row=0;row<4;row++)for(int col=0;col<11;col++)
             level.setBlock(placement.block(col,row,0),TILES[row][col].defaultBlockState().setValue(HeadTile.FACING,placement.forward()),Block.UPDATE_ALL);
-        source.sendSuccess(()->Component.literal("已生成独立轨道头部：宽11、高4（含1格底座）、厚1，进度条宽8。正面朝向玩家。"),false);
+        CommandFeedback.generated(source,"头部",null);
         PartConnections.register(level,PartConnections.Kind.HEAD,placement,1);
         TrackHeadDisplay.update(level,placement,new HeadDisplayData(0,0,0,0,0,0));
         return 44;

@@ -115,16 +115,16 @@ public final class DevelopmentScoreCheck {
                     if(!ChartPlayback.score(level).equals(score))throw new AssertionError("Speed/mirror changed score");
                     command(level,"chunithm chart seek 1");phase=3;wait[0]=ticks[0]+5;acknowledged=false;
                 }}
-                case 3->{if(ticks[0]>=wait[0]){if(score.passed()!=2)throw new AssertionError("Backward seek did not recompute score");command(level,"chunithm chart resume");phase=4;}}
+                case 3->{if(ticks[0]>=wait[0]){if(score.passed()!=2)throw new AssertionError("Backward seek did not recompute score");command(level,"chunithm chart play");phase=4;}}
                 case 4->{if(frame.time()>=1550){command(level,"chunithm chart stop");
                     if(ChartPlayback.score(level).score()!=0)throw new AssertionError("Stop did not reset score");
-                    verify(level,head,new HeadDisplayData(0,0,0,0,0,0),baseline);command(level,"chunithm chart resume");phase=5;
+                    verify(level,head,new HeadDisplayData(0,0,0,0,0,0),baseline);command(level,"chunithm chart play");phase=5;
                 }}
                 case 5->{if(frame.time()>=550){if(score.passed()!=1)throw new AssertionError("Restart duplicated score");
                     command(level,"chunithm chart seek 6");command(level,"chunithm chart pause");
                     verify(level,head,new HeadDisplayData(13,0,0,0,13,1010000),baseline);phase=6;wait[0]=ticks[0]+10;
                 }}
-                case 6->{if(ticks[0]>=wait[0]&&acknowledged){command(level,"chunithm chart resume");phase=7;}}
+                case 6->{if(ticks[0]>=wait[0]&&acknowledged){command(level,"chunithm chart play");phase=7;}}
                 case 7->{if(HeadControlServices.transport(level,head).state()==HeadControlServices.Playback.FINISHED){
                     if(HeadControlServices.transport(level,head).state()!=HeadControlServices.Playback.FINISHED)throw new AssertionError("Chart did not finish");
                     pressureEntity.discard();pressureEntity=null;

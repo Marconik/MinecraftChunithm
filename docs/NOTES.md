@@ -45,7 +45,7 @@
 /function minecraftchunithm:note_showcase
 ```
 
-会替换脚下一层的 9×96 格区域，并依次展示 EX-Tap、Hold、Slide、Flick、Air、Air-Action，每类宽度为 1、2、4、8、16 分区。该命令会停止当前维度的运动测试。普通 `/chunithm test` 目前仍然只生成 TAP。
+会替换脚下一层的 9×96 格区域，并依次展示 EX-Tap、Hold、Slide、Flick、Air、Air-Action，每类宽度为 1、2、4、8、16 分区。该命令会停止当前维度的运动测试。普通 `/chunithm debug test` 目前仍然只生成 TAP。
 
 也可在完整轨道表面右键放置单个模型；横向边界会检查。长模型向后延伸，放置时需自行给起点留出约 1.5 格纵向空间。
 

@@ -1,6 +1,6 @@
 # Air 感应器模型
 
-`/chunithm air_sensors` 在左右两侧生成一对独立 Air 感应器，中间留出 13 格宽的 Ground Slide 位置。定位与 `/chunithm ground_slide` 相同：在平地执行时，以玩家脚下方块为 Ground Slide 中央，朝向与轨道的朝向一致。
+`/chunithm debug air_sensors` 在左右两侧生成一对独立 Air 感应器，中间留出 13 格宽的 Ground Slide 位置。定位与 `/chunithm debug ground_slide` 相同：在平地执行时，以玩家脚下方块为 Ground Slide 中央，朝向与轨道的朝向一致。
 
 每侧包含 5 格横宽、3 格纵深、1 格高的白色底座。在底座最外侧一排方块上，竖起横厚 1 格、纵深 3 格、高 4 格的感应板；含底座总高 5 格。两侧以 Ground Slide 中心线镜像对称，底座贴着 Ground Slide 两端，左右合计占地 23×3 格。
 

@@ -100,7 +100,7 @@ public final class HeadControlMenu extends AbstractContainerMenu {
                 if(action==SPEED_UP||action==SPEED_DOWN)MusicQueue.settings(level,head,head.music.changeSpeed(action==SPEED_UP?1:-1));
                 else if(action==MIRROR)MusicQueue.settings(level,head,new MusicQueueData(head.music.speed(),!head.music.mirror(),head.music.slots()));
                 else MusicQueue.cycle(level,head,(action-CHOICE_FIRST)/2,(action-CHOICE_FIRST)%2==0?-1:1);
-            }catch(RuntimeException invalid){owner.sendSystemMessage(Component.literal(invalid.getMessage()==null?"曲目设置失败":invalid.getMessage()));}
+            }catch(RuntimeException invalid){CommandFeedback.failure(owner,Component.literal(invalid.getMessage()==null?"曲目设置失败":invalid.getMessage()));}
             refresh(true);sendMusic(true);super.broadcastChanges();return true;
         }
         if(!enabled(action))return false;
@@ -108,7 +108,7 @@ public final class HeadControlMenu extends AbstractContainerMenu {
             if(action==0&&HeadControlServices.transport(level,head.placement).state()==HeadControlServices.Playback.FINISHED)MusicQueue.prepare(level,head);
             HeadControlServices.execute(level,head.placement,HeadControlServices.Action.values()[action]);
         }
-        catch(RuntimeException e){MinecraftChunithm.LOGGER.error("Playback action failed",e);owner.sendSystemMessage(Component.literal("播放控制器执行失败。"));}
+        catch(RuntimeException e){MinecraftChunithm.LOGGER.error("Playback action failed",e);CommandFeedback.failure(owner,Component.literal("播放控制器执行失败。"));}
         refresh(true);super.broadcastChanges();return true;
     }
     @Override public boolean stillValid(Player player){return level==null||player==owner&&player.level()==level

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2718,
+  "title": "I Wanna",
+  "artist": "静香(CV.長谷川育美)「ワールドダイスター 夢のステラリウム」",
+  "sortName": "IWANNA",
+  "genres": [
+    "POPS & ANIME"
+  ],
+  "releaseDate": "20250508",
+  "defaultBpm": 200.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2718/cover.png",
+    "itemModel": "minecraftchunithm:cover/2718",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2718",
+    "resource": "minecraftchunithm:sounds/songs/2718/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 153621.333,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2718_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 7,
+      "levelDecimal": 0,
+      "internalLevel": 7.0,
+      "sourceFile": "2718_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 14,
+      "levelDecimal": 0,
+      "internalLevel": 14.0,
+      "sourceFile": "2718_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 20,
+      "internalLevel": 15.2,
+      "sourceFile": "2718_03.c2s",
+      "notesDesigner": "BELiZHEL & Twinrook",
+      "chartResource": "minecraftchunithm:songs/2718/master.json",
+      "imported": true,
+      "firstNoteMs": 1200.0,
+      "lastNoteMs": 151053.125,
+      "logicalNoteCount": 1890,
+      "judgmentCount": 2726,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2718",
+    "metadataFile": "Music.xml"
+  }
+}

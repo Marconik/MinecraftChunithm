@@ -1,6 +1,6 @@
 # 轨道谱面呈现模块
 
-现有随机TAP测试保留为`/chunithm test`。新增`ChartDefinition`及`ChartPlayback`，加载指定JSON谱面后，在现有轨道内按时间、方块/秒和镜像设置呈现。此模块是可运行的可视播放后端，不是判定/评分系统。
+现有随机TAP测试保留为`/chunithm debug test`。新增`ChartDefinition`及`ChartPlayback`，加载指定JSON谱面后，在现有轨道内按时间、方块/秒和镜像设置呈现。此模块是可运行的可视播放后端，不是判定/评分系统。
 
 Hold/Slide 的条带主体以原定义宽度的 95% 居中显示，两侧各内收 2.5%；Slide 的可见中间节点同样横向缩放至 95%。Hold/Slide 的头部和尾部保持原来的满格宽度。源谱面的 lane、width、路径中心线、转折位置、到达时间与镜像计算保持原定义，缩窄只作用于显示。
 
@@ -9,7 +9,7 @@ Hold/Slide 的条带主体以原定义宽度的 95% 居中显示，两侧各内�
 重新启动最新版测试客户端并进入世界。在空地生成轨道，或靠近已有完整轨道（32格以内）：
 
 ```mcfunction
-/chunithm track_empty 24
+/chunithm debug track_empty 24
 /chunithm chart play 180 10 false
 ```
 
@@ -18,7 +18,7 @@ Hold/Slide 的条带主体以原定义宽度的 95% 居中显示，两侧各内�
 ```mcfunction
 /chunithm chart play 103 10 true
 /chunithm chart pause
-/chunithm chart resume
+/chunithm chart play
 /chunithm chart seek 85.3
 /chunithm chart status
 /chunithm chart stop

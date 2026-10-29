@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2641,
+  "title": "マシンガンポエムドール",
+  "artist": "cosMo＠暴走P「プロジェクトセカイ カラフルステージ！ feat. 初音ミク」",
+  "sortName": "マシンカンホエムトウル",
+  "genres": [
+    "niconico"
+  ],
+  "releaseDate": "20241003",
+  "defaultBpm": 220.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2641/cover.png",
+    "itemModel": "minecraftchunithm:cover/2641",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2641",
+    "resource": "minecraftchunithm:sounds/songs/2641/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 141290.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 4,
+      "levelDecimal": 0,
+      "internalLevel": 4.0,
+      "sourceFile": "2641_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 8,
+      "levelDecimal": 50,
+      "internalLevel": 8.5,
+      "sourceFile": "2641_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 80,
+      "internalLevel": 13.8,
+      "sourceFile": "2641_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 10,
+      "internalLevel": 15.1,
+      "sourceFile": "2641_03.c2s",
+      "notesDesigner": "POETIC LEMON",
+      "chartResource": "minecraftchunithm:songs/2641/master.json",
+      "imported": true,
+      "firstNoteMs": 3272.727273,
+      "lastNoteMs": 138272.727273,
+      "logicalNoteCount": 1757,
+      "judgmentCount": 2339,
+      "speedChangeMarkerCount": 0,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2641",
+    "metadataFile": "Music.xml"
+  }
+}

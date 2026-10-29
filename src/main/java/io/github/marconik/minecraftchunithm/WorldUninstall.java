@@ -63,7 +63,7 @@ public final class WorldUninstall {
 
     public static int start(CommandSourceStack source){
         var server=source.getServer();
-        if(running(server)){source.sendFailure(Component.literal("卸载任务正在执行，请等待完成提示。"));return 0;}
+        if(running(server)){CommandFeedback.failure(source,Component.literal("卸载任务正在执行，请等待完成提示。"));return 0;}
         var job=new Job(server,source);JOBS.put(server,job);RESULTS.remove(server);
         try{job.prepare();return 1;}catch(Exception error){job.fail("无法准备卸载",error);job.finish();return 0;}
     }
@@ -123,8 +123,11 @@ public final class WorldUninstall {
         final Set<Path> dimensionPaths=new HashSet<>();
         long blocks,entities;int scanned,failed,total,ticks;
         Job(MinecraftServer server,CommandSourceStack source){this.server=server;this.source=source;}
-        void message(String text){source.sendSuccess(()->Component.literal(text),true);}
-        void fail(String text,Exception error){failed++;MinecraftChunithm.LOGGER.error(text,error);source.sendFailure(Component.literal(text+"："+error.getMessage()));}
+        void message(String text){
+            CommandFeedback.status(source,Component.literal(text));
+            if(source.getEntity() instanceof net.minecraft.server.level.ServerPlayer)MinecraftChunithm.LOGGER.info("{}",text);
+        }
+        void fail(String text,Exception error){failed++;MinecraftChunithm.LOGGER.error(text,error);CommandFeedback.failure(source,Component.literal(text+"："+error.getMessage()));}
         void prepare()throws IOException{
             message("开始卸载清理：将清除所有维度中的中二节奏方块和显示实体。请保持世界开启，等待完成提示。");
             for(var player:server.getPlayerList().getPlayers())if(player.containerMenu instanceof HeadControlMenu
@@ -218,7 +221,7 @@ public final class WorldUninstall {
             }catch(Exception error){fail("卸载保存失败",error);}
             RESULTS.put(server,new Result(blocks,entities,scanned,failed,failed==0));JOBS.remove(server);
             if(failed==0)message("卸载清理完成并已保存：清除 "+blocks+" 个 MOD 方块、"+entities+" 个相关实体。现在可保存退出、关闭游戏并删除 MOD 文件。");
-            else source.sendFailure(Component.literal("卸载未完成（"+failed+" 处错误），已清除 "+blocks+" 方块、"+entities+" 实体。请保留 MOD，处理错误后重试。"));
+            else CommandFeedback.failure(source,Component.literal("卸载未完成（"+failed+" 处错误），已清除 "+blocks+" 方块、"+entities+" 实体。请保留 MOD，处理错误后重试。"));
         }
     }
     static long clearBlocks(ServerLevel level,LevelChunk chunk){

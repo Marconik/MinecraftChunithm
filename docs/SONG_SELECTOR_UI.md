@@ -12,7 +12,7 @@
 - 没有头部连接时仍可配置歌曲，连接后头部读取该面板输入。选曲不会自动开始播放。配置随面板保存到世界。
 - 右上角X关闭整个窗口；目录中Esc或CANCEL返回三曲配置。无管理员权限可查看目录，不能修改。离开面板、跨维度、面板结构损坏或被替换会使菜单失效。
 
-SPEED/MIRROR继续在头部Music界面设置。原有`SongPanel.update/setQueue`和`/chunithm song_data`输入接口仍然有效。歌曲面板新窗口使用`SongLibrary.catalog`，不再使用旧的物品栏歌曲选择器或默认空的SongProvider列表。
+SPEED/MIRROR继续在头部Music界面设置。原有`SongPanel.update/setQueue`和`/chunithm debug song_data`输入接口仍然有效。歌曲面板新窗口使用`SongLibrary.catalog`，不再使用旧的物品栏歌曲选择器或默认空的SongProvider列表。
 
 ## 实现与验证
 

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2606,
+  "title": "リ・フィクション・O",
+  "artist": "sasakure.UK feat.ピリオ",
+  "sortName": "リフイクシヨンO",
+  "genres": [
+    "ORIGINAL"
+  ],
+  "releaseDate": "20240620",
+  "defaultBpm": 244.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2606/cover.png",
+    "itemModel": "minecraftchunithm:cover/2606",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2606",
+    "resource": "minecraftchunithm:sounds/songs/2606/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 162794.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "2606_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 9,
+      "levelDecimal": 50,
+      "internalLevel": 9.5,
+      "sourceFile": "2606_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 13,
+      "levelDecimal": 80,
+      "internalLevel": 13.8,
+      "sourceFile": "2606_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 15,
+      "levelDecimal": 30,
+      "internalLevel": 15.3,
+      "sourceFile": "2606_03.c2s",
+      "notesDesigner": "ミニミライト",
+      "chartResource": "minecraftchunithm:songs/2606/master.json",
+      "imported": true,
+      "firstNoteMs": 2950.819672,
+      "lastNoteMs": 159590.163934,
+      "logicalNoteCount": 1896,
+      "judgmentCount": 2600,
+      "speedChangeMarkerCount": 7,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2606",
+    "metadataFile": "Music.xml"
+  }
+}

@@ -9,7 +9,8 @@ with Image.open(assets / 'textures/block/air_action_line.png') as image:
     alpha = image.convert('RGBA').getchannel('A')
 
 models = list((assets / 'models/item').glob('chart_effect_*_body.json'))
-assert len(models) == 13
+expected_colors = {'gry', 'aqa', 'red', 'blk', 'def', 'dgr', 'grn', 'pnk', 'cyn', 'blu', 'orn', 'yel', 'ppl', 'vlt', 'lim'}
+assert {path.stem.removeprefix('chart_effect_').removesuffix('_body') for path in models} == expected_colors
 for path in models:
     model = json.loads(path.read_text())
     assert model['textures']['effect']['force_translucent'] is True
@@ -24,4 +25,6 @@ for path in models:
         assert texture.getchannel('A').tobytes() == alpha.tobytes(), path
         assert all(low == high for low, high in texture.convert('RGB').getextrema()), 'RGB gradient is not allowed'
         assert texture.getchannel('A').getextrema() == (0,204), 'Missing translucent glow'
-print('All 13 ALD colors: solid RGB, exact Air opacity, crossed sheets and fullbright materials passed.')
+        if path.stem == 'chart_effect_lim_body':
+            assert texture.getpixel((0, 0))[:3] == (180, 255, 60), 'Wrong LIM colour'
+print(f'All {len(models)} ALD colors: solid RGB, exact Air opacity, crossed sheets and fullbright materials passed.')

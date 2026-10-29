@@ -17,13 +17,25 @@ public final class TrackCommands {
     private TrackCommands() {}
 
     public static void initialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) ->
-                dispatcher.register(Commands.literal("chunithm")
+        CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) -> dispatcher.register(tree()));
+    }
+
+    static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> tree(){
+        return Commands.literal("chunithm")
                         .requires(source->Commands.hasPermission(Commands.LEVEL_GAMEMASTERS).test(source)&&!WorldUninstall.running(source.getServer()))
                         .then(Commands.literal("uninstall").executes(context->WorldUninstall.start(context.getSource())))
                         .then(Commands.literal("assemble").executes(c->PartAssembly.generate(c.getSource(),24))
                                 .then(Commands.argument("length",IntegerArgumentType.integer(2,1024))
                                         .executes(c->PartAssembly.generate(c.getSource(),IntegerArgumentType.getInteger(c,"length")))))
+                        .then(Commands.literal("stop").executes(context -> {
+                            ChartPlayback.unload(context.getSource().getLevel());
+                            TrackMotion.stop(context.getSource().getLevel());return 1;
+                        }))
+                        .then(debugTree());
+    }
+
+    private static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> debugTree(){
+        return Commands.literal("debug")
                         .then(Commands.literal("nameplate").executes(context->NamePanel.generate(context.getSource())))
                         .then(Commands.literal("nameplate_data").then(Commands.argument("json",com.mojang.brigadier.arguments.StringArgumentType.greedyString())
                                 .executes(context->NamePanel.command(context.getSource(),com.mojang.brigadier.arguments.StringArgumentType.getString(context,"json")))))
@@ -41,7 +53,7 @@ public final class TrackCommands {
                                                         Integer.parseInt(values[2]),Integer.parseInt(values[3]),Integer.parseInt(values[4]),
                                                         Integer.parseInt(values[5]));
                                             } catch(IllegalArgumentException invalid) {
-                                                source.sendFailure(Component.literal("用法：/chunithm head_data critical justice attack miss maxCombo score（完成度由分数自动计算）"));return 0;
+                                                CommandFeedback.failure(source,Component.literal("用法：/chunithm debug head_data critical justice attack miss maxCombo score"));return 0;
                                             }
                                         })))
                         .then(Commands.literal("head").executes(context -> TrackHead.generate(context.getSource())))
@@ -52,12 +64,6 @@ public final class TrackCommands {
                                 .then(Commands.argument("length",IntegerArgumentType.integer(2,1024))
                                         .executes(context -> generate(context.getSource(),
                                                 IntegerArgumentType.getInteger(context,"length")))))
-                        .then(Commands.literal("stop").executes(context -> {
-                            ChartPlayback.unload(context.getSource().getLevel());
-                            TrackMotion.stop(context.getSource().getLevel());
-                            context.getSource().sendSuccess(() -> Component.literal("运动测试已停止，测试音符和灰色节拍线已清除。"), false);
-                            return 1;
-                        }))
                         .then(Commands.literal("test")
                                 .executes(context -> test(context.getSource(),24,120,MusicQueueData.DEFAULT_SPEED))
                                 .then(Commands.argument("length", IntegerArgumentType.integer(2,1024))
@@ -67,22 +73,16 @@ public final class TrackCommands {
                                                         .executes(context -> test(context.getSource(),
                                                                 IntegerArgumentType.getInteger(context,"length"),
                                                                 DoubleArgumentType.getDouble(context,"bpm"),
-                                                                DoubleArgumentType.getDouble(context,"speed")))))))
-                        .then(Commands.literal("track")
-                                .then(Commands.argument("length", IntegerArgumentType.integer(2, 1024))
-                                        .executes(context -> generate(context.getSource(),
-                                                IntegerArgumentType.getInteger(context, "length")))))));
+                                                                DoubleArgumentType.getDouble(context,"speed")))))));
     }
 
     private static int test(CommandSourceStack source, int length, double bpm, double speed) {
         if ((RhythmTiming.end(length)-RhythmTiming.SPAWN_CENTER)/speed*bpm/60*2+4 > 512) {
-            source.sendFailure(Component.literal("同时显示的测试实体会超过 512 个，请缩短轨道、提高速度或降低 BPM。"));
+            CommandFeedback.failure(source,Component.literal("同时显示的测试实体会超过 512 个，请缩短轨道、提高速度或降低 BPM。"));
             return 0;
         }
         if (generate(source,length) == 0) return 0;
         TrackMotion.start(source.getLevel(),Placement.track(source),length,bpm,speed);
-        source.sendSuccess(() -> Component.literal("开始随机 TAP 测试：BPM="+bpm+"，速度="+speed
-                +" 格/秒，四分音符间隔="+(60/bpm)+" 秒。使用 /chunithm stop 停止。"),false);
         return 1;
     }
 
@@ -100,7 +100,7 @@ public final class TrackCommands {
             BlockPos pos = placement.block(x,0,z);
             if (!level.isInWorldBounds(pos) || !level.hasChunkAt(pos)
                     || !level.getWorldBorder().isWithinBounds(pos)) {
-                source.sendFailure(Component.literal("轨道超出世界边界或已加载区域，请缩短长度或先加载区域。"));
+                CommandFeedback.failure(source,Component.literal("轨道超出世界边界或已加载区域，请缩短长度或先加载区域。"));
                 return 0;
             }
         }
@@ -116,8 +116,7 @@ public final class TrackCommands {
         }
         TrackMotion.addJudgment(level,placement,length);
         PartConnections.register(level,PartConnections.Kind.TRACK,placement,length);
-        source.sendSuccess(() -> Component.literal("已生成轨道（含尾部判定线）：有效宽 8 格 / 16 分区，总宽 9 格，总高 0.75 格，长 "
-                + length + " 格。"), true);
+        CommandFeedback.generated(source,"轨道",length);
         return 9 * length;
     }
 }

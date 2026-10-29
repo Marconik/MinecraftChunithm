@@ -7,8 +7,8 @@
 生成后，在相同位置与朝向执行：
 
 ```mcfunction
-/chunithm song
-/chunithm song_data {"cover":"minecraftchunithm:cover/default","title":"The First Seeker of Souls","artist":"Creator A vs Creator B","track":3,"difficulty":"MASTER","level":"15+","speed":8.0,"mirror":false}
+/chunithm debug song
+/chunithm debug song_data {"cover":"minecraftchunithm:cover/default","title":"The First Seeker of Souls","artist":"Creator A vs Creator B","track":3,"difficulty":"MASTER","level":"15+","speed":8.0,"mirror":false}
 ```
 
 `difficulty` 支持 MASTER（紫）、EXPERT（红）、ULTIMA（黑紫标签/斜纹背景），不区分输入大小写。输入的`track`为1～3，对应待播队列位置；`level`是文本，可输入15+等格式；`speed`范围0.25～30，默认20，`mirror`为布尔值。速度与镜像是连接机台的统一设置，控制界面和面板输入均会更新世界中的面板显示及已加载谱面，保留播放/暂停时间，不影响无关机台。
@@ -26,8 +26,8 @@ SongPanel.update(level, placement, new SongDisplayData(
 三曲输入也可一次替换，缺少的位置使用null；空数组清空全部位置：
 
 ```mcfunction
-/chunithm song_data {"songs":[null,{"cover":"minecraftchunithm:cover/default","title":"Custom song","artist":"Creator","difficulty":"MASTER","level":"14+"},null],"speed":10.25,"mirror":true}
-/chunithm song_data {"songs":[],"speed":10.00,"mirror":false}
+/chunithm debug song_data {"songs":[null,{"cover":"minecraftchunithm:cover/default","title":"Custom song","artist":"Creator","difficulty":"MASTER","level":"14+"},null],"speed":10.25,"mirror":true}
+/chunithm debug song_data {"songs":[],"speed":10.00,"mirror":false}
 ```
 
 数组顺序为TRACK 1～3，最多三项；没有填满时其余位置为空。Java调用`SongPanel.setQueue(level, placement, SongQueueData.empty().withSlot(1, song), speed, mirror)`；`song.track()`必须为2，与其位置一致。三曲元数据无需依靠测试示例生成，即使自定义曲目没有可播放谱面，也会按输入显示。

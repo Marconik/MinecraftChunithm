@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": 2629,
+  "title": "壱雫空",
+  "artist": "MyGO!!!!!",
+  "sortName": "ヒトシスク",
+  "genres": [
+    "POPS & ANIME"
+  ],
+  "releaseDate": "20240919",
+  "defaultBpm": 204.0,
+  "cover": {
+    "texture": "minecraftchunithm:textures/song/2629/cover.png",
+    "itemModel": "minecraftchunithm:cover/2629",
+    "width": 300,
+    "height": 300
+  },
+  "audio": {
+    "soundEvent": "minecraftchunithm:music.2629",
+    "resource": "minecraftchunithm:sounds/songs/2629/music.ogg",
+    "codec": "vorbis",
+    "sampleRate": 48000,
+    "channels": 2,
+    "durationMs": 95018.667,
+    "stream": true,
+    "offsetMs": 0
+  },
+  "charts": {
+    "BASIC": {
+      "difficultyId": 0,
+      "level": 3,
+      "levelDecimal": 0,
+      "internalLevel": 3.0,
+      "sourceFile": "2629_00.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "ADVANCED": {
+      "difficultyId": 1,
+      "level": 5,
+      "levelDecimal": 0,
+      "internalLevel": 5.0,
+      "sourceFile": "2629_01.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "EXPERT": {
+      "difficultyId": 2,
+      "level": 10,
+      "levelDecimal": 80,
+      "internalLevel": 10.8,
+      "sourceFile": "2629_02.c2s",
+      "notesDesigner": null,
+      "chartResource": null,
+      "imported": false
+    },
+    "MASTER": {
+      "difficultyId": 3,
+      "level": 14,
+      "levelDecimal": 0,
+      "internalLevel": 14.0,
+      "sourceFile": "2629_03.c2s",
+      "notesDesigner": "犬は！　必死にやるしか出来ない！",
+      "chartResource": "minecraftchunithm:songs/2629/master.json",
+      "imported": true,
+      "firstNoteMs": 2352.941176,
+      "lastNoteMs": 91176.470588,
+      "logicalNoteCount": 871,
+      "judgmentCount": 1282,
+      "speedChangeMarkerCount": 3,
+      "visualWarnings": []
+    }
+  },
+  "source": {
+    "package": "A000",
+    "musicDirectory": "music2629",
+    "metadataFile": "Music.xml"
+  }
+}

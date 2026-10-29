@@ -51,14 +51,14 @@ final class DevelopmentNoteCueCheck {
                 case 4->{if(ticks[0]>=wait[0]){
                     NoteCuePlayback.verifyNative(false);
                     if(NoteCuePlayback.checkTriggers()!=previous[0])throw new AssertionError("Pause/seek replayed old cues");
-                    command(client,"resume");phase[0]=5;
+                    command(client,"play");phase[0]=5;
                 }}
                 case 5->{if(time>=3580){
                     NoteCuePlayback.verifyNative(true);
                     if(NoteCuePlayback.checkTriggers()!=previous[0]+1)throw new AssertionError("Resume/seek did not play exactly the next note");
                     command(client,"stop");wait[0]=ticks[0]+10;phase[0]=6;
                 }}
-                case 6->{if(ticks[0]>=wait[0]){NoteCuePlayback.verifyNative(false);previous[0]=NoteCuePlayback.checkTriggers();command(client,"resume");phase[0]=7;}}
+                case 6->{if(ticks[0]>=wait[0]){NoteCuePlayback.verifyNative(false);previous[0]=NoteCuePlayback.checkTriggers();command(client,"play");phase[0]=7;}}
                 case 7->{if(time>=80&&time<240){
                     NoteCuePlayback.verifyNative(true);
                     if(NoteCuePlayback.checkTriggers()!=previous[0]+1)throw new AssertionError("Restart lost or repeated the first chord");

@@ -9,8 +9,8 @@
 开发环境自动打开 `New World` 并生成银色、金色两块测试面板：`powershell -NoProfile -ExecutionPolicy Bypass -File .\dev.ps1 runClient -PnameplateQuickPlay`。测试区域位于 X=58～72、Y=-60、Z=-1；会替换两块面板范围内的方块，并设置白天、晴天及创造模式。普通启动不会自动生成。
 
 ```mcfunction
-/chunithm nameplate
-/chunithm nameplate_data {"team":"My Team","title":"欢迎来到中二节奏","titleColor":"SILVER","level":"99","name":"Player","character":"minecraftchunithm:character/default","rating":"16.50"}
+/chunithm debug nameplate
+/chunithm debug nameplate_data {"team":"My Team","title":"欢迎来到中二节奏","titleColor":"SILVER","level":"99","name":"Player","character":"minecraftchunithm:character/default","rating":"16.50"}
 ```
 
 更新数据时保持生成时的站位和朝向。`titleColor` 支持 `SILVER`、`GOLD`，不区分大小写。等级、RATING 使用文本，可保留小数位或显示 `**` 等占位。TEAM、称号、名字最长 256 字符，等级 16 字符，RATING 32 字符，均为单行。长文字自动缩小至对应区域内；名牌使用 minecraft:uniform 字体，ASCII 按当前游戏内置 Unifont 字宽计算，中日韩全宽字按 9 像素推进量计算，其余字符保守估算。自定义字体资源包可能需要调整。

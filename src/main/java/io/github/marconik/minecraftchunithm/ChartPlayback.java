@@ -48,7 +48,9 @@ public final class ChartPlayback {
             if(entity.entityTags().contains(TAG)&&!LIVE.contains(entity.getUUID()))entity.discard();
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server->{for(var level:new ArrayList<>(SESSIONS.keySet()))unload(level);});
-        CommandRegistrationCallback.EVENT.register((dispatcher,registry,environment)->{
+        CommandRegistrationCallback.EVENT.register((dispatcher,registry,environment)->dispatcher.register(Commands.literal("chunithm").then(commandTree())));
+    }
+    static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> commandTree(){
             var chart=Commands.literal("chart").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS));
             for(String verb:List.of("load","play")){
                 var command=Commands.literal(verb);
@@ -61,7 +63,6 @@ public final class ChartPlayback {
                 chart.then(command);
             }
             chart.then(Commands.literal("pause").executes(c->control(c.getSource(),HeadControlServices.Action.PAUSE)))
-                .then(Commands.literal("resume").executes(c->control(c.getSource(),HeadControlServices.Action.START_OR_RESUME)))
                 .then(Commands.literal("stop").executes(c->control(c.getSource(),HeadControlServices.Action.STOP)))
                 .then(Commands.literal("seek").then(Commands.argument("seconds",DoubleArgumentType.doubleArg(0)).executes(c->{
                     var s=SESSIONS.get(c.getSource().getLevel());if(s==null)return missing(c.getSource());
@@ -70,12 +71,11 @@ public final class ChartPlayback {
                     s.audioRevision++;s.clear();s.render(c.getSource().getLevel());s.publishScore(c.getSource().getLevel());s.syncAudio(c.getSource().getLevel());return 1;
                 })))
                 .then(Commands.literal("status").executes(c->{var s=SESSIONS.get(c.getSource().getLevel());if(s==null)return missing(c.getSource());
-                    c.getSource().sendSuccess(()->Component.literal(s.chart.title()+" · "+s.state+" · "+String.format(Locale.ROOT,"%.3fs",s.time/1000)
-                        +" · "+s.speed+" 格/秒 · 镜像 "+s.mirror+" · 显示实体 "+s.entities.size()),false);return 1;}));
-            dispatcher.register(Commands.literal("chunithm").then(chart));
-        });
+                    CommandFeedback.status(c.getSource(),Component.literal(s.chart.title()+" · "+s.state+" · "+String.format(Locale.ROOT,"%.3fs",s.time/1000)
+                        +" · "+s.speed+" 格/秒 · 镜像 "+s.mirror+" · 显示实体 "+s.entities.size()));return 1;}));
+            return chart;
     }
-    private static int missing(CommandSourceStack source){source.sendFailure(Component.literal("尚未加载谱面：/chunithm chart load 180 10 false"));return 0;}
+    private static int missing(CommandSourceStack source){CommandFeedback.failure(source,Component.literal("尚未加载谱面：/chunithm chart load 180 10 false"));return 0;}
     public static void unload(ServerLevel level){var s=SESSIONS.remove(level);if(s!=null){s.clear();RailAudio.clear(level);NoteCueAudio.clear(level);}}
     static int groundSlideMask(ServerLevel level,Placement ground){
         var session=SESSIONS.get(level);
@@ -143,7 +143,7 @@ public final class ChartPlayback {
     }
     public static int control(CommandSourceStack source,HeadControlServices.Action action){
         var s=SESSIONS.get(source.getLevel());if(s==null)return missing(source);s.action(source.getLevel(),action);
-        source.sendSuccess(()->Component.literal("谱面呈现："+s.state),false);return 1;
+        return 1;
     }
     private static int select(CommandSourceStack source,String resource,double speed,boolean mirror,boolean start){
         var level=source.getLevel();
@@ -151,9 +151,9 @@ public final class ChartPlayback {
             var box=new AABB(part.placement.point(0,0,0),part.placement.point(9,1,part.length));return box.distanceToSqr(source.getPosition());
         })).orElse(null);
         if(track==null||new AABB(track.placement.point(0,0,0),track.placement.point(9,1,track.length)).distanceToSqr(source.getPosition())>32*32){
-            source.sendFailure(Component.literal("请靠近已生成的轨道；本命令不会替换地图。"));return 0;
+            CommandFeedback.failure(source,Component.literal("请靠近已生成的轨道；本命令不会替换地图。"));return 0;
         }
-        if(PartConnections.integrity(level,track)!=PartConnections.Status.CONNECTED){source.sendFailure(Component.literal("轨道不完整或所在区块未加载。"));return 0;}
+        if(PartConnections.integrity(level,track)!=PartConnections.Status.CONNECTED){CommandFeedback.failure(source,Component.literal("轨道不完整或所在区块未加载。"));return 0;}
         try{
             var definition=ChartDefinition.load(level,resource);
             load(level,track,definition,speed,mirror);var session=SESSIONS.get(level);
@@ -161,9 +161,8 @@ public final class ChartPlayback {
                 session.songId=song.songId();session.difficulty=song.difficulty();session.audio=SongLibrary.audio(level,session.songId);break;
             }
             if(start)session.action(level,HeadControlServices.Action.START_OR_RESUME);
-            source.sendSuccess(()->Component.literal("已加载 "+definition.title()+" "+session.difficulty+"，"+speed+" 格/秒，镜像="+mirror
-                +"。预滚后按音乐时间播放，两侧边框分别发出玩家视角的左右声道；暂不计分。"),false);return 1;
-        }catch(Exception error){source.sendFailure(Component.literal("谱面加载失败："+error.getMessage()));return 0;}
+            return 1;
+        }catch(Exception error){CommandFeedback.failure(source,Component.literal("谱面加载失败："+error.getMessage()));return 0;}
     }
     public static AutoScoreTimeline.Snapshot score(ServerLevel level){var s=SESSIONS.get(level);if(s==null)return null;if(s.scoring==null)s.scoring=AutoScoreTimeline.of(s.chart);return s.scoring.at(s.time);}
     record Spec(String item,double x,double y,double z,double sx,double sy,double sz,double shear,double lift,boolean bright,int profile){}

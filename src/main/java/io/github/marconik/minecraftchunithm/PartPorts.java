@@ -37,7 +37,7 @@ final class PartPorts {
     static boolean ready(){return headLogo!=null;}
     static boolean checkReady(net.minecraft.commands.CommandSourceStack source){
         if(ready())return true;
-        source.sendFailure(net.minecraft.network.chat.Component.literal("控制入口资源尚未初始化。请保存世界并完全关闭 Minecraft，再启动最新版；仅退出世界或 F3+T 无法更新 Java 代码。"));
+        CommandFeedback.failure(source,net.minecraft.network.chat.Component.literal("控制入口资源尚未初始化。请保存世界并完全关闭 Minecraft，再启动最新版；仅退出世界或 F3+T 无法更新 Java 代码。"));
         MinecraftChunithm.LOGGER.error("Generation refused: PartPorts not initialized. A running development JVM may be using mixed build outputs.");
         return false;
     }

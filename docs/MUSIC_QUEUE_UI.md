@@ -21,7 +21,7 @@
 ## 程序接口
 
 - `SongLibrary.charts(level)`：读取数据包索引和元数据，返回真实可加载的难度、显示等级、定数、封面和谱面资源；按服务端ResourceManager缓存，数据包重新加载时使用新目录。
-- `SongPanel.update(level, placement, data)`：向歌曲面板输入一首曲目，根据TRACK 1～3写入对应位置；空曲名清空该位置。输入中速度/镜像同步为机台设置。已有提供器和`/chunithm song_data`单曲JSON沿用此接口。
+- `SongPanel.update(level, placement, data)`：向歌曲面板输入一首曲目，根据TRACK 1～3写入对应位置；空曲名清空该位置。输入中速度/镜像同步为机台设置。已有提供器和`/chunithm debug song_data`单曲JSON沿用此接口。
 - `SongPanel.setQueue(level, placement, SongQueueData inputs, speed, mirror)`：一次替换三曲输入；`SongQueueData.empty().withSlot(0, data)`构造稀疏队列，null槽为空，`SongQueueData.empty()`清空全队列。曲目关联到已导入谱面时可用于播放。
 - `MusicQueue.setChoice(level, headPart, slot, choice)`：按歌曲ID/难度写入已连接歌曲面板，再由头部读取；`MusicQueueData.Choice.empty()`可清空位置。
 - `MusicQueue.settings(level, headPart, data)`：保存速度/镜像并应用于现有谱面。

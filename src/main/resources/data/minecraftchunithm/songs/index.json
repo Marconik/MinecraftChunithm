@@ -237,6 +237,54 @@
       "metadata": "minecraftchunithm:songs/2579/song.json"
     },
     {
+      "id": 2582,
+      "title": "Ultimate Force",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2582/song.json"
+    },
+    {
+      "id": 2589,
+      "title": "ÅMARA (大未来電脳)",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2589/song.json"
+    },
+    {
+      "id": 2606,
+      "title": "リ・フィクション・O",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2606/song.json"
+    },
+    {
+      "id": 2629,
+      "title": "壱雫空",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2629/song.json"
+    },
+    {
+      "id": 2641,
+      "title": "マシンガンポエムドール",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2641/song.json"
+    },
+    {
+      "id": 2660,
+      "title": "What's up? Pop!",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2660/song.json"
+    },
+    {
       "id": 2712,
       "title": "Theatore Creatore",
       "difficulties": [
@@ -244,6 +292,14 @@
         "ULTIMA"
       ],
       "metadata": "minecraftchunithm:songs/2712/song.json"
+    },
+    {
+      "id": 2718,
+      "title": "I Wanna",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2718/song.json"
     },
     {
       "id": 2826,
@@ -260,6 +316,14 @@
         "MASTER"
       ],
       "metadata": "minecraftchunithm:songs/2838/song.json"
+    },
+    {
+      "id": 2891,
+      "title": "創 -汝ら新世界へ歩む者なり-",
+      "difficulties": [
+        "MASTER"
+      ],
+      "metadata": "minecraftchunithm:songs/2891/song.json"
     },
     {
       "id": 2966,
