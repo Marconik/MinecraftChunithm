@@ -127,6 +127,26 @@ public final class NoteCuePlayback {
         MinecraftChunithm.LOGGER.info("Note cue native check passed: active={}, triggers={}, replacements={}",active,triggers,replacements);
     }
     private record Pcm(byte[] bytes,float rate){}
+    static void verifyVolumeMix(){
+        var saved=AudioVolumeSettings.levels();
+        try{
+            AudioVolumeSettings.set(false,1);
+            for(double gain:new double[]{0,.5,1,1.5,2}){
+                AudioVolumeSettings.set(true,gain);
+                var sound=new CueSound(new Pcm(new byte[]{0,16,0,-16},48000),Vec3.ZERO);
+                try(var stream=sound.getAudioStream(null,RESOURCE,false).join()){
+                    var bytes=stream.read(4);
+                    for(int frame=0;frame<2;frame++){
+                        short expected=AudioVolume.amplify((short)(frame==0?4096:-4096),gain);
+                        if(bytes.get(frame*2)!=(byte)expected||bytes.get(frame*2+1)!=(byte)(expected>>8))throw new AssertionError("Native cue PCM gain mismatch");
+                    }
+                }
+                if(Math.abs(sound.getVolume()-.2*Math.min(1,gain))>1e-6)throw new AssertionError("Native cue volume mismatch");
+            }
+        }catch(IOException error){throw new AssertionError(error);}
+        finally{AudioVolumeSettings.set(false,saved.system());AudioVolumeSettings.set(true,saved.effects());}
+        MinecraftChunithm.LOGGER.info("Audio mixer native effect stream: mute, attenuation and amplification passed");
+    }
     private static final class CueSound extends AbstractTickableSoundInstance {
         private final Pcm pcm;private volatile int opened;
         CueSound(Pcm pcm,Vec3 point){
@@ -140,12 +160,18 @@ public final class NoteCuePlayback {
                 public AudioFormat getFormat(){return new AudioFormat(pcm.rate,16,1,true,false);}
                 public ByteBuffer read(int expected){
                     int size=Math.min(expected&~1,pcm.bytes.length-offset);var buffer=ByteBuffer.allocateDirect(size);
-                    buffer.put(pcm.bytes,offset,size);offset+=size;return buffer.flip();
+                    double gain=AudioVolumeSettings.gain(true);
+                    for(int i=0;i<size;i+=2){
+                        short sample=AudioVolume.amplify((short)((pcm.bytes[offset+i]&255)|(pcm.bytes[offset+i+1]<<8)),gain);
+                        buffer.put((byte)sample).put((byte)(sample>>8));
+                    }
+                    offset+=size;return buffer.flip();
                 }
                 public void close(){}
             });
         }
         @Override public void tick(){}
+        @Override public float getVolume(){return volume*(float)Math.min(1,AudioVolumeSettings.gain(true));}
         boolean spatialOneShot(){return !relative&&!looping;}
         Vec3 position(){return new Vec3(x,y,z);}
         void finish(){stop();}

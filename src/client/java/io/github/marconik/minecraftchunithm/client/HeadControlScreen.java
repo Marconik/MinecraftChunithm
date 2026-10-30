@@ -20,12 +20,19 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
     private float zoom=1;
     private long lastFrame=System.nanoTime();
     private boolean musicOpen;
+    private boolean audioOpen;
     private MusicQueueView musicView;
+    private AudioVolumeView audioView;
     public HeadControlScreen(HeadControlMenu menu,Inventory inventory,Component title){super(menu,inventory,title,W,H);}
     @Override protected void init(){
         super.init();controls.clear();
         zoom=Math.min(1f,Math.min((width-12f)/W,(height-12f)/H));zoom=Math.max(.1f,zoom);
         leftPos=(width-Math.round(W*zoom))/2;topPos=(height-Math.round(H*zoom))/2;
+        if(audioOpen){
+            audioView=new AudioVolumeView(font);
+            audioView.init(leftPos,topPos,zoom,widget->addRenderableWidget(widget),()->{AudioVolumeSettings.save();super.onClose();});
+            return;
+        }
         if(musicOpen){
             musicView=new MusicQueueView(menu,font);
             musicView.init(leftPos,topPos,zoom,button->addRenderableWidget(button),this::request,()->super.onClose());
@@ -48,9 +55,15 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
     }
     private void request(int action){if(minecraft.gameMode!=null)minecraft.gameMode.handleInventoryButtonClick(menu.containerId,action);}
     void showMusic(boolean open){musicOpen=open;rebuildWidgets();}
-    @Override public void onClose(){if(musicOpen)showMusic(false);else super.onClose();}
+    void showAudio(boolean open){audioOpen=open;if(!open)AudioVolumeSettings.save();rebuildWidgets();}
+    @Override public void onClose(){if(audioOpen)showAudio(false);else if(musicOpen)showMusic(false);else super.onClose();}
+    @Override public void removed(){AudioVolumeSettings.save();super.removed();}
     @Override protected void extractLabels(GuiGraphicsExtractor g,int mx,int my){} // No inventory title or player slots.
     @Override public void extractContents(GuiGraphicsExtractor g,int mx,int my,float delta){
+        if(audioOpen){
+            g.pose().pushMatrix();g.pose().translate(leftPos,topPos);g.pose().scale(zoom,zoom);audioView.draw(g);g.pose().popMatrix();
+            super.extractContents(g,mx,my,delta);return;
+        }
         if(musicOpen){
             g.pose().pushMatrix();g.pose().translate(leftPos,topPos);g.pose().scale(zoom,zoom);musicView.draw(g);g.pose().popMatrix();
             super.extractContents(g,mx,my,delta);return;
@@ -113,7 +126,7 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
             active=state==-2?menu.enabled(action):state<0||menu.connected(state);
             // The rear control diagram is mirrored relative to the player at the slide.
             String tipLabel=state==HeadControlMenu.AIR_LEFT?"Right Air":state==HeadControlMenu.AIR_RIGHT?"Left Air":label;
-            String tip=tipLabel+"\n"+(state==-2?playbackReason(action):state>=0?reason(state):icon==4?
+            String tip=tipLabel+"\n"+(action==HeadControlMenu.OPEN_PLAYER&&menu.connected(state)?"调节系统音量 / 效果音量":state==-2?playbackReason(action):state>=0?reason(state):icon==4?
                     "轨道左 / 中 / 右："+reason(HeadControlMenu.TRACK)+"\nMusic："+reason(HeadControlMenu.MUSIC)+"\nPlayer："+reason(HeadControlMenu.PLAYER)+"\n点击刷新":"关闭窗口");
             if(!tip.equals(lastTip)){lastTip=tip;setTooltip(Tooltip.create(Component.literal(tip)));setMessage(Component.literal(tip));}
         }
@@ -121,7 +134,7 @@ public final class HeadControlScreen extends AbstractContainerScreen<HeadControl
             pressedUntil=System.nanoTime()+100_000_000L;
             if(action==-2){onClose();return;}
             if(action==HeadControlMenu.OPEN_MUSIC){showMusic(true);return;}
-            if(action==HeadControlMenu.OPEN_PLAYER)return;
+            if(action==HeadControlMenu.OPEN_PLAYER){showAudio(true);return;}
             request(action>=0?action:HeadControlMenu.REFRESH);
         }
         @Override protected void extractContents(GuiGraphicsExtractor g,int mx,int my,float delta){

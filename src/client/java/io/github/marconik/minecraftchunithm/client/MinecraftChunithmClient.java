@@ -6,6 +6,7 @@ import net.fabricmc.api.ClientModInitializer;
 public final class MinecraftChunithmClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        AudioVolumeSettings.initialize();
         RailMusicPlayback.initialize();
         NoteCuePlayback.initialize();
         SongPanelTextRenderer.initialize();
@@ -30,6 +31,7 @@ public final class MinecraftChunithmClient implements ClientModInitializer {
                     menu.receive(payload.json());
             }));
         DevelopmentHeadUiCapture.initialize();
+        DevelopmentAudioUiPreview.initialize();
         DevelopmentNoteCueCheck.initialize();
         DevelopmentReverseCapture.initialize();
         DevelopmentDifferentialCapture.initialize();

@@ -13,6 +13,14 @@ loom {
     }
     runs {
         client {
+            if (project.hasProperty('audioUiPreview')) {
+                runDir 'build/audio-ui-preview'
+                vmArg '-Dminecraftchunithm.audioUiPreview=true'
+                programArg '--width'
+                programArg '1280'
+                programArg '--height'
+                programArg '800'
+            }
             if (project.hasProperty('offTrackQuickPlay')) {
                 runDir 'build/air-input-test'
                 vmArg '-Dminecraftchunithm.offTrackQuickPlay=true'
@@ -124,4 +132,10 @@ tasks.register('checkAutoScore', JavaExec) {
     dependsOn boundsCheckClasses
     classpath = sourceSets.boundsCheck.runtimeClasspath
     mainClass = 'io.github.marconik.minecraftchunithm.AutoScoreCheck'
+}
+
+tasks.register('checkAudioVolume', JavaExec) {
+    dependsOn boundsCheckClasses
+    classpath = sourceSets.boundsCheck.runtimeClasspath
+    mainClass = 'io.github.marconik.minecraftchunithm.AudioVolumeCheck'
 }

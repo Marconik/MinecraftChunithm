@@ -3,6 +3,7 @@ package io.github.marconik.minecraftchunithm;
 /** Exhaustively checks 16 widths at every half-lane slot, including negative world coordinates. */
 public final class TrackBoundsCheck {
     public static void main(String[] args) {
+        AudioVolumeCheck.run();
         CommandCheck.run();
         ImportedHeightCheck.run();
         NoteCueCheck.run();

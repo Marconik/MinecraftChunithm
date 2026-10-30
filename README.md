@@ -5,6 +5,8 @@ Play CHUNITHM(NEW and Later) in Minecraft
 
 正式 JAR 的构建、安装环境和当前限制见 [发布包说明](docs/RELEASE.md)。
 
+头部右下角 Player 模块现可打开 [音量设置](docs/AUDIO_SETTINGS.md)，调节本机系统总音量和过线效果音，支持 0～2 倍连续拖动并保存。
+
 Minecraft Java 26.3 / Fabric 项目。已实现轨道模型、16 种宽度的 TAP、轨道生成、边界检查和按 BPM 运行的随机运动测试；尚未实现击打判定或音乐播放。
 
 ## 音符运动测试

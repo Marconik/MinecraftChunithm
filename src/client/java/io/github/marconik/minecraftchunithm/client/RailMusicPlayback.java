@@ -113,13 +113,36 @@ public final class RailMusicPlayback {
         for(boolean left:new boolean[]{true,false})for(int at:new int[]{0,12345}){
             var stream=new MonoStream(pcm,at,left);var bytes=stream.read(1024);
             if(stream.getFormat().getChannels()!=1)throw new AssertionError("Rail stream must be mono");
-            for(int i=0;i<bytes.remaining();i++){
+            double gain=AudioVolumeSettings.gain(false);
+            for(int i=0;i<bytes.remaining();i+=2){
                 int channel=left||pcm.channels==1?0:1;
-                int original=((at+i/2)*pcm.channels+channel)*2+i%2;
-                if(bytes.get(i)!=pcm.bytes[original])throw new AssertionError("Stereo channel separation changed samples");
+                int original=((at+i/2)*pcm.channels+channel)*2;
+                short expected=AudioVolume.amplify((short)((pcm.bytes[original]&255)|(pcm.bytes[original+1]<<8)),gain);
+                if(bytes.get(i)!=(byte)expected||bytes.get(i+1)!=(byte)(expected>>8))throw new AssertionError("Stereo channel separation/gain mismatch");
             }
         }
-        MinecraftChunithm.LOGGER.info("Rail PCM check passed: both mono channels preserve source samples and seek frames");
+        MinecraftChunithm.LOGGER.info("Rail PCM check passed: both mono channels preserve channel selection, gain and seek frames");
+    }
+    static void verifyVolumeMix(){
+        var saved=AudioVolumeSettings.levels();
+        var pcm=new Pcm(new byte[]{0,16,0,-16,0,32,0,-32},2,48000);
+        try{
+            for(double gain:new double[]{0,.5,1,1.5,2}){
+                AudioVolumeSettings.set(false,gain);
+                for(boolean side:new boolean[]{true,false}){
+                    var bytes=new MonoStream(pcm,0,side).read(4);
+                    for(int frame=0;frame<2;frame++){
+                        short source=(short)((side?1:-1)*(frame+1)*4096);
+                        short expected=AudioVolume.amplify(source,gain);
+                        if(bytes.get(frame*2)!=(byte)expected||bytes.get(frame*2+1)!=(byte)(expected>>8))throw new AssertionError("Native rail PCM gain mismatch");
+                    }
+                    var sound=new RailSound(SoundEvent.createVariableRangeEvent(Identifier.parse("minecraftchunithm:test")),pcm,0,side,
+                            new Placement(BlockPos.ZERO,Direction.NORTH),24);
+                    if(Math.abs(sound.getVolume()-.8*Math.min(1,gain))>1e-6)throw new AssertionError("Native rail volume mismatch");
+                }
+            }
+        }finally{AudioVolumeSettings.set(false,saved.system());}
+        MinecraftChunithm.LOGGER.info("Audio mixer native music streams: stereo channels, mute, attenuation and amplification passed");
     }
     private record Pcm(byte[] bytes,int channels,float rate){
         double duration(){return bytes.length/(channels*2.0)/rate*1000;}
@@ -132,8 +155,11 @@ public final class RailMusicPlayback {
         public ByteBuffer read(int expected){
             int count=Math.min(expected/2,pcm.bytes.length/(pcm.channels*2)-frame);
             var output=ByteBuffer.allocateDirect(count*2);
+            double gain=AudioVolumeSettings.gain(false);
             for(int i=0;i<count;i++){
-                int index=((frame++)*pcm.channels+channel)*2;output.put(pcm.bytes[index]).put(pcm.bytes[index+1]);
+                int index=((frame++)*pcm.channels+channel)*2;
+                short sample=AudioVolume.amplify((short)((pcm.bytes[index]&255)|(pcm.bytes[index+1]<<8)),gain);
+                output.put((byte)sample).put((byte)(sample>>8));
             }
             return output.flip();
         }
@@ -153,6 +179,7 @@ public final class RailMusicPlayback {
             return CompletableFuture.completedFuture(new MonoStream(pcm,frame,left));
         }
         public void tick(){var p=RailAudioGeometry.position(track,length,listener(),left);x=p.x;y=p.y;z=p.z;}
+        @Override public float getVolume(){return volume*(float)Math.min(1,AudioVolumeSettings.gain(false));}
         Vec3 position(){return new Vec3(x,y,z);}
         double cursorTime(){return frame*1000/pcm.rate+(System.nanoTime()-started)/1_000_000.0;}
         void finish(){stop();}
