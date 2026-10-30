@@ -35,6 +35,29 @@ If saved custom dimensions are disabled, enable their provider before rerunning
 so their content can be examined. Only explicitly matching registry filenames
 are deleted; other save data is retained.
 
+## Leftover display repair
+
+The facades, score text, progress fill and connection sockets are vanilla
+`text_display`, `item_display` and `block_display` entities. They have no normal
+block collision or mining behaviour; Display rejects normal attack damage even
+when its saved `Invulnerable` field is false. Many use vanilla paper/concrete,
+so their `minecraftchunithm.*` ownership tags and custom item models identify
+them independently of the material or the presence of cabinet blocks.
+
+Cleanup now snapshots the native entity section storage, including hidden and
+pending-unload entities omitted by `ServerLevel.getAllEntities()`. It preserves
+players, unrelated vanilla entities and other namespaces. After the removal
+pass it flushes through Minecraft's save APIs and asynchronously rereads every
+saved entity chunk. A late residual triggers another live cleanup and readback;
+an unreadable or persistently dirty chunk reports an incomplete result and
+retains the part registrations instead of claiming success.
+
+To repair an already dismantled cabinet, install the fixed MOD and run
+`/chunithm uninstall` again. The original cabinet blocks and registrations are
+not required for detecting orphan displays. Wait for the completed-and-saved
+message before exiting and removing the MOD. This clears world-wide MOD
+content and does not reconstruct terrain.
+
 Development integration test (destructive only inside `build/air-input-test`):
 
 ```powershell
@@ -52,3 +75,12 @@ removed 1,332 MOD blocks and 166 related entities across all three vanilla
 dimensions. Unloaded unregistered content was removed, vanilla control blocks
 and text displays survived, registry files disappeared, and the second pass
 successfully removed zero blocks/entities.
+
+Verified 2026-10-30: the extended integration check reproduced three hidden
+displays absent from `getAllEntities()`, removed 614 MOD blocks and 338 related
+entities across three dimensions, and completed a second no-op uninstall.
+Unloaded orphans and vanilla controls passed. After client shutdown, a separate
+read of 109 active entity records across 13 entity region files found no MOD
+ownership tags or model references. Test output is in
+`build/air-input-test/uninstall-checks.json` and
+`build/uninstall-analysis/post-shutdown-verification.json`.

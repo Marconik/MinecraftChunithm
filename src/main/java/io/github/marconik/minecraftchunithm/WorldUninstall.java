@@ -30,6 +30,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
 import net.minecraft.world.level.chunk.storage.SerializableChunkData;
+import net.minecraft.world.level.chunk.storage.EntityStorage;
+import net.minecraft.world.level.chunk.storage.SimpleRegionStorage;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -68,14 +70,52 @@ public final class WorldUninstall {
         try{job.prepare();return 1;}catch(Exception error){job.fail("无法准备卸载",error);job.finish();return 0;}
     }
     static boolean modBlock(BlockState state){return BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace().equals(MinecraftChunithm.MOD_ID);}
+    private static boolean ownedTag(String value){return value.equals(MinecraftChunithm.MOD_ID)||value.startsWith(MinecraftChunithm.MOD_ID+".")||value.startsWith(MinecraftChunithm.MOD_ID+":");}
+    private static boolean modId(String value){return value.startsWith(MinecraftChunithm.MOD_ID+":");}
     static boolean owned(Entity entity){
-        if(entity instanceof Display&&entity.entityTags().stream().anyMatch(t->t.startsWith(MinecraftChunithm.MOD_ID+".")))return true;
+        if(entity instanceof net.minecraft.world.entity.player.Player)return false;
+        if(entity.entityTags().stream().anyMatch(WorldUninstall::ownedTag))return true;
+        if(modId(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString()))return true;
         if(entity instanceof Display.BlockDisplay block)return modBlock(block.getBlockState());
         var stack=entity instanceof Display.ItemDisplay item?item.getItemStack():entity instanceof ItemEntity item?item.getItem():null;
         if(stack==null||stack.isEmpty())return false;
         var model=stack.get(DataComponents.ITEM_MODEL);
         return BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(MinecraftChunithm.MOD_ID)
                 ||model!=null&&model.getNamespace().equals(MinecraftChunithm.MOD_ID);
+    }
+    /** Native section storage includes hidden entities omitted by getAllEntities().
+     * Snapshot first: discard removes entities and can delete the section itself. */
+    static List<Entity> storedEntities(ServerLevel level,ChunkPos pos){
+        var storage=level.entityManager.sectionStorage;var found=new ArrayList<Entity>();
+        long[] chunks=pos==null?storage.getAllChunksWithExistingSections().toLongArray():new long[]{pos.pack()};
+        for(long chunk:chunks)storage.getExistingSectionsInChunk(chunk).forEach(section->section.getEntities().forEach(found::add));
+        return found;
+    }
+    static SimpleRegionStorage entityStorage(ServerLevel level){
+        if(level.entityManager.permanentStorage instanceof EntityStorage storage)return storage.simpleRegionStorage;
+        throw new IllegalStateException("无法核对当前实体存储实现");
+    }
+    /** Read-only post-save ownership check, independent of entity tracking or hit boxes. */
+    static boolean containsEntities(CompoundTag chunk){
+        for(var entry:chunk.getListOrEmpty("Entities"))if(entry instanceof CompoundTag entity&&ownedData(entity))return true;
+        return false;
+    }
+    static boolean ownedData(CompoundTag entity){
+        for(var tag:entity.getListOrEmpty("Tags"))if(ownedTag(tag.asString().orElse("")))return true;
+        if(modId(entity.getStringOr("id","")))return true;
+        String type=entity.getStringOr("id","");
+        if(type.equals("minecraft:block_display")){
+            var state=entity.get("block_state");
+            String name=state instanceof CompoundTag block?block.getStringOr("id",block.getStringOr("Name","")):state==null?"":state.asString().orElse("");
+            if(modId(name))return true;
+        }
+        if(type.equals("minecraft:item_display")||type.equals("minecraft:item")){
+            var stack=entity.getCompoundOrEmpty(type.equals("minecraft:item")?"Item":"item");
+            if(modId(stack.getStringOr("id",""))||modId(stack.getCompoundOrEmpty("components").getStringOr("minecraft:item_model","")))return true;
+        }
+        // Include passengers, even if their vanilla vehicle has no ownership tag.
+        for(var child:entity.getListOrEmpty("Passengers"))if(child instanceof CompoundTag passenger&&ownedData(passenger))return true;
+        return false;
     }
     /** Only existing region-header entries; negative coordinates use floor-based region offsets. */
     static Map<ChunkPos,Boolean> savedChunks(Path dimension)throws IOException{
@@ -119,8 +159,9 @@ public final class WorldUninstall {
     }
     private static final class Job {
         final MinecraftServer server;final CommandSourceStack source;
-        final Deque<Work> queued=new ArrayDeque<>();final List<Work> pending=new ArrayList<>();
+        final Deque<Work> queued=new ArrayDeque<>(),repairs=new ArrayDeque<>();final List<Work> pending=new ArrayList<>();
         final Set<Path> dimensionPaths=new HashSet<>();
+        boolean verifying;int verificationPass;
         long blocks,entities;int scanned,failed,total,ticks;
         Job(MinecraftServer server,CommandSourceStack source){this.server=server;this.source=source;}
         void message(String text){
@@ -133,7 +174,7 @@ public final class WorldUninstall {
             for(var player:server.getPlayerList().getPlayers())if(player.containerMenu instanceof HeadControlMenu
                     ||player.containerMenu instanceof SongPanelMenu||player.containerMenu instanceof PlayerPanelMenu)player.closeContainer();
             for(var level:server.getAllLevels()){ChartPlayback.unload(level);TrackMotion.stop(level);}
-            for(var level:server.getAllLevels())cleanMemory(level);
+            for(var level:server.getAllLevels()){purge(level,null);cleanMemory(level);}
             // Flush pending writes first so newly placed/unsaved blocks are included in the scan.
             server.saveEverything(true,true,true);
             for(var level:server.getAllLevels()){
@@ -155,16 +196,48 @@ public final class WorldUninstall {
         void tick(){
             ticks++;
             while(pending.size()<64&&!queued.isEmpty()){
-                var work=queued.removeFirst();work.read=work.level.getChunkSource().chunkMap.read(work.pos);pending.add(work);
+                var work=queued.removeFirst();work.read=verifying?entityStorage(work.level).read(work.pos):work.level.getChunkSource().chunkMap.read(work.pos);pending.add(work);
             }
             for(var it=pending.iterator();it.hasNext();){
                 var work=it.next();
-                try{if(!step(work))continue;}
+                try{if(!(verifying?verify(work):step(work)))continue;}
                 catch(Exception error){fail("无法清理 "+work.level.dimension().identifier()+" "+work.pos,error);}
                 work.release();it.remove();scanned++;
             }
-            if(queued.isEmpty()&&pending.isEmpty()){finish();return;}
-            if(ticks%100==0)message("卸载进度："+scanned+"/"+total+" 区块，已清除 "+blocks+" 方块、"+entities+" 实体。");
+            if(queued.isEmpty()&&pending.isEmpty()){
+                if(failed!=0){finish();return;}
+                if(!verifying){beginVerification();return;}
+                if(!repairs.isEmpty()){
+                    verifying=false;total+=repairs.size();queued.addAll(repairs);repairs.clear();
+                    message("发现延迟载入的展示实体，正在补充清理后重新核对存档。");return;
+                }
+                finish();return;
+            }
+            if(ticks%100==0)message((verifying?"卸载存档核对：":"卸载进度：")+scanned+"/"+total+" 区块，已清除 "+blocks+" 方块、"+entities+" 实体。");
+        }
+        void beginVerification(){
+            // Releasing a chunk ticket can hide an entity without removing it from
+            // the native store. Include those sections before flushing and verifying.
+            for(var level:server.getAllLevels()){cleanMemory(level);purge(level,null);}
+            release();server.saveEverything(true,true,true);verifying=true;verificationPass++;
+            for(var level:server.getAllLevels()){
+                Path path=DimensionType.getStorageFolder(level.dimension(),server.getWorldPath(LevelResource.ROOT));
+                try{for(var entry:savedChunks(path).entrySet())if(entry.getValue())queued.add(new Work(level,entry.getKey(),true));}
+                catch(IOException error){fail("无法核对实体存档",error);}
+            }
+            total+=queued.size();message("方块和内存实体已清理，正在回读实体存档核对，完成前请保持世界开启。");
+        }
+        boolean verify(Work work){
+            if(!work.read.isDone())return false;
+            var data=work.read.join();
+            if(data.isPresent()&&containsEntities(data.get())){
+                // Re-run the normal live removal path once for a late entity load.
+                if(verificationPass>=2)throw new IllegalStateException("保存后仍存在 MOD 实体，不能宣告卸载完成");
+                var repair=new Work(work.level,work.pos,true);
+                // Finish the read-only pass before starting another live pass.
+                repairs.add(repair);
+            }
+            return true;
         }
         boolean step(Work work)throws IOException{
             if(work.load==null){
@@ -192,7 +265,7 @@ public final class WorldUninstall {
         }
         void purge(ServerLevel level,ChunkPos pos){
             var remove=new ArrayList<Entity>();
-            for(var entity:level.getAllEntities())if((pos==null||ChunkPos.containing(entity.blockPosition()).equals(pos))&&owned(entity))remove.add(entity);
+            for(var entity:storedEntities(level,pos))if(!entity.isRemoved()&&owned(entity))remove.add(entity);
             for(var entity:remove){entity.discard();entities++;}
         }
         void cleanMemory(ServerLevel level){

@@ -6,7 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.level.ChunkPos;
 
-final class UninstallCheck {
+public final class UninstallCheck {
+    public static void main(String[] args){run();}
     static void run(){
         // ChunkPos.isValid consults the vanilla chunk-generation registry.
         net.minecraft.SharedConstants.tryDetectVersion();
@@ -27,6 +28,29 @@ final class UninstallCheck {
         if(!WorldUninstall.containsBlocks(chunk))throw new AssertionError("26.3 default-state string ignored");
         palette.clear();palette.add(net.minecraft.nbt.StringTag.valueOf("minecraft:diamond_block"));
         if(WorldUninstall.containsBlocks(chunk))throw new AssertionError("Vanilla state string incorrectly accepted");
+        for(String type:new String[]{"minecraft:text_display","minecraft:item_display","minecraft:block_display","minecraft:interaction"}){
+            var display=new CompoundTag();display.putString("id",type);
+            var tags=new ListTag();display.put("Tags",tags);
+            tags.add(net.minecraft.nbt.StringTag.valueOf("minecraftchunithm_other.song_display"));
+            if(WorldUninstall.ownedData(display))throw new AssertionError("Similar namespace must be preserved");
+            tags.clear();tags.add(net.minecraft.nbt.StringTag.valueOf("minecraftchunithm.song_display"));
+            if(!WorldUninstall.ownedData(display))throw new AssertionError("Tagged vanilla display escaped saved-entity verification");
+            var list=new ListTag();list.add(display);var saved=new CompoundTag();saved.put("Entities",list);
+            if(!WorldUninstall.containsEntities(saved))throw new AssertionError("Saved display chunk ignored");
+            var vehicle=new CompoundTag();vehicle.putString("id","minecraft:boat");vehicle.put("Passengers",list);
+            if(!WorldUninstall.ownedData(vehicle))throw new AssertionError("Owned passenger ignored");
+        }
+        var display=new CompoundTag();display.putString("id","minecraft:block_display");
+        display.putString("block_state","minecraft:yellow_concrete");
+        if(WorldUninstall.ownedData(display))throw new AssertionError("Untagged vanilla progress material must survive");
+        display.putString("block_state","minecraftchunithm:head_control_logo");
+        if(!WorldUninstall.ownedData(display))throw new AssertionError("Untagged custom block display ignored");
+        var item=new CompoundTag();item.putString("id","minecraft:paper");
+        var components=new CompoundTag();components.putString("minecraft:item_model","minecraftchunithm:cover/3000");item.put("components",components);
+        display=new CompoundTag();display.putString("id","minecraft:item_display");display.put("item",item);
+        if(!WorldUninstall.ownedData(display))throw new AssertionError("Vanilla paper with custom song/player model ignored");
+        components.putString("minecraft:item_model","minecraftchunithm_other:cover/3000");
+        if(WorldUninstall.ownedData(display))throw new AssertionError("Another model namespace must survive");
         try{
             var root=Files.createTempDirectory("chunithm-uninstall-check-");
             var region=Files.createDirectory(root.resolve("region"));var entities=Files.createDirectory(root.resolve("entities"));
@@ -42,6 +66,6 @@ final class UninstallCheck {
                 catch(java.io.EOFException expected){}
             }finally{Files.deleteIfExists(blocks);Files.deleteIfExists(entity);Files.delete(entities);Files.delete(region);Files.delete(root);}
         }catch(java.io.IOException error){throw new AssertionError(error);}
-        System.out.println("Uninstall scan: exact namespace filtering, orphan palettes, negative region coordinates, block/entity chunk union and truncated-file rejection passed.");
+        System.out.println("Uninstall scan: tagged vanilla facades/sockets, custom model items, passengers, namespace isolation, orphan palettes, negative regions and saved entity verification passed.");
     }
 }

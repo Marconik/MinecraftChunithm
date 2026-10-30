@@ -55,12 +55,22 @@ public final class DevelopmentUninstallCheck {
                 level.setBlockAndUpdate(remote,BuiltInRegistries.BLOCK.getValue(Identifier.parse("minecraftchunithm:track")).defaultBlockState());
                 var orphan=EntityTypes.TEXT_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);orphan.setText(Component.literal("orphan"));
                 orphan.addTag("minecraftchunithm.name_display");orphan.setPos(remote.getX()+.5,remote.getY()+1,remote.getZ()+.5);level.addFreshEntity(orphan);
+                facadeOrphans(level,remote.offset(2,3,2));
                 phase[0]=1;return;
             }
             if(phase[0]==1&&ticks[0]>40){server.saveEverything(true,true,true);level.setChunkForced(remoteChunk.x(),remoteChunk.z(),false);phase[0]=2;return;}
             if(phase[0]==2){
                 if(level.getChunkSource().getChunkNow(remoteChunk.x(),remoteChunk.z())!=null||level.areEntitiesLoaded(remoteChunk.pack()))return;
                 MinecraftChunithm.LOGGER.info("UNINSTALL TEST: remote unregistered block/entity confirmed unloaded before cleanup.");
+                // The old getAllEntities-only query cannot see these residents.
+                var hidden=new ChunkPos(400,-400);level.getChunk(hidden.x(),hidden.z());
+                facadeOrphans(level,new BlockPos(hidden.getMinBlockX()+4,100,hidden.getMinBlockZ()+4));
+                level.entityManager.updateChunkStatus(hidden,net.minecraft.world.level.entity.Visibility.HIDDEN);
+                long stored=WorldUninstall.storedEntities(level,hidden).stream().filter(WorldUninstall::owned).count();
+                long visible=java.util.stream.StreamSupport.stream(level.getAllEntities().spliterator(),false)
+                        .filter(e->ChunkPos.containing(e.blockPosition()).equals(hidden)&&WorldUninstall.owned(e)).count();
+                if(stored<3||visible!=0)throw new AssertionError("Could not reproduce hidden display storage outside visible lookup");
+                MinecraftChunithm.LOGGER.info("UNINSTALL TEST: {} owned hidden displays are absent from getAllEntities() before cleanup.",stored);
                 server.getCommands().performPrefixedCommand(player.createCommandSourceStack(),"chunithm uninstall");
                 if(!WorldUninstall.running(server))throw new AssertionError("Uninstall command did not start");phase[0]=3;return;
             }
@@ -75,7 +85,7 @@ public final class DevelopmentUninstallCheck {
                     if(!dimension.getBlockState(pos).is(Blocks.BEDROCK)||WorldUninstall.modBlock(dimension.getBlockState(pos.above())))
                         throw new AssertionError("Dimension cleanup mismatch in "+dimension.dimension().identifier()+" "+pos
                                 +": vanilla="+dimension.getBlockState(pos)+", above="+dimension.getBlockState(pos.above()));
-                    for(var entity:dimension.getAllEntities())if(WorldUninstall.owned(entity))throw new AssertionError("Residual MOD display/item");
+                    for(var entity:WorldUninstall.storedEntities(dimension,null))if(WorldUninstall.owned(entity))throw new AssertionError("Residual MOD display/item in entity sections");
                     for(var kind:PartConnections.Kind.values())if(!PartConnections.ofKind(dimension,kind).isEmpty())throw new AssertionError("Part cache not cleared");
                 }
                 if(level.getEntity(control[0])==null)throw new AssertionError("Uninstall removed unrelated vanilla TextDisplay");
@@ -84,7 +94,9 @@ public final class DevelopmentUninstallCheck {
             if(phase[0]==4){
                 if(!level.areEntitiesLoaded(remoteChunk.pack()))return;
                 if(!level.getBlockState(remote).isAir())throw new AssertionError("Unloaded unregistered MOD block survived");
-                for(var entity:level.getAllEntities())if(WorldUninstall.owned(entity))throw new AssertionError("Unloaded MOD entity survived");
+                for(var entity:WorldUninstall.storedEntities(level,null))if(WorldUninstall.owned(entity))throw new AssertionError("Unloaded MOD entity survived");
+                var saved=WorldUninstall.entityStorage(level).read(remoteChunk).join();
+                if(saved.isPresent()&&WorldUninstall.containsEntities(saved.get()))throw new AssertionError("Saved remote display resurrected after cleanup");
                 level.setChunkForced(remoteChunk.x(),remoteChunk.z(),false);
                 PathCheck.requireNoRegistryFiles(server.getWorldPath(LevelResource.ROOT));
                 // A second command should be a harmless, successful no-op.
@@ -93,10 +105,24 @@ public final class DevelopmentUninstallCheck {
             if(phase[0]==5&&!WorldUninstall.running(server)){
                 var report=WorldUninstall.result(server);
                 if(report==null||!report.complete()||report.blocks()!=0||report.entities()!=0)throw new AssertionError("Uninstall is not idempotent: "+report);
-                result="{\"passed\":true,\"blocksRemoved\":"+removed[0]+",\"dimensions\":"+markers.size()+",\"unloadedOrphans\":true,\"vanillaPreserved\":true,\"idempotent\":true}";
+                result="{\"passed\":true,\"blocksRemoved\":"+removed[0]+",\"dimensions\":"+markers.size()+",\"unloadedOrphans\":true,\"hiddenDisplays\":true,\"savedEntityVerification\":true,\"vanillaPreserved\":true,\"idempotent\":true}";
                 MinecraftChunithm.LOGGER.info("UNINSTALL INTEGRATION PASSED: {}",result);
             }
         });
+    }
+    private static void facadeOrphans(ServerLevel level,BlockPos position){
+        var text=EntityTypes.TEXT_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);
+        text.setText(Component.literal("MAX COMBO: 1204 SCORE: 1,010,000"));text.addTag("minecraftchunithm.head_display");
+        var socket=EntityTypes.BLOCK_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);
+        socket.setBlockState(BuiltInRegistries.BLOCK.getValue(Identifier.parse("minecraft:cyan_concrete")).defaultBlockState());socket.addTag("minecraftchunithm.part_ports");
+        var item=EntityTypes.ITEM_DISPLAY.create(level,EntitySpawnReason.TRIGGERED);
+        var stack=new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.PAPER);
+        stack.set(net.minecraft.core.component.DataComponents.ITEM_MODEL,Identifier.parse("minecraftchunithm:cover/3000"));
+        item.setItemStack(stack); // No ownership tag: model namespace alone is sufficient.
+        int x=0;
+        for(var entity:List.of(text,socket,item)){
+            entity.setPos(position.getX()+x++*.25,position.getY(),position.getZ()+.5);level.addFreshEntity(entity);
+        }
     }
     private static final class PathCheck {
         static void requireIsolated(java.nio.file.Path root){

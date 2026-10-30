@@ -139,3 +139,9 @@ tasks.register('checkAudioVolume', JavaExec) {
     classpath = sourceSets.boundsCheck.runtimeClasspath
     mainClass = 'io.github.marconik.minecraftchunithm.AudioVolumeCheck'
 }
+
+tasks.register('checkUninstall', JavaExec) {
+    dependsOn boundsCheckClasses
+    classpath = sourceSets.boundsCheck.runtimeClasspath
+    mainClass = 'io.github.marconik.minecraftchunithm.UninstallCheck'
+}

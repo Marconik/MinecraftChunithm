@@ -3,3 +3,10 @@ accessWidener v2 official
 # Include accessible and pending-unload chunks when removing all MOD content.
 accessible field net/minecraft/server/level/ChunkMap visibleChunkMap Lit/unimi/dsi/fastutil/longs/Long2ObjectLinkedOpenHashMap;
 accessible field net/minecraft/server/level/ChunkMap pendingUnloads Lit/unimi/dsi/fastutil/longs/Long2ObjectLinkedOpenHashMap;
+
+# getAllEntities only exposes tracked entities. Uninstall must also inspect
+# loaded hidden/pending-unload sections and verify the actual entity save.
+accessible field net/minecraft/server/level/ServerLevel entityManager Lnet/minecraft/world/level/entity/PersistentEntitySectionManager;
+accessible field net/minecraft/world/level/entity/PersistentEntitySectionManager sectionStorage Lnet/minecraft/world/level/entity/EntitySectionStorage;
+accessible field net/minecraft/world/level/entity/PersistentEntitySectionManager permanentStorage Lnet/minecraft/world/level/entity/EntityPersistentStorage;
+accessible field net/minecraft/world/level/chunk/storage/EntityStorage simpleRegionStorage Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;
